@@ -1,3 +1,86 @@
-.header_wrap {
-	background-color: yellow;
+.header_wrapper {
+	background-color: #3f4a82;
+	width: 100%;
+	height: 60px;
+	flex-direction: row;
+	display: flex;
+	/* align-items: flex-start; */
+	align-items: center;
+	position: fixed;
+	z-index: 999;
+	top: 0;
+	left: 0;
+	justify-content: stretch;
+	/* padding-top: 5px; */
+	/* padding-bottom: 5px; */
+}
+
+.logo_wrapper {
+	margin-left: 50px;
+}
+
+.logo {
+	width: 100%;
+	height: 50px;
+	justify-content: center;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.menu_wrapper {
+	height: 50px;
+	align-items: center;
+	margin-left: 400px;
+	flex-direction: row;
+	justify-content: center;
+	display: flex;
+	font-family: "IM_Hyemin-Bold";
+	font-size: 17px;
+	letter-spacing: 2px;
+}
+
+.memu_item {
+	padding: 30px;
+	/* font-size: 18px; */
+	font-weight: 300px;
+	text-align: center;
+	flex-direction: row;
+	font-family: "IM_Hyemin-Bold";
+}
+
+.login_wrapper {
+	height: 50px;
+	justify-content: center;
+	align-items: center;
+	margin-left: 50px;
+	flex-direction: row;
+	display: flex;
+	font-family: "IM_Hyemin-Bold";
+	font-size: 17px;
+	letter-spacing: 2px;
+}
+
+.login_item .link {
+	text-decoration: none;
+	color: #ffd0ca;
+	font-weight: 300px;
+	padding: 10px;
+	margin-left: 30px;
+	font-family: "IM_Hyemin-Bold";
+	font-size: 17px;
+	letter-spacing: 2px;
+}
+.link {
+	text-decoration: none;
+	color: white;
+	padding: 10px;
+	margin-right: 15px;
+}
+
+@font-face {
+	font-family: "IM_Hyemin-Bold";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2")
+		format("woff");
+	font-weight: normal;
+	font-style: normal;
 }
