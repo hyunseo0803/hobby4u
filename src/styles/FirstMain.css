@@ -1,0 +1,71 @@
+.Main_wrap {
+	width: 100%;
+	/* min-height: calc(100vh-20px); */
+	overflow: hidden;
+	position: relative;
+	top: 50px;
+	/* display: flex; */
+	/* flex-direction: column; */
+	/* padding-bottom: 20px; */
+	/* overflow-x: hidden; */
+}
+.homeImg {
+	width: 100%;
+	height: 100%;
+	/* padding-bottom: 100px; */
+	position: relative;
+	/* margin-top: 50px; */
+
+	/* background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	background-attachment: full; */
+}
+
+.home_text_left {
+	position: absolute;
+	text-align: center;
+	top: 10%;
+	left: 45%;
+	color: #ffd0ca;
+	animation: fade 3s;
+	animation-iteration-count: infinite;
+	/* animation-delay: 1s; */
+	animation-timing-function: 5s;
+	animation-fill-mode: none;
+	font-family: "Pretendard-Regular";
+	font-weight: 500;
+	font-style: normal;
+	font-size: 35px;
+	background-color: "red";
+}
+.home_text_right {
+	position: absolute;
+	text-align: center;
+	bottom: 24%;
+	right: 21%;
+	color: #3f4a82;
+	animation: fade 3s;
+	animation-iteration-count: infinite;
+	/* animation-delay: 1s; */
+	animation-timing-function: 5s;
+	animation-fill-mode: none;
+	font-family: "Pretendard-Regular";
+	font-weight: 500;
+	font-style: normal;
+	font-size: 35px;
+}
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@font-face {
+	font-family: "Pretendard-Regular";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+}
