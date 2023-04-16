@@ -3,31 +3,86 @@
 	/* height: 100vh; */
 	top: 50px;
 	position: relative;
+	overflow: hidden;
+	text-align: center;
 }
 .intro {
+	display: inline-block;
+	margin-top: 50px;
+	/* margin-bottom: 50px; */
+	/* justify-content: center;
+	align-items: center;
+	text-align: center; */
+}
+.text_wrap {
+	margin-top: 100px;
+	/* background-color: #666666; */
+}
+.text {
+	width: 100%;
 	font-size: 40px;
+	/* position: relative; */
 	font-family: "yg-jalnan";
 	text-align: center;
 	letter-spacing: 15px;
-	margin-top: 200px;
-	margin-bottom: 200px;
+	justify-content: center;
+	align-items: center;
+
+	color: white;
+	text-shadow: 2px 4px 6px #3f4a82;
+}
+.intro_text {
+	/* width: 500px; */
+	font-size: 40px;
+	/* position: relative; */
+	font-family: "yg-jalnan";
+	/* text-align: center; */
+	letter-spacing: 15px;
+	/* justify-content: center;
+	align-items: center; */
+
 	color: #f26b6b;
+	/* text-shadow: 50px; */
+	/* -webkit-animation: typing 2s steps(22), blink 0.5s step-end infinite alternate; */
+	animation: blink 1s infinite, typing 4s steps(22);
+	/* animation-iteration-count: infinite; */
+	/* animation-direction: 10s; */
+	/* animation-timing-function: 10s; */
+	white-space: nowrap;
+	overflow: hidden;
+	border-right: 3px solid;
+	/* overflow: hidden; */
+	/* animation: typing 2s steps(18), cursor 0.4s step-end infinite alternate; */
+}
+@keyframes typing {
+	from {
+		width: 0;
+	}
+	to {
+		width: 558px;
+	}
+}
+
+@keyframes blink {
+	50% {
+		border-color: transparent;
+	}
 }
 .intro1 {
 	width: 100%;
 	height: 100%;
 }
 
-.intro2 {
-	width: 100%;
-	height: 30px;
-	justify-content: center;
+.intro2_title {
+	/* width: 100%; */
+	/* height: 40px; */
 	text-align: center;
+	margin-top: 200px;
 	font-size: 30px;
 	font-weight: bolder;
-	margin-top: 60px;
 	font-family: "yg-jalnan";
 }
+
 .intro2_grid {
 	display: grid;
 	justify-content: center;
@@ -65,9 +120,6 @@
 	/* height: 100%; */
 }
 
-.line {
-	border: 1px solid #d9d9d9;
-}
 .none {
 	width: 100%;
 	height: 1800px;
