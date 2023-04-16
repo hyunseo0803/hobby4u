@@ -1,3 +1,4 @@
+//footer 문의
 import React from "react";
 import "../styles/Header.css";
 import "../styles/Footer.css";

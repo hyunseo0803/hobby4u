@@ -1,3 +1,4 @@
+//소개 및 이용방법 화면
 import React from "react";
 import "../styles/Intro.css";
 import Intro1 from "../../src/assets/Intro1.png";
@@ -14,9 +15,11 @@ function Intro(props) {
 				<p className="text">Hobby For You</p>
 			</div>
 			<div className="intro">
+				{/* 애니메이션 효과 들어가는 텍스트 */}
 				<p className="intro_text">누구나 쉽고 재미있게</p>
 			</div>
 			<div className="intro2_title">
+				{/* 수평 구분선 사용 */}
 				<HorizonLine text="Mentor" />
 			</div>
 
@@ -30,7 +33,7 @@ function Intro(props) {
 					<div className="detail">
 						멘토는 자신의 능력과 경험에 따라 적정한 인원수와 수강료를 스스로
 						결정 할 수 있으며, 이를 통해 보다 맞춤화된 클래스를 제공할 수
-						있습니다.{" "}
+						있습니다.
 					</div>
 				</div>
 
@@ -97,6 +100,7 @@ function Intro(props) {
 					</div>
 				</div>
 			</div>
+			{/* Mentor가 되려면? */}
 			<img src={Intro3} className="intro3" alt="" />
 		</div>
 	);

@@ -1,3 +1,4 @@
+//로고 클릭시 나오는 화면, 제일 첫번째 화면
 import React from "react";
 import Home from "../../src/assets/Home.png";
 import "../styles/FirstMain.css";
