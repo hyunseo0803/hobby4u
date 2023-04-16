@@ -3,13 +3,23 @@ import "../styles/Intro.css";
 import Intro1 from "../../src/assets/Intro1.png";
 import GropBying from "../../src/assets/GropBying.png";
 import Intro3 from "../../src/assets/Intro3.png";
+import HorizonLine from "../common/HorizonLine";
 
 function Intro(props) {
 	return (
 		<div className="intro_wrap">
 			<img className="intro1" alt="" src={Intro1} />
-			<div className="intro">누구나 쉽고 재밌게</div>
-			<div className="intro2">Mentor</div>
+			<div className="text_wrap">
+				<p className="text">Special time just for me,</p>
+				<p className="text">Hobby For You</p>
+			</div>
+			<div className="intro">
+				<p className="intro_text">누구나 쉽고 재미있게</p>
+			</div>
+			<div className="intro2_title">
+				<HorizonLine text="Mentor" />
+			</div>
+
 			<div className="intro2_grid">
 				<div className="grid_detail">
 					<img
@@ -48,8 +58,9 @@ function Intro(props) {
 					</div>
 				</div>
 			</div>
-			<div className="line"></div>
-			<div className="intro2">Mentee</div>
+			<div className="intro2_title">
+				<HorizonLine text="Mentor" />
+			</div>
 			<div className="intro2_grid">
 				<div className="grid_detail">
 					<img src={GropBying} alt="" style={{ width: 55, height: 50 }} />
