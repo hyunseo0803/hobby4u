@@ -4,15 +4,12 @@
 	height: 60px;
 	flex-direction: row;
 	display: flex;
-	/* align-items: flex-start; */
 	align-items: center;
 	position: fixed;
 	z-index: 999;
 	top: 0;
 	left: 0;
 	justify-content: stretch;
-	/* padding-top: 5px; */
-	/* padding-bottom: 5px; */
 }
 
 .logo_wrapper {
@@ -41,7 +38,6 @@
 
 .memu_item {
 	padding: 30px;
-	/* font-size: 18px; */
 	font-weight: 300px;
 	text-align: center;
 	flex-direction: row;
@@ -77,6 +73,7 @@
 	margin-right: 15px;
 }
 
+/* 눈누-IM혜민체 폰트 */
 @font-face {
 	font-family: "IM_Hyemin-Bold";
 	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2")

@@ -1,6 +1,5 @@
 .intro_wrap {
 	width: 100%;
-	/* height: 100vh; */
 	top: 50px;
 	position: relative;
 	overflow: hidden;
@@ -9,19 +8,13 @@
 .intro {
 	display: inline-block;
 	margin-top: 50px;
-	/* margin-bottom: 50px; */
-	/* justify-content: center;
-	align-items: center;
-	text-align: center; */
 }
 .text_wrap {
 	margin-top: 100px;
-	/* background-color: #666666; */
 }
 .text {
 	width: 100%;
 	font-size: 40px;
-	/* position: relative; */
 	font-family: "yg-jalnan";
 	text-align: center;
 	letter-spacing: 15px;
@@ -32,27 +25,14 @@
 	text-shadow: 2px 4px 6px #3f4a82;
 }
 .intro_text {
-	/* width: 500px; */
 	font-size: 40px;
-	/* position: relative; */
 	font-family: "yg-jalnan";
-	/* text-align: center; */
 	letter-spacing: 15px;
-	/* justify-content: center;
-	align-items: center; */
-
 	color: #f26b6b;
-	/* text-shadow: 50px; */
-	/* -webkit-animation: typing 2s steps(22), blink 0.5s step-end infinite alternate; */
 	animation: blink 1s infinite, typing 4s steps(22);
-	/* animation-iteration-count: infinite; */
-	/* animation-direction: 10s; */
-	/* animation-timing-function: 10s; */
 	white-space: nowrap;
 	overflow: hidden;
 	border-right: 3px solid;
-	/* overflow: hidden; */
-	/* animation: typing 2s steps(18), cursor 0.4s step-end infinite alternate; */
 }
 @keyframes typing {
 	from {
@@ -72,10 +52,8 @@
 	width: 100%;
 	height: 100%;
 }
-
+/* Mentor , Mentee */
 .intro2_title {
-	/* width: 100%; */
-	/* height: 40px; */
 	text-align: center;
 	margin-top: 200px;
 	font-size: 30px;
@@ -87,23 +65,13 @@
 	display: grid;
 	justify-content: center;
 	text-align: center;
-	/* flex-direction: row; */
-	/* background-color: red; */
-	/* width: 100px; */
-	/* height: 100px; */
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: 100px;
-	/* align-items: stretch; */
 	margin-left: 200px;
 	margin-right: 200px;
 	margin-top: 200px;
 	margin-bottom: 150px;
 }
-/* .grid_detail { */
-/* display: grid; */
-/* flex-direction: ; */
-/* } */
-
 .detail {
 	margin-top: 10px;
 	font-size: 16px;
@@ -117,7 +85,6 @@
 
 .intro3 {
 	width: 100%;
-	/* height: 100%; */
 }
 
 .none {
@@ -126,12 +93,7 @@
 	background-color: black;
 	opacity: 0.63;
 }
-
-@font-face {
-	font-family: "Pretendard-Regular";
-	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-		format("woff");
-}
+/* 눈누-강원교육모두체 폰트 */
 @font-face {
 	font-family: "GangwonEdu_OTFBoldA";
 	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff")
@@ -139,6 +101,7 @@
 	font-weight: normal;
 	font-style: normal;
 }
+/* 눈누-여기어때 잘난체 폰트 */
 @font-face {
 	font-family: "yg-jalnan";
 	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff")
