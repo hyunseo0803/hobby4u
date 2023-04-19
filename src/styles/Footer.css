@@ -1,7 +1,8 @@
 .footer_wrap {
 	width: 100%;
-	height: 20px;
-	/* background-color: #beefbe44; */
+	height: 200px;
+	background-color: white;
+	/* opacity: 0.6; */
 	margin-top: 46px;
 	justify-content: center;
 	flex-direction: column;
@@ -9,13 +10,35 @@
 	text-align: center;
 	display: flex;
 }
-.footer {
-	width: 100%;
-	height: 30px;
+/* .footer {
+	display: grid;
+	justify-content: center;
+	text-align: center;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 100px;
+	margin-left: 200px;
+	margin-right: 200px;
+	margin-top: 200px;
+	margin-bottom: 150px;
+	width: 200px;
+	height: 80px;
 	font-size: 13px;
-	color: #666666;
-	font-family: "Pretendard-Regular";
-}
+	/* color: #666666; */
+/* background-color: red;
+	font-family: "Pretendard-Regular";  */
+/* display: grid; */
+/* justify-content: center; */
+/* text-align: center; */
+/* grid-template-columns: 1fr 1fr 1fr; */
+/* gap: 100px; */
+/* } */
+/* .footer_title {
+	text-align: center;
+	margin-top: 200px;
+	font-size: 30px;
+	font-weight: bolder;
+	font-family: "yg-jalnan";
+} */
 
 /* 눈누 - 프리텐다드 폰트 */
 @font-face {
