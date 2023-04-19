@@ -31,7 +31,7 @@
 	flex-direction: row;
 	justify-content: center;
 	display: flex;
-	font-family: "IM_Hyemin-Bold";
+	font-family: "Pretendard-Regular";
 	font-size: 17px;
 	letter-spacing: 2px;
 }
@@ -41,7 +41,7 @@
 	font-weight: 300px;
 	text-align: center;
 	flex-direction: row;
-	font-family: "IM_Hyemin-Bold";
+	font-family: "Pretendard-Regular";
 }
 
 .login_wrapper {
@@ -51,7 +51,7 @@
 	margin-left: 50px;
 	flex-direction: row;
 	display: flex;
-	font-family: "IM_Hyemin-Bold";
+	font-family: "Pretendard-Regular";
 	font-size: 17px;
 	letter-spacing: 2px;
 }
@@ -62,7 +62,7 @@
 	font-weight: 300px;
 	padding: 10px;
 	margin-left: 30px;
-	font-family: "IM_Hyemin-Bold";
+	font-family: "Pretendard-Regular";
 	font-size: 17px;
 	letter-spacing: 2px;
 }
@@ -80,4 +80,11 @@
 		format("woff");
 	font-weight: normal;
 	font-style: normal;
+}
+
+/* 눈누 - 프리텐다드 폰트 */
+@font-face {
+	font-family: "Pretendard-Regular";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
 }
