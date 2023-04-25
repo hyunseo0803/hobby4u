@@ -111,13 +111,13 @@
 	padding: 10px;
 	font-size: 15px;
 }
-.kakao_btn {
+/* .kakao_btn {
 	background-image: url("/src/assets/kakao_login_medium_wide.png");
 	background-repeat: no-repeat;
 	background-size: cover;
 	margin: 10px auto;
 	/* padding: -10px; */
-	color: transparent;
+/* color: transparent;
 	width: 300px;
 	height: 45px;
-}
+} */

@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import SignUp from "./SignUp";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import HorizonLine from "../common/HorizonLine";
-import { KAKAO_AUTH_URL } from "../Auth";
+// import { KAKAO_AUTH_URL } from "../Auth";
+import axios from "axios";
 
 const Login = ({ onClose }) => {
 	const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false); // 회원가입 모달 열림 여부 상태
-
+	const [text, setText] = useState("업음");
 	useEffect(() => {
 		const script = document.createElement("script");
 		script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
@@ -26,6 +27,16 @@ const Login = ({ onClose }) => {
 	// 회원가입 모달 닫기 함수
 	const handleCloseSignUpModal = () => {
 		setIsSignUpModalOpen(false);
+	};
+
+	const clicked = () => {
+		axios
+			.get("http://127.0.0.1:8000", {
+				params: {
+					abc: "가나다",
+				},
+			})
+			.then((response) => setText(JSON.stringify(response.data)));
 	};
 
 	return (
@@ -67,7 +78,8 @@ const Login = ({ onClose }) => {
 				</div>
 				<div className="sns">
 					<HorizonLine text="소셜 계정으로 로그인 하기" />
-					<a href={KAKAO_AUTH_URL}>카카오로 로그인</a>
+					<h1>{text}</h1>
+					<button onClick={clicked}>클릭</button>
 				</div>
 			</div>
 		</div>

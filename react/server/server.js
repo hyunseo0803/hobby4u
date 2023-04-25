@@ -1,22 +1,19 @@
+//'use strict';
 const express = require("express");
+const path = require("path");
 const mysql = require("mysql");
 const axios = require("axios");
-const cors = require("cors");
-const app = express();
 require("dotenv").config();
 
-let corsOptions = {
-	origin: "http://localhost:3000",
-	credentials: true, // 사용자 인증이 필요한 리소스(쿠키, ...등) 접근
-};
+// const environments = require(path.join(__dirname, "..", "server/config/DB"));
 
-app.use(cors(corsOptions));
+let app = express();
 
-const REST_API_KEY = "0aa1d52197f4048d9b7cbefe466951e8";
-const REDIRECT_URI = "http://localhost:3000/auth/kakao/callback";
+app.use(express.static(path.join(__dirname, "..", "public/")));
 
-export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+const main = require("./routes/router");
 
+app.use("/", main);
 const db = mysql.connection({
 	host: "localhost", // 호스트
 	user: "root", // 데이터베이스 계정
@@ -38,8 +35,8 @@ app.get("/auth/kakao/callback", async (req, res) => {
 		// 액세스 토큰 발급 요청
 		const response = await axios.post("https://kauth.kakao.com/oauth/token", {
 			grant_type: "authorization_code",
-			client_id: REST_API_KEY,
-			redirect_uri: REDIRECT_URI,
+			client_id: "0aa1d52197f4048d9b7cbefe466951e8",
+			redirect_uri: "http://localhost:3000/auth/kakao/callback",
 			code: code,
 		});
 		const { access_token } = response.data; // 발급받은 액세스 토큰
@@ -75,4 +72,9 @@ app.get("/auth/kakao/callback", async (req, res) => {
 		console.error("카카오 인증 및 사용자 정보 요청 실패", error);
 		res.status(500).json({ message: "카카오 인증 및 사용자 정보 요청 실패" });
 	}
+});
+
+// app.set("port", environments["port"] || process.env.PORT);
+var server = app.listen(app.get("port"), function () {
+	console.log("Express server has started on port : " + server.address().port);
 });
