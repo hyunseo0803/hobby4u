@@ -57,7 +57,7 @@
 }
 
 .login_item .link {
-	text-decoration: none;
+	/* text-decoration: none; */
 	color: #ffd0ca;
 	font-weight: 300px;
 	padding: 10px;
@@ -65,6 +65,8 @@
 	font-family: "Pretendard-Regular";
 	font-size: 17px;
 	letter-spacing: 2px;
+	background-color: transparent;
+	border: 1px solid #3f4a82;
 }
 .link {
 	text-decoration: none;
