@@ -3,8 +3,31 @@ import React from "react";
 import "../styles/Header.css";
 import { Link } from "react-router-dom";
 import Logo from "../assets/Logo.png";
+import { useState } from "react";
+import LoginModal from "./Login";
+// import SignUpModal from "./SignUp";
 
 function Header(props) {
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	// const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
+	const handleLoginButtonClick = () => {
+		setIsModalOpen(true);
+	};
+	const handleModalClose = () => {
+		setIsModalOpen(false);
+	};
+
+	// 회원가입 모달 열기 함수
+	// const handleOpenSignUpModal = () => {
+	// 	setIsSignUpModalOpen(true);
+	// };
+
+	// // 회원가입 모달 닫기 함수
+	// const handleCloseSignUpModal = () => {
+	// 	setIsSignUpModalOpen(false);
+	// };
+
 	return (
 		<div className="header_wrapper">
 			<div className="logo_wrapper">
@@ -41,9 +64,13 @@ function Header(props) {
 			<div className="login_wrapper">
 				<div className="login_item">
 					{/* default로 로그인 화면으로, 업을경우 회원가입 버튼을 통해 회원가입  */}
-					<Link to="test" className="link">
+
+					<button className="link" onClick={handleLoginButtonClick}>
 						로그인/회원가입
-					</Link>
+					</button>
+					{/* 모달 */}
+					{isModalOpen && <LoginModal onClose={handleModalClose} />}
+					{/* 회원가입 모달 */}
 				</div>
 			</div>
 		</div>
