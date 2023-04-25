@@ -1,0 +1,123 @@
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5); /* 배경을 흐려지게 만들기 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-content {
+	background-color: #ffffff;
+	padding: 10px;
+	border-radius: 5px;
+	max-width: 400px;
+	width: 100%;
+	text-align: center;
+	height: auto;
+}
+.title {
+	/* background-color: red; */
+	width: 100%;
+	height: 30px;
+}
+.content {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.close {
+	/* background-color: blue; */
+	float: right;
+}
+.input_wrapper {
+	/* background-color: blue; */
+	float: right;
+	justify-content: flex-end;
+	/* display: flex; */
+	margin-bottom: 30px;
+	margin-top: 20px;
+}
+.input {
+	width: 200px;
+	height: 20px;
+	float: right;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	outline: none;
+}
+.input_id {
+	display: flex;
+	flex-direction: row;
+	/* float: right; */
+	justify-content: flex-end;
+	margin-bottom: 10px;
+}
+.input_password {
+	display: flex;
+	flex-direction: row;
+}
+
+.login {
+	width: 20%;
+	height: 60px;
+	margin-left: 10px;
+	margin-bottom: 30px;
+	margin-top: 20px;
+}
+
+.etc {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	/* background-color: red; */
+}
+.signup_etc {
+	font-size: 13px;
+	/* background-color: red; */
+}
+.pwfind {
+	font-size: 13px;
+	/* background-color: red; */
+	justify-content: center;
+	align-items: center;
+	display: flex;
+}
+.signUp {
+	margin-left: 5px;
+	border-radius: 7px;
+	border: 0;
+	outline: 0;
+	background-color: white;
+	color: #3f4a82;
+}
+.signUp:hover {
+	background-color: #3f4a82;
+	color: white;
+}
+.pw {
+	background-color: white;
+	border: 0;
+	outline: 0;
+	color: #3f4a82;
+}
+
+.sns {
+	padding: 10px;
+	font-size: 15px;
+}
+.kakao_btn {
+	background-image: url("/src/assets/kakao_login_medium_wide.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+	margin: 10px auto;
+	/* padding: -10px; */
+	color: transparent;
+	width: 300px;
+	height: 45px;
+}
