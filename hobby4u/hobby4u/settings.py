@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*3v7+=)s&sq#y10e1t&v3!=u%8qc0_7*@i(!+a7o@yu^%$ro77'
+SECRET_KEY = 'django-insecure-r_zjn8^k#pnr!oj+&k5s(!^b6u#g(%3l^5o6zik)63&dvzlw^2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,9 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'post',
+    'rest_framework',
+    'corsheaders',
 ]
 
+REST_FRAMEWORKS ={
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -48,6 +58,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST=[
+    'https://localhost:3000',
+    
+]
+CORS_ORIGIN_ALLOW_ALL=True
 
 ROOT_URLCONF = 'hobby4u.urls'
 
@@ -75,8 +91,12 @@ WSGI_APPLICATION = 'hobby4u.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Hobby4u',
+        'USER':'root',
+        'PASSWORD': 'choihyunseo7159Aabbcc!@',
+        'HOST': 'localhost',
+        'PORT': ''
     }
 }
 
