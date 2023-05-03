@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Header from "./component/Header";
+import Footer from "./component/Footer";
+import FirstMain from "./pages/FirstMain";
+import Intro from "./pages/Intro";
+import "../src/App.css";
 
 class App extends Component {
 	state = {
@@ -17,13 +23,24 @@ class App extends Component {
 	}
 	render() {
 		return (
-			<div className="App">
-				{this.state.members.map((item) => (
-					<div key={item.id}>
-						<h1>{item.email}</h1>
-					</div>
-				))}
-			</div>
+			// <div className="App">
+			// 	{this.state.members.map((item) => (
+			// 		<div key={item.id}>
+			// 			<h1>{item.email}</h1>
+			// 		</div>
+			// 	))}
+			// </div>
+			<BrowserRouter>
+				<div className="Container">
+					<Header />
+					{/* <FirstMain /> */}
+					<Routes>
+						<Route path="/" element={<FirstMain />} />
+						<Route path="intro" element={<Intro />} />
+					</Routes>
+					<Footer />
+				</div>
+			</BrowserRouter>
 		);
 	}
 }
