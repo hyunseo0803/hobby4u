@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/Login.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SignUp from "./SignUp";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import HorizonLine from "../common/HorizonLine";
@@ -9,15 +9,6 @@ import HorizonLine from "../common/HorizonLine";
 
 const Login = ({ onClose }) => {
 	const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false); // 회원가입 모달 열림 여부 상태
-	// const [text, setText] = useState("업음");
-	useEffect(() => {
-		const script = document.createElement("script");
-		script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
-		document.body.appendChild(script);
-		return () => {
-			document.body.removeChild(script);
-		};
-	}, []);
 
 	// 회원가입 모달 열기 함수
 	const handleOpenSignUpModal = () => {
@@ -27,6 +18,9 @@ const Login = ({ onClose }) => {
 	// 회원가입 모달 닫기 함수
 	const handleCloseSignUpModal = () => {
 		setIsSignUpModalOpen(false);
+	};
+	const handleLoginClick = () => {
+		window.location.href = "http://localhost:8000/kakao/login";
 	};
 
 	// const clicked = () => {
@@ -78,7 +72,7 @@ const Login = ({ onClose }) => {
 				</div>
 				<div className="sns">
 					<HorizonLine text="소셜 계정으로 로그인 하기" />
-					<button>클릭</button>
+					<button onClick={handleLoginClick}>카카오 로그인</button>
 				</div>
 			</div>
 		</div>
