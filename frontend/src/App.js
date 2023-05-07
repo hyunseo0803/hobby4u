@@ -7,20 +7,20 @@ import Intro from "./pages/Intro";
 import "../src/App.css";
 
 class App extends Component {
-	state = {
-		members: [],
-	};
-	async componentDidMount() {
-		try {
-			const res = await fetch("http://127.0.0.1:8000/api/");
-			const members = await res.json();
-			this.setState({
-				members,
-			});
-		} catch (e) {
-			console.log(e);
-		}
-	}
+	// state = {
+	// 	members: [],
+	// };
+	// async componentDidMount() {
+	// 	try {
+	// 		const res = await fetch("http://127.0.0.1:8000/api/");
+	// 		const members = await res.json();
+	// 		this.setState({
+	// 			members,
+	// 		});
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 	}
+	// }
 	render() {
 		return (
 			// <div className="App">
