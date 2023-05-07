@@ -1,22 +1,63 @@
 //메뉴바
 import React from "react";
 import "../styles/Header.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/Logo.png";
-import { useState } from "react";
-import LoginModal from "./Login";
+import { useState, useEffect } from "react";
+// import LoginModal from "./Login";
 // import SignUpModal from "./SignUp";
 
 function Header(props) {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	// const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+	// const [isModalOpen, setIsModalOpen] = useState(false);
+	const [userData, setUserData] = useState(null);
+	const navigate = useNavigate();
 
-	const handleLoginButtonClick = () => {
-		setIsModalOpen(true);
+	// const token = localStorage.getItem("token");
+
+	// useEffect(() => {
+	// 	fetch("kakao/login/")
+	// 		.then((response) => response.json())
+	// 		.then((token) => {
+	// 			localStorage.setItem("token", token);
+	// 		});
+	// });
+
+	const token = localStorage.getItem("token");
+
+	useEffect(() => {
+		fetch("get_user_data/", {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				setUserData(data);
+				// navigate("");
+			})
+			.catch((error) => console.error(error));
+	}, [navigate, token, setUserData]);
+
+	// const handleLogout = () => {
+	// 	localStorage.removeItem("accessToken");
+	// 	setLoggedIn(false);
+	// };
+	const handleLoginClick = () => {
+		fetch("/kakao/login/").then((response) => {
+			console.log(response);
+		});
+
+		// .then((token) => {
+		// 	localStorage.setItem("token", token);
+		// });
 	};
-	const handleModalClose = () => {
-		setIsModalOpen(false);
-	};
+
+	// const handleLoginButtonClick = () => {
+	// 	setIsModalOpen(true);
+	// };
+	// const handleModalClose = () => {
+	// 	setIsModalOpen(false);
+	// };
 
 	// 회원가입 모달 열기 함수
 	// const handleOpenSignUpModal = () => {
@@ -64,13 +105,18 @@ function Header(props) {
 			<div className="login_wrapper">
 				<div className="login_item">
 					{/* default로 로그인 화면으로, 업을경우 회원가입 버튼을 통해 회원가입  */}
-
-					<button className="link" onClick={handleLoginButtonClick}>
-						로그인/회원가입
-					</button>
-					{/* 모달 */}
-					{isModalOpen && <LoginModal onClose={handleModalClose} />}
-					{/* 회원가입 모달 */}
+					{userData ? (
+						<>
+							<a href="/myprofile">{userData.name} Profile</a>
+						</>
+					) : (
+						<>
+							<a className="link" href="http://localhost:8000/kakao/login">
+								카톡 로그인
+							</a>
+							{/* {isModalOpen && <LoginModal onClose={handleModalClose} />} */}
+						</>
+					)}
 				</div>
 			</div>
 		</div>
