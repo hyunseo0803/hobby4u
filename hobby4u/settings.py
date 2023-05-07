@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,11 +65,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST=[
-    'https://localhost:3000',
+# CORS_ORIGIN_WHITELIST=[
+#     'https://localhost:3000',
     
-]
+# ]
+
 CORS_ORIGIN_ALLOW_ALL=True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    # ... 등등 필요한 도메인들을 추가해줍니다.
+]
 
 ROOT_URLCONF = 'hobby4u.urls'
 
