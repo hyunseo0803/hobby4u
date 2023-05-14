@@ -1,7 +1,7 @@
 //메뉴바
 import React from "react";
 import "../styles/Header.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../assets/Logo.png";
 import { useState, useEffect } from "react";
 // import LoginModal from "./Login";
@@ -10,64 +10,60 @@ import { useState, useEffect } from "react";
 function Header(props) {
 	// const [isModalOpen, setIsModalOpen] = useState(false);
 	const [userData, setUserData] = useState(null);
-	const navigate = useNavigate();
 
-	// const token = localStorage.getItem("token");
+	// const navigate = useNavigate();
 
-	// useEffect(() => {
-	// 	fetch("kakao/login/")
-	// 		.then((response) => response.json())
-	// 		.then((token) => {
-	// 			localStorage.setItem("token", token);
-	// 		});
-	// });
-
-	const token = localStorage.getItem("token");
-
-	useEffect(() => {
-		fetch("get_user_data/", {
+	const getCode = async (code) => {
+		const response = await fetch("http://localhost:8000/kakao/callback/", {
+			method: "POST",
 			headers: {
-				Authorization: `Bearer ${token}`,
+				"Content-type": "application/json",
 			},
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				setUserData(data);
-				// navigate("");
-			})
-			.catch((error) => console.error(error));
-	}, [navigate, token, setUserData]);
-
-	// const handleLogout = () => {
-	// 	localStorage.removeItem("accessToken");
-	// 	setLoggedIn(false);
-	// };
-	const handleLoginClick = () => {
-		fetch("/kakao/login/").then((response) => {
-			console.log(response);
+			body: JSON.stringify({ code: code }),
 		});
 
-		// .then((token) => {
-		// 	localStorage.setItem("token", token);
-		// });
+		const token = await response.json();
+		localStorage.setItem("token", token);
 	};
 
-	// const handleLoginButtonClick = () => {
-	// 	setIsModalOpen(true);
-	// };
-	// const handleModalClose = () => {
-	// 	setIsModalOpen(false);
-	// };
+	const loginWithKakao = async () => {
+		try {
+			const response = await fetch("http://localhost:8000/kakao/login/");
+			const url = await response.text();
 
-	// 회원가입 모달 열기 함수
-	// const handleOpenSignUpModal = () => {
-	// 	setIsSignUpModalOpen(true);
-	// };
+			window.location.replace(url);
 
-	// // 회원가입 모달 닫기 함수
-	// const handleCloseSignUpModal = () => {
-	// 	setIsSignUpModalOpen(false);
-	// };
+			console.log(url);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	useEffect(() => {
+		const code = new URLSearchParams(window.location.search).get("code");
+		if (code) {
+			getCode(code);
+		}
+	}, []);
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+
+		if (token) {
+			getUserData(token);
+		}
+	}, []);
+
+	const getUserData = async (token) => {
+		const response = await fetch("http://localhost:8000/get_user_data/", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
+			},
+		});
+		const user = await response.json();
+		setUserData(user);
+	};
 
 	return (
 		<div className="header_wrapper">
@@ -111,9 +107,9 @@ function Header(props) {
 						</>
 					) : (
 						<>
-							<a className="link" href="http://localhost:8000/kakao/login">
+							<button className="link" onClick={loginWithKakao}>
 								카톡 로그인
-							</a>
+							</button>
 							{/* {isModalOpen && <LoginModal onClose={handleModalClose} />} */}
 						</>
 					)}

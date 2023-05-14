@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
-KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
+# KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,12 +63,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware'
 ]
 
-# CORS_ORIGIN_WHITELIST=[
-#     'https://localhost:3000',
+CORS_ORIGIN_WHITELIST=[
+    'http://localhost:3000',
+    'http://localhost:8000'
     
-# ]
+]
 
 CORS_ORIGIN_ALLOW_ALL=True
 
@@ -100,6 +102,7 @@ STATICFILES_DIRS =[os.path.join(BASE_DIR,'frontend','build','static')]
 
 WSGI_APPLICATION = 'hobby4u.wsgi.application'
 
+APPEND_SLASH = False
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

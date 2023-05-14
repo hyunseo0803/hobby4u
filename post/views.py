@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view
 from .models import Member
 from .serializers import MemberSerializer
 from django.views.generic import View
@@ -29,43 +30,42 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset=Member.objects.all()
     serializer_class=MemberSerializer
     
-    
-class KakaoSignUpView(View):
-    def get(self,request):
-        # load_dotenv()
-        app_key ='625fbab96c202cda5ddf24a9c200657d'
-        redirect_uri = 'http://localhost:8000/kakao/callback'
+@api_view(['GET'])   
+def KakaoSignUpView(request):
+        app_key ='175c0d79d0d2ee2e609a8ea7bc44d709'
+        redirect_uri = 'http://localhost:3000/kakao/callback'
         response = HttpResponse("Hello, world!")
         response["Access-Control-Allow-Origin"] = "http://localhost:3000"
-        return redirect(
+        return Response(
             f'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id={app_key}&redirect_uri={redirect_uri}'
         )
         
-class KakaoCallbackView(View):
-    def get(self, request):
-        load_dotenv()
-        code = request.GET.get('code')
-        app_key ='625fbab96c202cda5ddf24a9c200657d'
-        app_secret = 'Xw8bsmCEkjsNrrvDptsw9PxDfZPX6Uti'
-        redirect_uri = 'http://localhost:8000/kakao/callback'
+        
+@api_view(['POST'])
+def KakaoCallbackView(request):
+        if request.method == "POST":
+            code = request.POST.get('code')
+            app_key ='175c0d79d0d2ee2e609a8ea7bc44d709'
+            app_secret = 'IS0s4oiXGqTEROgPopoq4RtAeA5tzlqG'
+            redirect_uri = 'http://localhost:3000/kakao/callback'
 
-        token_api = 'https://kauth.kakao.com/oauth/token'
-        headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
+            token_api = 'https://kauth.kakao.com/oauth/token'
+            headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
 
-        data = {
-            'grant_type': 'authorization_code',
-            'client_id': app_key,
-            'client_secret': app_secret,
-            'redirect_uri': redirect_uri,
-            'code': code,
-        }
+            data = {
+                'grant_type': 'authorization_code',
+                'client_id': app_key,
+                'client_secret': app_secret,
+                'redirect_uri': redirect_uri,
+                'code': code,
+            }
         response = requests.post(token_api, headers=headers, data=data) 
         # print(response)
 
         if response.status_code == 200:
             tokens = json.loads(response.text)
             access_token = tokens.get('access_token')
-
+            
             profile_api = 'https://kapi.kakao.com/v2/user/me'
             headers = {'Authorization': f'Bearer {access_token}'}
             response = requests.post(profile_api, headers=headers)
@@ -89,9 +89,14 @@ class KakaoCallbackView(View):
 
                     jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
                     
-                    # return redirect('http://localhost:3000/')
+                    response_data = {
+                            'id': member.id,
+                            'nickname': member.nickname,
+                            'token': jwt_token,
+                            'exist': True
+                        }
+                    return Response(response_data)
                         
-                    return JsonResponse({'id':member.id, 'nickname':member.nickname, 'token':jwt_token, 'exist':True})
                         # return JsonResponse({'token':jwt_token})
                 except Member.DoesNotExist:
                         # 회원 가입되어 있지 않으면 새로 추가
@@ -113,28 +118,35 @@ class KakaoCallbackView(View):
 
                     jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
                     
-                    return JsonResponse({'id':member.id, 'nickname':member.nickname, 'token':jwt_token, 'exist':True})
+                    response_data = {
+                        'id': member.id,
+                        'nickname': member.nickname,
+                        'token': jwt_token,
+                        'exist': False
+                    }
+                    return JsonResponse(response_data)
 
                     # 로그인이 완료되었으므로, 다시 React App으로 리다이렉트
                     # return redirect('http://localhost:3000/')
             else:
-                return HttpResponse('Failed to get user profile', status=response.status_code)
+                return Response('Failed to get user profile', status=response.status_code)
         else:
-            return HttpResponse('Failed to get access token', status=response.status_code)
+            return Response('Failed to get access token', status=response.status_code)
         
         
         
 def get_user_data(request):
-    
-    try:
+    if request.method == "POST":
         token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
         member=Member.objects.get(id=user_id)
+        response_data = {
+                    'id': member.id,
+                    'nickname': member.nickname,
+                    'email':member.email,
+                }
         
-        return JsonResponse({'id':member.id,'name':member.nickname,'email':member.email})
-    except jwt.exceptions.InvalidSignatureError:
-        return JsonResponse({'error': 'Invalid token'})
-    except Member.DoesNotExist:
-        return JsonResponse({'error': 'Member does not exist'})
+        return Response(response_data)
+    
     

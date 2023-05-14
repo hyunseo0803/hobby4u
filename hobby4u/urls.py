@@ -17,14 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from django.views.generic import TemplateView
-from post.views import KakaoSignUpView, KakaoCallbackView
+from post.views import KakaoSignUpView
+from post.views import KakaoCallbackView
+# from post.views import get_user_data
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/',include('post.urls')),
+    path('/',include('post.urls')),
     path('',TemplateView.as_view(template_name='index.html')),
-    path('kakao/callback/', KakaoCallbackView.as_view()),  # 수정된 부분
-    path('kakao/login/', KakaoSignUpView.as_view()),  # 수정된 부분
+    path('kakao/callback/', KakaoCallbackView),  # 수정된 부분
+    path('kakao/login/', KakaoSignUpView),  # 수정된 부분
+    # path('get_user_data/', get_user_data)
     # path('user/',UserView.as_view()),
 
 ]
