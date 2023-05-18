@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'post',
+    'user',
     'rest_framework',
     'corsheaders',
 ]
@@ -79,6 +79,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     # ... 등등 필요한 도메인들을 추가해줍니다.
 ]
+
 
 ROOT_URLCONF = 'hobby4u.urls'
 

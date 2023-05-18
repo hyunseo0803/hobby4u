@@ -1,4 +1,5 @@
 //메뉴바
+
 import React from "react";
 import "../styles/Header.css";
 import { Link } from "react-router-dom";
@@ -14,26 +15,34 @@ function Header(props) {
 	// const navigate = useNavigate();
 
 	const getCode = async (code) => {
-		const response = await fetch("http://localhost:8000/kakao/callback/", {
-			method: "POST",
-			headers: {
-				"Content-type": "application/json",
-			},
-			body: JSON.stringify({ code: code }),
-		});
-
-		const token = await response.json();
-		localStorage.setItem("token", token);
+		const response = await fetch(
+			"http://localhost:8000/api/user/kakao/callback/",
+			{
+				method: "POST",
+				headers: {
+					"Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+				},
+				body: JSON.stringify({ code: code }),
+			}
+		);
+		const data = await response.json();
+		// console.log(data.token);
+		localStorage.setItem("token", data.token);
 	};
 
-	const loginWithKakao = async () => {
+	const loginWithKakao = async (e) => {
+		e.preventDefault();
 		try {
-			const response = await fetch("http://localhost:8000/kakao/login/");
-			const url = await response.text();
+			const app_key = "175c0d79d0d2ee2e609a8ea7bc44d709";
+			const redirect_uri = "http://localhost:3000/api/user/kakao/callback";
+			// response = HttpResponse("Hello, world!");
+			// response["Access-Control-Allow-Origin"] = "http://localhost:3000";
+			window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${app_key}&redirect_uri=${redirect_uri}`;
 
-			window.location.replace(url);
-
-			console.log(url);
+			// const response = await fetch("http://localhost:8000/api/user/login/");
+			// const url = await response.text();
+			// console.log(url);
+			// window.location.href = url;
 		} catch (error) {
 			console.error(error);
 		}
@@ -42,6 +51,7 @@ function Header(props) {
 	useEffect(() => {
 		const code = new URLSearchParams(window.location.search).get("code");
 		if (code) {
+			console.log(code);
 			getCode(code);
 		}
 	}, []);
@@ -55,13 +65,17 @@ function Header(props) {
 	}, []);
 
 	const getUserData = async (token) => {
-		const response = await fetch("http://localhost:8000/get_user_data/", {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-			},
-		});
+		const response = await fetch(
+			"http://localhost:8000/api/user/get_user_data/",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
+				},
+			}
+		);
 		const user = await response.json();
+		console.log(user);
 		setUserData(user);
 	};
 
@@ -103,7 +117,7 @@ function Header(props) {
 					{/* default로 로그인 화면으로, 업을경우 회원가입 버튼을 통해 회원가입  */}
 					{userData ? (
 						<>
-							<a href="/myprofile">{userData.name} Profile</a>
+							<a href="/myprofile">{userData.nickname} Profile</a>
 						</>
 					) : (
 						<>
