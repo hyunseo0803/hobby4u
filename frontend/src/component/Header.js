@@ -11,8 +11,7 @@ import { useState, useEffect } from "react";
 function Header(props) {
 	// const [isModalOpen, setIsModalOpen] = useState(false);
 	const [userData, setUserData] = useState(null);
-
-	// const navigate = useNavigate();
+	const [islogin, setIsLogin] = useState(false);
 
 	const getCode = async (code) => {
 		const response = await fetch(
@@ -28,6 +27,7 @@ function Header(props) {
 		const data = await response.json();
 		// console.log(data.token);
 		localStorage.setItem("token", data.token);
+		getUserData(data.token); //jwt 토큰 getUserData 로 보내고, 함수 호출
 	};
 
 	const loginWithKakao = async (e) => {
@@ -54,7 +54,7 @@ function Header(props) {
 			console.log(code);
 			getCode(code);
 		}
-	}, []);
+	});
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -74,9 +74,15 @@ function Header(props) {
 				},
 			}
 		);
-		const user = await response.json();
-		console.log(user);
-		setUserData(user);
+		try {
+			if (response.ok) {
+				const user = await response.json();
+				setUserData(user);
+				setIsLogin(true);
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	return (
@@ -115,9 +121,9 @@ function Header(props) {
 			<div className="login_wrapper">
 				<div className="login_item">
 					{/* default로 로그인 화면으로, 업을경우 회원가입 버튼을 통해 회원가입  */}
-					{userData ? (
+					{islogin ? (
 						<>
-							<a href="/myprofile">{userData.nickname} Profile</a>
+							<Link to="/intro">{userData.nickname} Profile</Link>
 						</>
 					) : (
 						<>

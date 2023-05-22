@@ -82,7 +82,7 @@ def KakaoCallbackView(request):
 
                 try:
                         # 이미 회원 가입되어 있는 사용자인지 확인
-                    member = Member.objects.get(id=id)
+                    member = Member.objects.get(email=email)
                         # request.session['user_id'] = member.id
                     # print(member.id)
                     
@@ -111,10 +111,10 @@ def KakaoCallbackView(request):
                 
                         )
                     member.save()
-                        # access_token을 세션에 저장한다
-                    request.session['access_token'] = access_token
-                        # 사용자 ID를 세션에 저장한다
-                    request.session['user_id'] = member.id
+                    #     # access_token을 세션에 저장한다
+                    # request.session['access_token'] = access_token
+                    #     # 사용자 ID를 세션에 저장한다
+                    # request.session['user_id'] = member.id
                     
                     expires_at = datetime.utcnow() + timedelta(hours=2)
                     payload = {'id': member.id, 'exp': expires_at}
