@@ -98,6 +98,7 @@ def KakaoCallbackView(request):
                             'access_token':access_token
                             # 'exist': True
                         }
+                    print("---------------------"+jwt_token+"------------------------------")
                     return Response(response_data)
                         
                         # return JsonResponse({'token':jwt_token})
@@ -128,7 +129,7 @@ def KakaoCallbackView(request):
                         'token': jwt_token,
                         'exist': False
                     }
-                    return JsonResponse(response_data)
+                    return Response(response_data)
 
                     # 로그인이 완료되었으므로, 다시 React App으로 리다이렉트
                     # return redirect('http://localhost:3000/')
@@ -143,6 +144,7 @@ def get_user_data(request):
     print("dkdkdksdjfsleijflsj")
     if request.method == "POST":
         jwt_token = request.headers.get('Authorization').split(' ')[1]
+        print(jwt_token)
         
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
