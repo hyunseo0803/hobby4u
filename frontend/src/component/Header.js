@@ -7,8 +7,10 @@ import Logo from "../assets/Logo.png";
 import { useState, useEffect } from "react";
 
 function Header(props) {
+	// 사용자 닉네임 상태 변수
 	const [userNickname, setUserNickname] = useState("");
 
+	// 카카오 로그인 코드로 백엔드에 JWT 요청
 	const getCode = async (code) => {
 		try {
 			const response = await fetch(
@@ -24,14 +26,18 @@ function Header(props) {
 			const data = await response.json();
 			const token = data.token;
 
+			// 로컬스토리지에 JWT 토큰 저장
 			localStorage.setItem("token", token);
 
+			// 사용자 정보 가져오는 함수 호출
 			await getUserData();
 		} catch (error) {
+			// 예외처리
 			throw new Error(error.message);
 		}
 	};
 
+	// 카카오 로그인
 	const loginWithKakao = async () => {
 		try {
 			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
@@ -41,12 +47,16 @@ function Header(props) {
 			throw new Error(error.message);
 		}
 	};
+
+	// 로그아웃
 	const logout = () => {
 		localStorage.removeItem("token");
 		setUserNickname("");
 		alert("로그아웃되었습니다.");
 	};
 
+	// 1. 카카오 로그인 성공 후 , 코드로 GetCode 함수 호출
+	// 2. 중복 호출 방지를 위해 GetCode 함수 호출 이후 주소창에서 CODE 삭제
 	useEffect(() => {
 		const code = new URLSearchParams(window.location.search).get("code");
 		if (code) {
@@ -55,6 +65,7 @@ function Header(props) {
 		}
 	});
 
+	// JWT 검증 후 사용자 정보 가져오기
 	const getUserData = async () => {
 		try {
 			const token = localStorage.getItem("token");
@@ -77,9 +88,11 @@ function Header(props) {
 				const nickname = user.nickname;
 				setUserNickname(nickname);
 			} else {
+				// 예외처리
 				throw new Error("Failed to fetch user data");
 			}
 		} catch (error) {
+			// 예외처리
 			throw new Error("Token is not available");
 		}
 	};
