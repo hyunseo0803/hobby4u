@@ -156,7 +156,9 @@ function Header(props) {
 					{userNickname ? (
 						<>
 							<Link to="/intro">{userNickname} Profile</Link>
-							<button onClick={logout}>로그아웃</button>
+							<Link to="/">
+								<button onClick={logout}>로그아웃</button>
+							</Link>
 						</>
 					) : (
 						<>
