@@ -5,36 +5,48 @@ import "../styles/Header.css";
 import { Link } from "react-router-dom";
 import Logo from "../assets/Logo.png";
 import { useState, useEffect } from "react";
+
 // import LoginModal from "./Login";
 // import SignUpModal from "./SignUp";
 
 function Header(props) {
 	// const [isModalOpen, setIsModalOpen] = useState(false);
-	const [userData, setUserData] = useState(null);
-	const [islogin, setIsLogin] = useState(false);
+	const [userNickname, setUserNickname] = useState("");
+	// const [islogin, setIsLogin] = useState(false);
 
 	const getCode = async (code) => {
-		const response = await fetch(
-			"http://localhost:8000/api/user/kakao/callback/",
-			{
-				method: "POST",
-				headers: {
-					"Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-				},
-				body: JSON.stringify({ code: code }),
-			}
-		);
-		const data = await response.json();
-		// console.log(data.token);
-		localStorage.setItem("token", data.token);
-		getUserData(data.token); //jwt 토큰 getUserData 로 보내고, 함수 호출
+		try {
+			const response = await fetch(
+				"http://localhost:8000/api/user/kakao/callback/",
+				{
+					method: "POST",
+					headers: {
+						"Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+					},
+					body: JSON.stringify({ code: code }),
+				}
+			);
+			const data = await response.json();
+			const token = data.token;
+			console.log(token);
+
+			localStorage.setItem("token", token);
+
+			await getUserData();
+
+			// if (token) {
+			// 	await getUserData(token);
+			// 	//jwt 토큰 getUserData 로 보내고, 함수 호출
+			// }
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
-	const loginWithKakao = async (e) => {
-		e.preventDefault();
+	const loginWithKakao = async () => {
 		try {
-			const app_key = "175c0d79d0d2ee2e609a8ea7bc44d709";
-			const redirect_uri = "http://localhost:3000/api/user/kakao/callback";
+			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
+			const redirect_uri = process.env.REACT_APP_REDIRECT_URI;
 			// response = HttpResponse("Hello, world!");
 			// response["Access-Control-Allow-Origin"] = "http://localhost:3000";
 			window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${app_key}&redirect_uri=${redirect_uri}`;
@@ -47,44 +59,64 @@ function Header(props) {
 			console.error(error);
 		}
 	};
+	const logout = () => {
+		localStorage.removeItem("token");
+		setUserNickname("");
+		alert("로그아웃되었습니다.");
+	};
 
 	useEffect(() => {
 		const code = new URLSearchParams(window.location.search).get("code");
 		if (code) {
 			console.log(code);
 			getCode(code);
+			window.history.replaceState({}, document.title, window.location.pathname);
 		}
 	});
 
-	useEffect(() => {
-		const token = localStorage.getItem("token");
+	// useEffect(() => {
+	// 	const token = localStorage.getItem("token");
 
-		if (token) {
-			getUserData(token);
-		}
-	}, []);
+	// 	if (token) {
+	// 		getUserData();
+	// 	} else {
+	// 		setUserData(null);
+	// 		setIsLogin(false);
+	// 	}
+	// }, []);
 
-	const getUserData = async (token) => {
-		const response = await fetch(
-			"http://localhost:8000/api/user/get_user_data/",
-			{
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-				},
-			}
-		);
+	const getUserData = async () => {
 		try {
+			const token = localStorage.getItem("token");
+
+			console.log(token);
+			if (!token) {
+				throw new Error("Token is not available");
+			}
+
+			const response = await fetch(
+				"http://localhost:8000/api/user/get_user_data/",
+				{
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
+					},
+				}
+			);
 			if (response.ok) {
 				const user = await response.json();
-				setUserData(user);
-				setIsLogin(true);
+				console.log(user);
+				const nickname = user.nickname;
+				console.log(nickname);
+				setUserNickname(nickname);
+				// setIsLogin(true);
+			} else {
+				throw new Error("Failed to fetch user data");
 			}
 		} catch (error) {
-			console.error(error);
+			throw new Error("Token is not available");
 		}
 	};
-
 	return (
 		<div className="header_wrapper">
 			<div className="logo_wrapper">
@@ -121,9 +153,10 @@ function Header(props) {
 			<div className="login_wrapper">
 				<div className="login_item">
 					{/* default로 로그인 화면으로, 업을경우 회원가입 버튼을 통해 회원가입  */}
-					{islogin ? (
+					{userNickname ? (
 						<>
-							<Link to="/intro">{userData.nickname} Profile</Link>
+							<Link to="/intro">{userNickname} Profile</Link>
+							<button onClick={logout}>로그아웃</button>
 						</>
 					) : (
 						<>
