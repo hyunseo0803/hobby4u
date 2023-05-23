@@ -6,13 +6,8 @@ import { Link } from "react-router-dom";
 import Logo from "../assets/Logo.png";
 import { useState, useEffect } from "react";
 
-// import LoginModal from "./Login";
-// import SignUpModal from "./SignUp";
-
 function Header(props) {
-	// const [isModalOpen, setIsModalOpen] = useState(false);
 	const [userNickname, setUserNickname] = useState("");
-	// const [islogin, setIsLogin] = useState(false);
 
 	const getCode = async (code) => {
 		try {
@@ -28,18 +23,12 @@ function Header(props) {
 			);
 			const data = await response.json();
 			const token = data.token;
-			console.log(token);
 
 			localStorage.setItem("token", token);
 
 			await getUserData();
-
-			// if (token) {
-			// 	await getUserData(token);
-			// 	//jwt 토큰 getUserData 로 보내고, 함수 호출
-			// }
 		} catch (error) {
-			console.error(error);
+			throw new Error(error.message);
 		}
 	};
 
@@ -47,16 +36,9 @@ function Header(props) {
 		try {
 			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
 			const redirect_uri = process.env.REACT_APP_REDIRECT_URI;
-			// response = HttpResponse("Hello, world!");
-			// response["Access-Control-Allow-Origin"] = "http://localhost:3000";
 			window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${app_key}&redirect_uri=${redirect_uri}`;
-
-			// const response = await fetch("http://localhost:8000/api/user/login/");
-			// const url = await response.text();
-			// console.log(url);
-			// window.location.href = url;
 		} catch (error) {
-			console.error(error);
+			throw new Error(error.message);
 		}
 	};
 	const logout = () => {
@@ -68,28 +50,15 @@ function Header(props) {
 	useEffect(() => {
 		const code = new URLSearchParams(window.location.search).get("code");
 		if (code) {
-			console.log(code);
 			getCode(code);
 			window.history.replaceState({}, document.title, window.location.pathname);
 		}
 	});
 
-	// useEffect(() => {
-	// 	const token = localStorage.getItem("token");
-
-	// 	if (token) {
-	// 		getUserData();
-	// 	} else {
-	// 		setUserData(null);
-	// 		setIsLogin(false);
-	// 	}
-	// }, []);
-
 	const getUserData = async () => {
 		try {
 			const token = localStorage.getItem("token");
 
-			console.log(token);
 			if (!token) {
 				throw new Error("Token is not available");
 			}
@@ -105,11 +74,8 @@ function Header(props) {
 			);
 			if (response.ok) {
 				const user = await response.json();
-				console.log(user);
 				const nickname = user.nickname;
-				console.log(nickname);
 				setUserNickname(nickname);
-				// setIsLogin(true);
 			} else {
 				throw new Error("Failed to fetch user data");
 			}
@@ -165,7 +131,6 @@ function Header(props) {
 							<button className="link" onClick={loginWithKakao}>
 								카톡 로그인
 							</button>
-							{/* {isModalOpen && <LoginModal onClose={handleModalClose} />} */}
 						</>
 					)}
 				</div>
