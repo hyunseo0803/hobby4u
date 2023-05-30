@@ -50,9 +50,14 @@ function Header(props) {
 
 	// 로그아웃
 	const logout = () => {
-		localStorage.removeItem("token");
-		setUserNickname("");
-		alert("로그아웃되었습니다.");
+		try {
+			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
+			const logout_redirect_uri = process.env.REACT_APP_LOGOUT_REDIRECT_URI;
+			window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${app_key}&logout_redirect_uri=${logout_redirect_uri}`;
+			localStorage.removeItem("token");
+		} catch (error) {
+			throw new Error(error.message);
+		}
 	};
 
 	// 1. 카카오 로그인 성공 후 , 코드로 GetCode 함수 호출
