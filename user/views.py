@@ -30,16 +30,6 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset=Member.objects.all()
     serializer_class=MemberSerializer
     
-# @api_view(['GET'])   
-# def KakaoSignUpView(request):
-#         app_key ='175c0d79d0d2ee2e609a8ea7bc44d709'
-#         redirect_uri = 'http://localhost:3000/api/user/kakao/callback'
-#         response = HttpResponse("Hello, world!")
-#         response["Access-Control-Allow-Origin"] = "http://localhost:3000"
-#         return Response(
-#             f'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id={app_key}&redirect_uri={redirect_uri}&response_type=code'
-#         )
-        
         
 @api_view(['POST'])
 def KakaoCallbackView(request):
