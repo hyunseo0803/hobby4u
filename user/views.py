@@ -20,6 +20,9 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
+KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
+KAKAO_APP_SECRET=os.getenv('KAKAO_APP_SECRET')
+KAKAO_REDIRECT_URL=os.getenv('KAKAO_REDIRECT_URL')
 
 
 class MemberList(generics.ListCreateAPIView):
@@ -37,9 +40,9 @@ def KakaoCallbackView(request):
             body =  json.loads(request.body.decode('utf-8'))
             code= body["code"]
             # print(code)
-            app_key ='175c0d79d0d2ee2e609a8ea7bc44d709'
-            app_secret = 'IS0s4oiXGqTEROgPopoq4RtAeA5tzlqG'
-            redirect_uri = 'http://localhost:3000/intro'
+            app_key =KAKAO_APP_KEY
+            app_secret = KAKAO_APP_SECRET
+            redirect_uri = KAKAO_REDIRECT_URL
 
             token_api = 'https://kauth.kakao.com/oauth/token'
             headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
