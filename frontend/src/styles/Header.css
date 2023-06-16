@@ -17,7 +17,7 @@
 }
 
 .logo {
-	width: 100%;
+	width: 150px;
 	height: 50px;
 	justify-content: center;
 	align-items: center;
@@ -27,13 +27,15 @@
 .menu_wrapper {
 	height: 50px;
 	align-items: center;
-	margin-left: 400px;
+	margin-left: 20%;
 	flex-direction: row;
 	justify-content: center;
 	display: flex;
 	font-family: "Pretendard-Regular";
 	font-size: 17px;
 	letter-spacing: 2px;
+	white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
+	/* overflow-x: auto; */
 }
 
 .memu_item {
@@ -82,6 +84,12 @@
 		format("woff");
 	font-weight: normal;
 	font-style: normal;
+}
+
+#dropdown-basic {
+	background-color: "transparent";
+	color: #ffd0ca;
+	outline: none;
 }
 
 /* 눈누 - 프리텐다드 폰트 */
