@@ -5,10 +5,14 @@ import "../styles/Header.css";
 import { Link } from "react-router-dom";
 import Logo from "../assets/Logo.png";
 import { useState, useEffect } from "react";
+// import Dropdown from "../component/dropdown";
+import Dropdown from "react-bootstrap/Dropdown";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function Header(props) {
 	// 사용자 닉네임 상태 변수
 	const [userNickname, setUserNickname] = useState("");
+	// const [view, setView] = useState(false);
 
 	// 카카오 로그인 코드로 백엔드에 JWT 요청
 	const getCode = async (code) => {
@@ -59,7 +63,6 @@ function Header(props) {
 			throw new Error(error.message);
 		}
 	};
-
 	// 1. 카카오 로그인 성공 후 , 코드로 GetCode 함수 호출
 	// 2. 중복 호출 방지를 위해 GetCode 함수 호출 이후 주소창에서 CODE 삭제
 	useEffect(() => {
@@ -67,6 +70,9 @@ function Header(props) {
 		if (code) {
 			getCode(code);
 			window.history.replaceState({}, document.title, window.location.pathname);
+		} else {
+			// JWT 토큰이 로컬 스토리지에 있는 경우에도 사용자 정보를 가져옴
+			getUserData();
 		}
 	});
 
@@ -104,7 +110,7 @@ function Header(props) {
 	return (
 		<div className="header_wrapper">
 			<div className="logo_wrapper">
-				<Link to="/">
+				<Link to="/intro">
 					<img className="logo" alt="logo" src={Logo} />
 				</Link>
 			</div>
@@ -139,10 +145,19 @@ function Header(props) {
 					{/* default로 로그인 화면으로, 업을경우 회원가입 버튼을 통해 회원가입  */}
 					{userNickname ? (
 						<>
-							<Link to="/intro">{userNickname} Profile</Link>
-							<Link to="/">
-								<button onClick={logout}>로그아웃</button>
-							</Link>
+							<Dropdown>
+								<Dropdown.Toggle variant="white" id="dropdown-basic">
+									반가워요! {userNickname} 님
+								</Dropdown.Toggle>
+
+								<Dropdown.Menu>
+									<Dropdown.Item href="/intro">프로필</Dropdown.Item>
+									<Dropdown.Item href="#/action-2">마이페이지</Dropdown.Item>
+									<Dropdown.Item href="#/logout" onClick={logout}>
+										로그아웃
+									</Dropdown.Item>
+								</Dropdown.Menu>
+							</Dropdown>
 						</>
 					) : (
 						<>
