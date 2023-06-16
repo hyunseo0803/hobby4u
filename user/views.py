@@ -39,7 +39,7 @@ def KakaoCallbackView(request):
             # print(code)
             app_key ='175c0d79d0d2ee2e609a8ea7bc44d709'
             app_secret = 'IS0s4oiXGqTEROgPopoq4RtAeA5tzlqG'
-            redirect_uri = 'http://localhost:3000/api/user/kakao/callback'
+            redirect_uri = 'http://localhost:3000/intro'
 
             token_api = 'https://kauth.kakao.com/oauth/token'
             headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
