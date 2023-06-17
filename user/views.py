@@ -69,10 +69,13 @@ def KakaoCallbackView(request):
                 profile = json.loads(response.text)
                 kakao_account = profile.get('kakao_account')
                 id = profile.get('id')
-                profileimg=profile.get('profile_image_url')
+                # profileimg=profile.get('profile_image_url')
+                profileimg = profile.get('properties', {}).get('profile_image')
                 email = kakao_account.get('email')
                 nickname = kakao_account.get('profile').get('nickname')
 
+
+                print("======================="+profileimg)
                 try:
                         # 이미 회원 가입되어 있는 사용자인지 확인
                     member = Member.objects.get(email=email)
@@ -91,17 +94,17 @@ def KakaoCallbackView(request):
                             'access_token':access_token
                             # 'exist': True
                         }
-                    print("---------------------"+jwt_token+"------------------------------")
                     return Response(response_data)
                         
-                        # return JsonResponse({'token':jwt_token})
                 except Member.DoesNotExist:
                         # 회원 가입되어 있지 않으면 새로 추가
                     member = Member.objects.create(
                         id=id,
                         email=email,
                         nickname=nickname,
-                        profileimg=profileimg
+                        profileimg=profileimg,
+                        provider="kakao",
+                        joindate=datetime.today().date()
                 
                         )
                     member.save()
@@ -146,6 +149,7 @@ def get_user_data(request):
                     'id': member.id,
                     'nickname': member.nickname,
                     'email':member.email,
+                    'profileImg':member.profileimg
                 }
         
         return Response(response_data)
