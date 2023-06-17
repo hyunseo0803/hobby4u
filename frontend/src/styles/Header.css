@@ -77,6 +77,10 @@
 	margin-right: 15px;
 }
 
+.dropdown-link {
+	text-decoration: none;
+}
+
 /* 눈누-IM혜민체 폰트 */
 @font-face {
 	font-family: "IM_Hyemin-Bold";
