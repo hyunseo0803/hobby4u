@@ -172,8 +172,22 @@ function Header(props) {
 								)}
 
 								<Dropdown.Menu>
-									<Dropdown.Item href="/intro">프로필</Dropdown.Item>
-									<Dropdown.Item href="#/action-2">마이페이지</Dropdown.Item>
+									<Link to={"myclass"} className="dropdown-link ">
+										<Dropdown.Item href="#/action-2">MY 클래스</Dropdown.Item>
+									</Link>
+									<Link to={"exam"} className="dropdown-link ">
+										<Dropdown.Item href="#/action-2">
+											클래스 심사 현황
+										</Dropdown.Item>
+									</Link>
+									<Link to={"likeclass"} className="dropdown-link ">
+										<Dropdown.Item href="#/action-2">
+											내가 찜한 클래스
+										</Dropdown.Item>
+									</Link>
+									<Link to={"setting"} className="dropdown-link ">
+										<Dropdown.Item href="/intro">설정</Dropdown.Item>
+									</Link>
 									<Dropdown.Item href="#/logout" onClick={logout}>
 										로그아웃
 									</Dropdown.Item>
