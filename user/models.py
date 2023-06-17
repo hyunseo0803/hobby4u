@@ -2,13 +2,13 @@ from django.db import models
 
 class Admin(models.Model):
     admin_id = models.CharField(primary_key=True, max_length=100)
-    nickname = models.CharField(max_length=100, blank=True, null=True)
-    password = models.CharField(max_length=100, blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
-    contact = models.CharField(max_length=100, blank=True, null=True)
-    department = models.CharField(max_length=100, blank=True, null=True)
-    notification = models.CharField(max_length=100, blank=True, null=True)
+    nickname = models.CharField(max_length=100, blank=True, null=True)     
+    email = models.CharField(max_length=100, blank=True, null=True)        
+    contact = models.CharField(max_length=100, blank=True, null=True)      
+    department = models.CharField(max_length=100, blank=True, null=True)   
+    notification = models.CharField(max_length=100, blank=True, null=True) 
     date = models.CharField(max_length=100, blank=True, null=True)
+    pw = models.CharField(max_length=100)
 
     class Meta:
         managed = False
@@ -99,9 +99,9 @@ class AuthUserUserPermissions(models.Model):
 class Blackmember(models.Model):
     id = models.OneToOneField('Member', models.DO_NOTHING, db_column='id', primary_key=True)
     admin = models.ForeignKey(Admin, models.DO_NOTHING)
-    period = models.CharField(max_length=100, blank=True, null=True)
+    period = models.CharField(max_length=100, blank=True, null=True)       
     date = models.CharField(max_length=100, blank=True, null=True)
-    coment = models.CharField(max_length=100, blank=True, null=True)
+    coment = models.CharField(max_length=100, blank=True, null=True)       
 
     class Meta:
         managed = False
@@ -111,28 +111,28 @@ class Blackmember(models.Model):
 
 class Class(models.Model):
     class_id = models.CharField(primary_key=True, max_length=100)
-    id = models.ForeignKey('Member', models.DO_NOTHING, db_column='id')
+    id = models.ForeignKey('Member', models.DO_NOTHING, db_column='id')    
     title = models.CharField(max_length=100)
     info = models.CharField(max_length=100, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
     img = models.CharField(db_column='Img', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    theme = models.CharField(max_length=100, blank=True, null=True)
-    people = models.CharField(max_length=100, blank=True, null=True)
-    money = models.CharField(max_length=100, blank=True, null=True)
+    theme = models.CharField(max_length=100, blank=True, null=True)        
+    people = models.CharField(max_length=100, blank=True, null=True)       
+    money = models.CharField(max_length=100, blank=True, null=True)        
     type = models.CharField(max_length=100, blank=True, null=True)
-    intro1_file = models.CharField(max_length=100, blank=True, null=True)
+    intro1_file = models.CharField(max_length=100, blank=True, null=True)  
     intro1_content = models.CharField(max_length=100, blank=True, null=True)
-    intro2_file = models.CharField(max_length=100, blank=True, null=True)
+    intro2_file = models.CharField(max_length=100, blank=True, null=True)  
     intro2_content = models.CharField(max_length=100, blank=True, null=True)
-    intro3_file = models.CharField(max_length=100, blank=True, null=True)
+    intro3_file = models.CharField(max_length=100, blank=True, null=True)  
     intro3_content = models.CharField(max_length=100, blank=True, null=True)
-    applystart = models.CharField(max_length=100, blank=True, null=True)
-    applyend = models.CharField(max_length=100, blank=True, null=True)
+    applystart = models.CharField(max_length=100, blank=True, null=True)   
+    applyend = models.CharField(max_length=100, blank=True, null=True)     
     activitystart = models.CharField(max_length=100, blank=True, null=True)
     activityend = models.CharField(max_length=100, blank=True, null=True)
-    adress = models.CharField(max_length=100, blank=True, null=True)
-    uploadtime = models.CharField(max_length=100, blank=True, null=True)
-    goodcount = models.CharField(max_length=100, blank=True, null=True)
+    adress = models.CharField(max_length=100, blank=True, null=True)       
+    uploadtime = models.CharField(max_length=100, blank=True, null=True)   
+    goodcount = models.CharField(max_length=100, blank=True, null=True)    
 
     class Meta:
         managed = False
@@ -143,12 +143,12 @@ class Class(models.Model):
 class DayClassinfo(models.Model):
     num = models.AutoField(primary_key=True)
     class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
-    sequence = models.CharField(max_length=100, blank=True, null=True)
+    sequence = models.CharField(max_length=100, blank=True, null=True)     
     date = models.CharField(max_length=100, blank=True, null=True)
     time = models.CharField(max_length=100, blank=True, null=True)
-    title = models.CharField(max_length=100, blank=True, null=True)
+    title = models.CharField(max_length=100, blank=True, null=True)        
     info = models.CharField(max_length=100, blank=True, null=True)
-    prepare = models.CharField(max_length=100, blank=True, null=True)
+    prepare = models.CharField(max_length=100, blank=True, null=True)      
     file = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
@@ -193,7 +193,7 @@ class DjangoMigrations(models.Model):
 
 
 class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
+    session_key = models.CharField(primary_key=True, max_length=40)        
     session_data = models.TextField()
     expire_date = models.DateTimeField()
 
@@ -205,8 +205,8 @@ class DjangoSession(models.Model):
 class Exam(models.Model):
     class_id = models.CharField(primary_key=True, max_length=100)
     admin = models.ForeignKey(Admin, models.DO_NOTHING)
-    result = models.CharField(max_length=100, blank=True, null=True)
-    coment = models.CharField(max_length=100, blank=True, null=True)
+    result = models.CharField(max_length=100, blank=True, null=True)       
+    coment = models.CharField(max_length=100, blank=True, null=True)       
 
     class Meta:
         managed = False
@@ -227,7 +227,7 @@ class LikeClass(models.Model):
 
 class LikeUser(models.Model):
     num = models.AutoField(primary_key=True)
-    push_user = models.CharField(max_length=100, blank=True, null=True)
+    push_user = models.CharField(max_length=100, blank=True, null=True)    
     id = models.ForeignKey('Member', models.DO_NOTHING, db_column='id', blank=True, null=True, db_comment='receive')
 
     class Meta:
@@ -239,9 +239,8 @@ class LikeUser(models.Model):
 class Member(models.Model):
     id = models.CharField(primary_key=True, max_length=100)
     nickname = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
-    provider = models.CharField(max_length=100, blank=True, null=True)
+    provider = models.CharField(max_length=100, blank=True, null=True)     
     info = models.CharField(max_length=100, blank=True, null=True)
     profileimg = models.CharField(db_column='profileImg', max_length=100, blank=True, null=True)  # Field name made lowercase.
     goodcount = models.CharField(db_column='goodCount', max_length=100, blank=True, null=True)  # Field name made lowercase.
@@ -258,7 +257,7 @@ class OnlineClass(models.Model):
     class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
     daynum = models.CharField(db_column='dayNum', max_length=100, blank=True, null=True)  # Field name made lowercase.
     file = models.CharField(max_length=100, blank=True, null=True)
-    coment = models.CharField(max_length=100, blank=True, null=True)
+    coment = models.CharField(max_length=100, blank=True, null=True)       
 
     class Meta:
         managed = False
@@ -268,7 +267,7 @@ class OnlineClass(models.Model):
 
 class Performance(models.Model):
     num = models.AutoField(primary_key=True)
-    id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id')
+    id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id')      
     file = models.CharField(max_length=100, blank=True, null=True)
     link = models.CharField(max_length=100, blank=True, null=True)
 
@@ -282,7 +281,7 @@ class Review(models.Model):
     num = models.AutoField(primary_key=True)
     id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id', blank=True, null=True, db_comment='writer')
     class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id', blank=True, null=True, db_comment='receive')  # Field renamed because it was a Python reserved word.
-    coment = models.CharField(max_length=100, blank=True, null=True)
+    coment = models.CharField(max_length=100, blank=True, null=True)       
     date = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
