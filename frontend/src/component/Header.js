@@ -13,7 +13,6 @@ function Header(props) {
 	// 사용자 닉네임 상태 변수
 	const [userNickname, setUserNickname] = useState("");
 	const [userImg, setUserImg] = useState("");
-	// const [view, setView] = useState(false);
 
 	// 카카오 로그인 코드로 백엔드에 JWT 요청
 	const getCode = async (code) => {
@@ -64,6 +63,7 @@ function Header(props) {
 			throw new Error(error.message);
 		}
 	};
+
 	// 1. 카카오 로그인 성공 후 , 코드로 GetCode 함수 호출
 	// 2. 중복 호출 방지를 위해 GetCode 함수 호출 이후 주소창에서 CODE 삭제
 	useEffect(() => {
@@ -152,6 +152,7 @@ function Header(props) {
 								<Dropdown.Toggle variant="white" id="dropdown-basic">
 									반가워요! {userNickname} 님
 								</Dropdown.Toggle>
+								{/* 카카오 사용자 프로필 동의 한 경우,  */}
 								{userImg ? (
 									<img
 										style={{ borderRadius: 40 }}
@@ -161,6 +162,7 @@ function Header(props) {
 										alt="user-male-circle--v1"
 									/>
 								) : (
+									// 카카오 사용자 프로필 동의 하지 않은 경우,
 									<img
 										width="40"
 										height="40"

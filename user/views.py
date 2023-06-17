@@ -39,7 +39,6 @@ def KakaoCallbackView(request):
         if request.method == "POST":
             body =  json.loads(request.body.decode('utf-8'))
             code= body["code"]
-            # print(code)
             app_key =KAKAO_APP_KEY
             app_secret = KAKAO_APP_SECRET
             redirect_uri = KAKAO_REDIRECT_URL
@@ -55,7 +54,6 @@ def KakaoCallbackView(request):
                 'code': code,
             }
         response = requests.post(token_api, headers=headers, data=data) 
-        # print(response)
 
         if response.status_code == 200:
             tokens = json.loads(response.text)
@@ -69,18 +67,13 @@ def KakaoCallbackView(request):
                 profile = json.loads(response.text)
                 kakao_account = profile.get('kakao_account')
                 id = profile.get('id')
-                # profileimg=profile.get('profile_image_url')
                 profileimg = profile.get('properties', {}).get('profile_image')
                 email = kakao_account.get('email')
                 nickname = kakao_account.get('profile').get('nickname')
 
-
-                print("======================="+profileimg)
                 try:
                         # 이미 회원 가입되어 있는 사용자인지 확인
                     member = Member.objects.get(email=email)
-                        # request.session['user_id'] = member.id
-                    # print(member.id)
                     
                     expires_at = datetime.utcnow() + timedelta(hours=2)
                     payload = {'id': member.id, 'exp': expires_at}
@@ -88,11 +81,8 @@ def KakaoCallbackView(request):
                     jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
                     
                     response_data = {
-                            # 'id': member.id,
-                            # 'nickname': member.nickname,
                             'token': jwt_token,
                             'access_token':access_token
-                            # 'exist': True
                         }
                     return Response(response_data)
                         
@@ -108,10 +98,6 @@ def KakaoCallbackView(request):
                 
                         )
                     member.save()
-                    #     # access_token을 세션에 저장한다
-                    # request.session['access_token'] = access_token
-                    #     # 사용자 ID를 세션에 저장한다
-                    # request.session['user_id'] = member.id
                     
                     expires_at = datetime.utcnow() + timedelta(hours=2)
                     payload = {'id': member.id, 'exp': expires_at}
@@ -127,8 +113,6 @@ def KakaoCallbackView(request):
                     }
                     return Response(response_data)
 
-                    # 로그인이 완료되었으므로, 다시 React App으로 리다이렉트
-                    # return redirect('http://localhost:3000/')
             else:
                 return Response('Failed to get user profile', status=response.status_code)
         else:
@@ -137,10 +121,8 @@ def KakaoCallbackView(request):
         
 @api_view(['POST'])       
 def get_user_data(request):
-    print("dkdkdksdjfsleijflsj")
     if request.method == "POST":
         jwt_token = request.headers.get('Authorization').split(' ')[1]
-        print(jwt_token)
         
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
