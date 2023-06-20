@@ -8,6 +8,7 @@ import Setting from "./pages/Setting";
 import Myclass from "./pages/Myclass";
 import Likeclass from "./pages/Likeclass";
 import Exam from "./pages/Exam";
+import CreateClass from "./pages/CreateClass";
 
 class App extends Component {
 	render() {
@@ -22,6 +23,7 @@ class App extends Component {
 						<Route path="myclass" element={<Myclass />} />
 						<Route path="likeclass" element={<Likeclass />} />
 						<Route path="exam" element={<Exam />} />
+						<Route path="createclass" element={<CreateClass />} />
 					</Routes>
 
 					<Footer />
