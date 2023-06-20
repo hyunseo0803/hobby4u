@@ -5,7 +5,6 @@ import "../styles/Header.css";
 import { Link } from "react-router-dom";
 import Logo from "../assets/Logo.png";
 import { useState, useEffect } from "react";
-// import Dropdown from "../component/dropdown";
 import Dropdown from "react-bootstrap/Dropdown";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -138,7 +137,7 @@ function Header(props) {
 				</div>
 				<div className="menu_item">
 					{/* 클래스 업로드 화면, 로그인 안되어있을 경우 로그인 화면으로  */}
-					<Link to="test" className="link">
+					<Link to="createclass" className="link">
 						클래스 만들기
 					</Link>
 				</div>
