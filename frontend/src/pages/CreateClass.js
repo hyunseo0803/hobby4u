@@ -7,61 +7,91 @@ function CreateClass() {
 	const navigate = useNavigate();
 
 	const [token, SetToken] = useState();
-	const [selectedOption, setSelectedOption] = useState("");
+
+	// 제목, 소개, 옵션 값 저장
+	const [inputValues, setInputValues] = useState({
+		title: "",
+		info: "",
+		option: "offline",
+	});
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (token) {
 			SetToken(true);
-			getUserData();
+			// getUserData();
 		} else {
 			SetToken(false);
 		}
 	}, []);
 
-	const getUserData = async () => {
-		try {
-			const token = localStorage.getItem("token");
-
-			if (!token) {
-				throw new Error("Token is not available");
-			}
-
-			const response = await fetch(
-				"http://localhost:8000/api/user/get_user_data/",
-				{
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-					},
-				}
-			);
-			if (response.ok) {
-				const user = await response.json();
-				// const nickname = user.nickname;
-				// const userImg = user.profileImg;
-				// const userEmail = user.email;
-				console.log(user);
-			} else {
-				// 예외처리
-				throw new Error("Failed to fetch user data");
-			}
-		} catch (error) {
-			// 예외처리
-			throw new Error("Token is not available");
-		}
+	// 입력 값의 변경 이벤트를 처리하는 함수
+	const handleInputChange = (event) => {
+		// event의 target 속성에서 name과 value 추출
+		const { name, value } = event.target;
+		// 1. ..prevInputValues는 기존의 inputValues 객체 복사
+		// 2. [name]:value는 코드에서 결정되는 name을 새로운 필드 이름으로 생성하고 해당 필드 값을 value로 설정
+		setInputValues((prevInputValues) => ({
+			...prevInputValues,
+			[name]: value,
+		}));
 	};
 
-	function handleOptionChange(event) {
-		setSelectedOption(event.target.value);
-	}
+	// 라디오 버튼의 선택 값이 변경되었을 때 호출하는 함수, event를 변수로 받음.
+	const handleRadioChange = (event) => {
+		// event.target에서 value 속성을 사용하여 선택된 라디오 버튼의 값을 가져옴.
+		// 이 값을 const { value } = event.target; 구문을 사용하여 추출
+		const { value } = event.target;
+		// ...prevInputValues를 사용하여 기존의 inputValues 객체를 복사
+		// option 속성을 업데이트된 값으로 설정
+		setInputValues((prevInputValues) => ({
+			...prevInputValues,
+			option: value,
+		}));
+	};
+
+	// const getUserData = async () => {
+	// 	try {
+	// 		const token = localStorage.getItem("token");
+
+	// 		if (!token) {
+	// 			throw new Error("Token is not available");
+	// 		}
+
+	// 		const response = await fetch(
+	// 			"http://localhost:8000/api/user/get_user_data/",
+	// 			{
+	// 				method: "POST",
+	// 				headers: {
+	// 					Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
+	// 				},
+	// 			}
+	// 		);
+	// 		if (response.ok) {
+	// 			const user = await response.json();
+	// 			// const nickname = user.nickname;
+	// 			// const userImg = user.profileImg;
+	// 			// const userEmail = user.email;
+	// 			console.log(user);
+	// 		} else {
+	// 			// 예외처리
+	// 			throw new Error("Failed to fetch user data");
+	// 		}
+	// 	} catch (error) {
+	// 		// 예외처리
+	// 		throw new Error("Token is not available");
+	// 	}
+	// };
 
 	function handlePageChange() {
-		if (selectedOption === "대면") {
-			navigate("/page1");
-		} else if (selectedOption === "비대면") {
-			navigate("/page2");
-		}
+		console.log(inputValues);
+		navigate("/createClass/detail", {
+			state: {
+				title: inputValues.title,
+				info: inputValues.info,
+				option: inputValues.option,
+			},
+		});
 	}
 
 	return (
@@ -77,26 +107,42 @@ function CreateClass() {
 								</div>
 							</div>
 						</div>
-						<div>
-							<div>파일 업로드</div>
-							<div>제목을 입력해 주세요</div>
-							<div>나만의 클래스를 간단히 소개해주세요</div>
+						<div className="right_wrapper">
+							<button className="Img_upload">파일 업로드</button>
+							<input
+								type="text"
+								name="title"
+								value={inputValues.title}
+								onChange={handleInputChange}
+								className="Input_title"
+								placeholder="제목을 입력해 주세요 "
+							></input>
+							<input
+								type="text"
+								name="info"
+								value={inputValues.info}
+								onChange={handleInputChange}
+								className="Input_info"
+								placeholder="나만의 클래스를 간단히 소개해주세요"
+							></input>
 							<div>
 								<label>
 									<input
 										type="radio"
-										value="대면"
-										checked={selectedOption === "대면"}
-										onChange={handleOptionChange}
+										name="offline"
+										value="offline"
+										checked={inputValues.option === "offline"}
+										onChange={handleRadioChange}
 									/>
 									오프라인 클래스
 								</label>
 								<label>
 									<input
 										type="radio"
-										value="비대면"
-										checked={selectedOption === "비대면"}
-										onChange={handleOptionChange}
+										name="online"
+										value="online"
+										checked={inputValues.option === "online"}
+										onChange={handleRadioChange}
 									/>
 									온라인 클래스
 								</label>
