@@ -1,6 +1,6 @@
 .wrap {
 	margin-top: 70px;
-	background-color: blanchedalmond;
+	/* background-color: blanchedalmond; */
 	/* width: 90%; */
 	height: 600px;
 	margin-left: 7%;
@@ -16,6 +16,10 @@
 .left_wrapper {
 	text-align: center;
 	margin-right: 40px;
+}
+.right_wrapper {
+	display: flex;
+	flex-direction: column;
 }
 .img_wrapper {
 	margin: 15px;
@@ -36,4 +40,20 @@
 
 .img {
 	width: 70px;
+}
+
+.Img_upload {
+	width: 130px;
+	height: 30px;
+	border: none;
+}
+.Input_title {
+	/* width: 00px; */
+	height: 50px;
+	border: none;
+	border-bottom: 2px solid black;
+}
+.Input_info {
+	width: 400px;
+	height: 300px;
 }
