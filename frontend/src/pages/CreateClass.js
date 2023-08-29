@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../styles/CreateClass.css";
 import { useNavigate } from "react-router-dom";
-import Img from "../assets/Img.gif";
 
-function CreateClass() {
+function CreateClass(props) {
 	const navigate = useNavigate();
 
 	const [token, SetToken] = useState();
@@ -90,9 +89,39 @@ function CreateClass() {
 				title: inputValues.title,
 				info: inputValues.info,
 				option: inputValues.option,
+				imageSrc: imageSrc,
 			},
 		});
 	}
+
+	const [imageSrc, setImageSrc] = useState(null);
+	const [imagepreview, setImagepreview] = useState("");
+
+	const uploadfile = (e) => {
+		setImageSrc(e);
+		const reader = new FileReader();
+		reader.readAsDataURL(e);
+
+		return new Promise((resolve) => {
+			reader.onload = () => {
+				setImagepreview(reader.result);
+				resolve();
+			};
+		});
+	};
+	// const [imagepreview, setImagepreview] = useState("");
+
+	// const encodeFileToBase64 = (fileBlob) => {
+	// 	const reader = new FileReader();
+	// 	reader.readAsDataURL(fileBlob);
+
+	// 	return new Promise((resolve) => {
+	// 		reader.onload = () => {
+	// 			setImagepreview(reader.result);
+	// 			resolve();
+	// 		};
+	// 	});
+	// };
 
 	return (
 		<div className="wrap">
@@ -101,14 +130,29 @@ function CreateClass() {
 					<div className="component_wrapper">
 						<div className="left_wrapper">
 							<div> 썸네일 이미지 및 영상 업로드</div>
+
 							<div className="img_wrapper">
-								<div className="img_container">
-									<img className="img" width={70} src={Img} alt="" />
-								</div>
+								{imagepreview && (
+									<img
+										src={imagepreview}
+										style={{
+											objectFit: "cover",
+											width: "100%",
+											height: "100%",
+										}}
+										alt="preview-img"
+									/>
+								)}
 							</div>
 						</div>
 						<div className="right_wrapper">
-							<button className="Img_upload">파일 업로드</button>
+							{" "}
+							<input
+								type="file"
+								onChange={(e) => {
+									uploadfile(e.target.files[0]);
+								}}
+							/>
 							<input
 								type="text"
 								name="title"
