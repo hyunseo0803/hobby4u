@@ -21,6 +21,9 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'hobby4u/post/media/')
+# MEDIA_URL = '/hobby4u/post/media/'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'post',
     'user',
     'rest_framework',
     'corsheaders',
@@ -79,6 +83,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     # ... 등등 필요한 도메인들을 추가해줍니다.
 ]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'hobby4u/post/media/')
+MEDIA_URL = '/hobby4u/post/media/'
 
 
 ROOT_URLCONF = 'hobby4u.urls'
@@ -160,3 +167,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800

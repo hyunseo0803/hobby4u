@@ -5,6 +5,7 @@ from . import views
 # from .views import check_login_status
 
 urlpatterns = [
+    path('submit_data/',views.submit_data),
     # path('',views.MemberList.as_view()),
     # path('<int:pk>/',views.MemberDetail.as_view()),
     # path('kakao/callback/',views.KakaoCallbackView),

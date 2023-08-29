@@ -10,9 +10,12 @@ import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
 import Place_search_icon from "../assets/place_search_icon.png";
+import axios from "axios";
+
 // import { useSelector, shallowEqual } from "react-redux";
 
 function CreateClassDetail(props) {
+	const [selectedTheme, setSelectedTheme] = useState([]);
 	const [person, setPerson] = useState("");
 	const [money, setMoney] = useState("");
 	const [address, setAdress] = useState("");
@@ -32,11 +35,54 @@ function CreateClassDetail(props) {
 		useState("");
 	const [toStringActivityEndDate, setToStringActivityEndDate] = useState("");
 
-	// const { lat, lon } = useSelector(
-	// 	(state) => state.locationReducer,
-	// 	shallowEqual
-	// );
 	const { kakao } = window;
+
+	// var today = new Date();
+
+	// var month = today.getUTCMonth() + 1; //months from 1-12
+	// var day = today.getUTCDate();
+	// var year = today.getUTCFullYear();
+
+	// today = year + "-" + month + "-" + day;
+	const [days, setDays] = useState([
+		{
+			id: "day1",
+			dayImg: null,
+			dayImgpreview: "",
+			title: "",
+			date: new Date(),
+			startTime: "",
+			endTime: "",
+			content: "",
+			preparation: "",
+		},
+	]);
+
+	const [file, setFile] = useState(null);
+	const [fileSrc, setFileSrc] = useState("");
+
+	const [inputInfo1, setInputInfo1] = useState("");
+	const [inputImage1, setInputImage1] = useState(null);
+	const [inputImage1preview, setInputImage1preview] = useState(null);
+
+	const [inputInfo2, setInputInfo2] = useState("");
+	const [inputImage2, setInputImage2] = useState(null);
+	const [InputImage2preview, setInputImage2preview] = useState(null);
+
+	const [inputInfo3, setInputInfo3] = useState("");
+	const [inputImage3, setInputImage3] = useState(null);
+	const [inputImage3preview, setinputImage3preview] = useState(null);
+
+	const onChangeInput = (e) => {
+		const { name, value } = e.target;
+		if (name === "info1") {
+			setInputInfo1(value);
+		} else if (name === "info2") {
+			setInputInfo2(value);
+		} else if (name === "info3") {
+			setInputInfo3(value);
+		}
+	};
 
 	const onChangeApply = (dates) => {
 		const [start, end] = dates;
@@ -113,16 +159,13 @@ function CreateClassDetail(props) {
 		setIsOpen(true);
 	}
 
-	// useEffect(() => {
-	// 	if (address) {
-	// 		loadMap(address);
-	// 	}
-	// });
-
+	//CreateClass 첫 단계 부분 : 제목, 소개, 온라인/오프라인, 사진 변수 받는 부분
 	const location = useLocation();
-	const inputValues = location.state;
 
-	const option = inputValues.option;
+	const title = location.state.title;
+	const info = location.state.info;
+	const option = location.state.option;
+	const imageSrc = location.state.imageSrc;
 
 	const theme = [
 		"# 조용한",
@@ -138,6 +181,17 @@ function CreateClassDetail(props) {
 		"# 뷰티",
 		"# 문화예술",
 	];
+
+	const addTheme = (theme_item) => {
+		if (selectedTheme.includes(theme_item)) {
+			setSelectedTheme(selectedTheme.filter((t) => t !== theme_item));
+		} else {
+			setSelectedTheme([...selectedTheme, theme_item]);
+		}
+	};
+	useEffect(() => {
+		console.log(selectedTheme);
+	}, [selectedTheme]);
 
 	function loadMap(address) {
 		// Kakao Maps API 스크립트를 동적으로 로드
@@ -158,16 +212,16 @@ function CreateClassDetail(props) {
 				if (kakao.maps.services) {
 					const geocoder = new kakao.maps.services.Geocoder();
 					geocoder.addressSearch(address, (result, status) => {
-						console.log(address);
+						// console.log(address);
 
 						if (status === kakao.maps.services.Status.OK) {
 							const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
 							// 결과값으로 받은 위치를 마커로 표시합니다
-							const marker = new kakao.maps.Marker({
-								position: coords,
-								map: map,
-							});
+							// const marker = new kakao.maps.Marker({
+							// 	position: coords,
+							// 	map: map,
+							// });
 
 							// 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
 							map.setCenter(coords);
@@ -182,33 +236,193 @@ function CreateClassDetail(props) {
 		};
 	}
 
-	// 인포윈도우로 장소에 대한 설명을 표시합니다
+	// const encodeFileToBase64 = (fileBlob) => {
+	// 	const reader = new FileReader();
+	// 	reader.readAsDataURL(fileBlob);
 
-	// 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-	// map.setCenter(coords);
+	// 	return new Promise((resolve) => {
+	// 		reader.onload = () => {
+	// 			setImageSrc(reader.result);
+	// 			resolve();
+	// 		};
+	// 	});
+	// };
+	const handleAddDay = () => {
+		const lastDay = days[days.length - 1];
+		const lastDayNumber = parseInt(lastDay.id.replace("day", ""));
+		const newDayId = `day${lastDayNumber + 1}`;
+		const newDay = {
+			id: newDayId,
+			title: "",
+			dayImg: "",
+			dayImgpreview: "",
+			date: "",
+			startTime: "",
+			endTime: "",
+			content: "",
+			preparation: "",
+		};
+		setDays((prevDays) => [...prevDays, newDay]);
+		console.log(days);
+	};
 
-	//위도, 경도로 변환 및 마커표시
-	// let markerPosition  = new kakao.maps.LatLng(lat, lon);
-	// let marker = new kakao.maps.Marker({
-	//     position: markerPosition
+	const handleRemoveDay = (id) => {
+		setDays((prevDays) => prevDays.filter((day) => day.id !== id));
+	};
+
+	const handleChange = (id, field, value) => {
+		const reader = new FileReader();
+
+		reader.readAsDataURL(value);
+		reader.onload = () => {
+			setDays((prevDays) =>
+				prevDays.map((day) =>
+					day.id === id
+						? { ...day, [field]: value, dayImgpreview: reader.result }
+						: day
+				)
+			);
+		};
+
+		return new Promise((resolve) => {
+			reader.onloadend = () => {
+				resolve();
+			};
+		});
+	};
+
+	// const handleFileChange = (event) => {
+	// 	setFile(event.target.files[0]);
+	// };
+
+	const handleSubmit = () => {
+		const token = localStorage.getItem("token");
+
+		const classAllData = {
+			title: title,
+			info: info,
+			option: option,
+			person: person,
+			address: address,
+			money: money,
+			theme: selectedTheme,
+			toStringApplyStartDate: toStringApplyStartDate,
+			toStringApplyEndDate: toStringApplyEndDate,
+			toStringActivityEndDate: toStringActivityEndDate,
+			toStringActivityStartDate: toStringActivityStartDate,
+			inputInfo1: inputInfo1,
+			inputInfo2: inputInfo2,
+			inputInfo3: inputInfo3,
+			days: days,
+			token: token,
+		};
+		const formData = new FormData();
+		formData.append("json", JSON.stringify(classAllData)); // JSON 데이터 추가
+		formData.append("imageSrc", imageSrc);
+		formData.append("file", file);
+		formData.append("inputImage1", inputImage1);
+		formData.append("inputImage2", inputImage2);
+		formData.append("inputImage3", inputImage3);
+		days.forEach((day) => {
+			if (day.dayImg !== null) {
+				formData.append(`dayImg[${day.id}]`, day.dayImg);
+			}
+		});
+		// days.forEach((day) => {
+		// 	formData.append(`dayImg[${day.id}]`, day.dayImg);
+		// });
+
+		axios
+			.post("http://localhost:8000/api/post/submit_data/", formData, {
+				headers: {
+					"Content-Type": "multipart/form-data", // Content-Type 설정
+				},
+			})
+			.then((response) => {
+				console.log(response.data); // Django에서 보낸 응답을 확인합니다.
+			})
+			.catch((error) => {
+				console.error("Error submitting data:", error);
+			});
+	};
+
+	const onChangeImage1 = (e) => {
+		setInputImage1(e);
+		const reader = new FileReader();
+		reader.readAsDataURL(e);
+		return new Promise((resolve) => {
+			reader.onload = () => {
+				setInputImage1preview(reader.result);
+				resolve();
+			};
+		});
+	};
+	const onChangeImage2 = (e) => {
+		setInputImage2(e);
+		const reader = new FileReader();
+		reader.readAsDataURL(e);
+		return new Promise((resolve) => {
+			reader.onload = () => {
+				setInputImage1preview(reader.result);
+				resolve();
+			};
+		});
+	};
+	const onChangeImage3 = (e) => {
+		setInputImage3(e);
+		const reader = new FileReader();
+		reader.readAsDataURL(e);
+		return new Promise((resolve) => {
+			reader.onload = () => {
+				setInputImage1preview(reader.result);
+				resolve();
+			};
+		});
+	};
+	const onChangefile = (e) => {
+		setFile(e);
+		setFileSrc(e.name);
+	};
+	const onChangeImage_day = (value, name) => {
+		console.log(value);
+		const dayId = name.replace("day_img_", "");
+		handleChange(dayId, "dayImg", value);
+	};
+
+	// const reader = new FileReader();
+	// reader.readAsDataURL(e);
+
+	// return new Promise((resolve) => {
+	// 	reader.onload = () => {
+	// 		setImagepreview(reader.result);
+	// 		resolve();
+	// 	};
+	// };
 	// });
-	// marker.setMap(map);
-
+	// console.log(e);
+	// };
 	return (
-		<div className="wrap">
+		<div className="create_wrap">
 			{option === "offline" ? (
 				<>
 					<div className="theme_wrapper">
 						<div className="theme_text">클래스의 테마를 선택해 주세요 ! </div>
 						<div>
-							{theme.map((theme, index) => (
-								<button className="theme_button" key={index}>
-									{theme}
+							{theme.map((item, index) => (
+								<button
+									className={
+										selectedTheme.includes(item)
+											? "select_theme_button"
+											: "theme_button"
+									}
+									key={index}
+									onClick={() => addTheme(item)}
+								>
+									{item}
 								</button>
 							))}
 						</div>
 					</div>
-					{/* <div className="middle_wrapper"> */}
 					<div className="middle_text">
 						<div className="_text">
 							수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
@@ -306,9 +520,6 @@ function CreateClassDetail(props) {
 							</div>
 
 							<div className="period_place_choice">
-								{/* <button className="place_search_button" onClick={handleModal}>
-									장소 찾기
-								</button> */}
 								{isOpen ? (
 									<div className="Address_modal_wrapper">
 										<div className="Address_modal_content">
@@ -329,12 +540,327 @@ function CreateClassDetail(props) {
 										></div>
 									</>
 								) : (
-									<div>
+									<div className="place_search_icon_wrapper">
 										<img src={Place_search_icon} onClick={handleModal} alt="" />
 									</div>
 								)}
 							</div>
 						</div>
+					</div>
+					<div className="period_place">
+						<div className="period_place_label">상세 이미지 및 영상 업로드</div>
+						<div className="intro_detail_simple">
+							<div>1. </div>
+							<input
+								type="file"
+								name="infoimage1"
+								onChange={(e) => {
+									onChangeImage1(e.target.files[0]);
+								}}
+							/>
+							<input
+								type="text"
+								name="info1"
+								value={inputInfo1}
+								placeholder="해당 상세 이미지 및 영상에 대한 설명"
+								onChange={onChangeInput}
+							/>
+						</div>
+						<div className="intro_detail_simple">
+							<div>2. </div>
+							<input
+								type="file"
+								name="infoimage2"
+								onChange={(e) => {
+									onChangeImage2(e.target.files[0]);
+								}}
+							/>{" "}
+							<input
+								type="text"
+								name="info2"
+								value={inputInfo2}
+								placeholder="해당 상세 이미지 및 영상에 대한 설명"
+								onChange={onChangeInput}
+							/>
+						</div>
+						<div className="intro_detail_simple">
+							<div>3. </div>
+							<input
+								type="file"
+								name="infoimage3"
+								onChange={(e) => {
+									onChangeImage3(e.target.files[0]);
+								}}
+							/>
+							<input
+								type="text"
+								name="info3"
+								value={inputInfo3}
+								placeholder="해당 상세 이미지 및 영상에 대한 설명"
+								onChange={onChangeInput}
+							/>
+						</div>
+
+						<div className="period_place_label">활동 계획 및 소개서</div>
+						<div>
+							활동 계획표에 첨부되는 파일(이미지, 영상)은 클래스 상세소개에
+							들어갈 내용으로,
+						</div>
+						<div>
+							직접적인 활동 내용이 아닌 Day별 수업을 소개하는 파일(이미지, 영상)
+							입니다.
+						</div>
+
+						<div className="dayclasswrapper">
+							<div>
+								{days.map((day) => (
+									<div key={day.id} className="day_input_box">
+										<div className="file_input_split">
+											{day.dayImgpreview ? (
+												<>
+													<div className="editImg">
+														<img
+															src={day.dayImgpreview}
+															className="day_img_true"
+															alt="preview-img"
+														/>
+														<button
+															className="editImg_text"
+															onClick={() => {
+																const inputElement = document.getElementById(
+																	`day_img_input_${day.id}`
+																);
+																if (inputElement) {
+																	inputElement.click();
+																}
+															}}
+														>
+															수정하기
+														</button>
+														<input
+															type="file"
+															id={`day_img_input_${day.id}`}
+															style={{ display: "none" }}
+															onChange={(e) => {
+																onChangeImage_day(
+																	e.target.files[0],
+																	`day_img_${day.id}`
+																);
+															}}
+														/>
+													</div>
+												</>
+											) : (
+												<>
+													<button
+														className="uploadImg_behind"
+														onClick={() => {
+															const inputElement = document.getElementById(
+																`day_img_input_${day.id}`
+															);
+															if (inputElement) {
+																inputElement.click();
+															}
+														}}
+													>
+														<img
+															width="50"
+															height="50"
+															src="https://img.icons8.com/ios/50/FFFFFF/image--v1.png"
+															alt="addimg"
+														/>
+													</button>
+													<input
+														type="file"
+														id={`day_img_input_${day.id}`}
+														style={{ display: "none" }}
+														onChange={(e) => {
+															onChangeImage_day(
+																e.target.files[0],
+																`day_img_${day.id}`
+															);
+														}}
+													/>
+												</>
+											)}
+
+											<div>
+												<div>{day.id}</div>
+												<div className="label_row">
+													<input
+														className="input_box_long"
+														type="text"
+														maxLength={50}
+														name={`title_${day.id}`}
+														placeholder="제목"
+														value={day.title}
+														onChange={(e) =>
+															handleChange(day.id, "title", e.target.value)
+														}
+													/>
+												</div>
+												<div className="label_row">
+													<input
+														className="input_box_middle"
+														type="date"
+														dateFormat="yyyy-MM-dd"
+														name={`date_${day.id}`}
+														placeholder="날짜"
+														value={day.date}
+														onChange={(e) =>
+															handleChange(day.id, "date", e.target.value)
+														}
+													/>
+
+													<input
+														className="input_box_short"
+														type="time"
+														name={`startTime_${day.id}`}
+														placeholder="시간"
+														value={day.startTime}
+														onChange={(e) =>
+															handleChange(day.id, "startTime", e.target.value)
+														}
+													/>
+													<div>-</div>
+													<input
+														className="input_box_short"
+														type="time"
+														name={`endTime_${day.id}`}
+														placeholder="시간"
+														value={day.endTime}
+														onChange={(e) =>
+															handleChange(day.id, "endTime", e.target.value)
+														}
+													/>
+												</div>
+												<div className="label_row">
+													<input
+														className="input_box_middle"
+														type="text"
+														multiple="false"
+														name={`preparation_${day.id}`}
+														placeholder="준비물"
+														value={day.preparation}
+														onChange={(e) =>
+															handleChange(
+																day.id,
+																"preparation",
+																e.target.value
+															)
+														}
+													/>
+												</div>
+												<div className="label_row">
+													<input
+														className="input_box_long"
+														type="text"
+														multiple="true"
+														name={`content_${day.id}`}
+														placeholder="내용"
+														value={day.content}
+														onChange={(e) =>
+															handleChange(day.id, "content", e.target.value)
+														}
+													/>
+												</div>
+												{days.length > 1 &&
+													day.id === days[days.length - 1].id && (
+														<button onClick={() => handleRemoveDay(day.id)}>
+															-
+														</button>
+													)}
+											</div>
+										</div>
+									</div>
+								))}
+								<button onClick={handleAddDay}>+</button>
+								<button onClick={handleSubmit}>Submit</button>
+							</div>
+							{/* <div className="dayclasswrapper">
+							<div> 사진 첨부 </div>
+							<div>
+								<div className="label_row">
+									제목: <input type="text" placeholder="제목을 입력해 주세요" />
+								</div>
+								<div className="label_row">
+									날짜: <input type="text" placeholder="제목을 입력해 주세요" />
+									시간: <input type="text" placeholder="제목을 입력해 주세요" />
+								</div>
+
+								<div className="label_row">
+									준비물:{" "}
+									<input type="text" placeholder="제목을 입력해 주세요" />
+								</div>
+								<div className="label_row">
+									내용: <input type="text" placeholder="제목을 입력해 주세요" />
+								</div>
+							</div> */}
+						</div>
+					</div>
+					<div
+						style={{
+							width: "100%",
+							textAlign: "center",
+							borderBottom: "2px solid #f1f3f5 ",
+							lineHeight: "0.5em",
+							margin: "30px 0 20px",
+						}}
+					></div>
+					<div className="last_row">
+						<img
+							width="35"
+							height="35"
+							src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
+							alt="round-pushpin-emoji"
+						/>
+						활동 계획서 및 상세 일정 파일 첨부
+						<img
+							width="35"
+							height="35"
+							src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
+							alt="round-pushpin-emoji"
+						/>
+					</div>
+					<div class="filebox">
+						<label for="file">파일찾기</label>
+						<input
+							type="file"
+							id="file"
+							// name="file"
+							onChange={(e) => {
+								onChangefile(e.target.files[0]);
+							}}
+						/>
+						<input
+							class="upload-name"
+							value={fileSrc}
+							placeholder="첨부파일"
+							readOnly
+						/>
+					</div>
+					<div className="last_text">
+						<div className="last_text_row">
+							<div className="basic_text">위 파일은</div>
+							<div className="important_text">
+								(클래스 이름)(작성자)_활동계획서 및 상세일.확장자
+							</div>
+							<div className="basic_text">이름으로 업로드 해주세요.</div>
+						</div>
+						<div className="last_text_row">
+							<div className="basic_text">파일 안에 꼭 있어야하는 내용</div>
+							<div className="important_text">
+								클래스 소개 및 일별 상세 활동 소개, 준비물, 연락 가능한 연락망{" "}
+							</div>
+							<div className="basic_text">
+								이 포함되지 않았을 시 클래스 업로드에 제약이 있을 수 있습니다.
+							</div>
+						</div>
+					</div>
+					<div className="submit_button_wrapper">
+						<button className="submit_button" onClick={handleSubmit}>
+							등록하기
+						</button>
 					</div>
 				</>
 			) : (

@@ -1,5 +1,6 @@
-.wrap {
-	margin-top: 70px;
+.create_wrap {
+	margin-top: 10vh;
+	/* background-color: red; */
 	/* height: 600px; */
 	margin-left: 7%;
 	margin-right: 7%;
@@ -8,6 +9,8 @@
 }
 
 .theme_wrapper {
+	/* background-color: yellow; */
+	/* margin-top: 70px; */
 	text-align: center;
 }
 .theme_text {
@@ -19,6 +22,15 @@
 	font-size: 15px;
 	border: 1px solid #5f5f5f;
 	background-color: white;
+	text-align: center;
+	margin: 4px;
+}
+.select_theme_button {
+	width: 90px;
+	border-radius: 15px;
+	font-size: 15px;
+	border: 1px solid #5f5f5f;
+	background-color: pink;
 	text-align: center;
 	margin: 4px;
 }
@@ -34,17 +46,21 @@
 	text-align: center;
 }
 .middle {
+	justify-content: center;
 	margin-top: 20px;
 	display: flex;
 	flex-direction: row;
 	/* background-color: yellow; */
 }
 .period_place_wrapper {
+	justify-content: center;
 	display: flex;
 	flex-direction: row;
 }
 .period_place {
-	width: 350px;
+	/* background-color: yellow; */
+	justify-content: center;
+	/* width: 350px; */
 	margin: 15px;
 	align-items: center;
 	text-align: center;
@@ -118,4 +134,185 @@
 	box-shadow: 2px 3px 2px 2px gray;
 	font-size: 12px;
 	text-align: left;
+}
+
+.intro_detail_simple {
+	display: flex;
+	flex-direction: row;
+}
+
+.dayclasswrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	padding: 10px;
+	margin-top: 30px;
+	width: 100%;
+	background-color: #f1f3f5;
+}
+
+.file_input_split {
+	justify-content: center;
+	flex-direction: row;
+	display: flex;
+}
+.editImg {
+	display: flex;
+	flex-direction: column;
+	color: #5f5f5f;
+	size: 10px;
+}
+
+.editImg_text {
+	background-color: transparent;
+	border: none;
+}
+.day_img_true {
+	object-fit: cover;
+	width: 130px;
+	height: 130px;
+	align-items: center;
+	margin-top: 15px;
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+}
+.uploadImg_behind {
+	align-items: center;
+	text-align: center;
+	margin: 15px;
+	justify-content: center;
+	width: 130px;
+	height: 130px;
+	background-color: #576191;
+	border-radius: 5px;
+	border: none;
+}
+.file_input {
+	align-items: center;
+	text-align: center;
+	margin: 15px;
+	justify-content: center;
+	width: 130px;
+	height: 130px;
+	background-color: #576191;
+	border-radius: 5px;
+	border: none;
+	display: none;
+}
+.label_row {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+.day_input_box {
+	justify-content: center;
+	width: 100%;
+}
+.input_box_long {
+	width: 800px;
+	border: none;
+	outline: none;
+	margin: 2px;
+	border-radius: 5px;
+
+	background-color: white;
+}
+
+.input_box_middle {
+	width: 400px;
+	border: none;
+	outline: none;
+	background-color: white;
+	margin: 2px;
+	border-radius: 5px;
+}
+.input_box_short {
+	width: 200px;
+	border: none;
+	outline: none;
+	margin: 2px;
+	border-radius: 5px;
+
+	background-color: white;
+}
+.last_row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	text-align: center;
+	align-items: center;
+}
+.filebox {
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin-top: 20px;
+}
+.filebox .upload-name {
+	display: inline-block;
+	height: 40px;
+	padding: 10px 10px;
+	vertical-align: middle;
+	/* border: 1px solid #dddddd; */
+	border: none;
+	border-bottom: 1px solid #dddddd;
+	width: 40%;
+	color: #999999;
+	outline: none;
+}
+.filebox label {
+	display: inline-block;
+	padding: 10px 20px;
+	color: #fff;
+	vertical-align: middle;
+	background-color: #3a3a3a;
+	border-radius: 6px;
+	cursor: pointer;
+	width: 10%;
+	height: 40px;
+	margin-right: 10px;
+}
+.filebox input[type="file"] {
+	position: absolute;
+	width: 0;
+	height: 0;
+	padding: 0;
+	overflow: hidden;
+	border: 0;
+}
+.last_text {
+	padding: 10px;
+	margin-top: 20px;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+.last_text_row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	text-align: center;
+	align-items: center;
+}
+.basic_text {
+	font-size: 14px;
+}
+.important_text {
+	color: rgb(219, 55, 55);
+	margin-left: 5px;
+	margin-right: 5px;
+	font-size: 16px;
+}
+.submit_button_wrapper {
+	margin: 25px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+.submit_button {
+	width: 15%;
+	border: none;
+	border-radius: 5px;
 }
