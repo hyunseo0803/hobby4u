@@ -2,17 +2,27 @@ import React, { useState, useEffect } from "react";
 
 import "../styles/CreateClassDetail.css";
 import { useLocation } from "react-router-dom";
-import person_img from "../assets/person.png";
-import money_img from "../assets/money.png";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/esm/locale";
+import minus from "../assets/day_class_minus.png";
+import add from "../assets/day_class_add.png";
+import Skill from "../assets/Skill.png";
+import Activity from "../assets/Activity.png";
+import Alon from "../assets/Alon.png";
+import Craft from "../assets/Craft.png";
+import Culture_arts from "../assets/Culture_arts.png";
+import Music from "../assets/Music.png";
+import Simple from "../assets/Simple.png";
+import Trip from "../assets/Trip.png";
+import Beauty from "../assets/Beauty.png";
+import quiet from "../assets/quiet.png";
+import Sports from "../assets/Sports.png";
+import Healing from "../assets/Healing.png";
 
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
 import Place_search_icon from "../assets/place_search_icon.png";
 import axios from "axios";
-
-// import { useSelector, shallowEqual } from "react-redux";
 
 function CreateClassDetail(props) {
 	const [selectedTheme, setSelectedTheme] = useState([]);
@@ -37,13 +47,10 @@ function CreateClassDetail(props) {
 
 	const { kakao } = window;
 
-	// var today = new Date();
+	let [inputCount1, setInputCount1] = useState(0);
+	let [inputCount2, setInputCount2] = useState(0);
+	let [inputCount3, setInputCount3] = useState(0);
 
-	// var month = today.getUTCMonth() + 1; //months from 1-12
-	// var day = today.getUTCDate();
-	// var year = today.getUTCFullYear();
-
-	// today = year + "-" + month + "-" + day;
 	const [days, setDays] = useState([
 		{
 			id: "day1",
@@ -67,23 +74,36 @@ function CreateClassDetail(props) {
 
 	const [inputInfo2, setInputInfo2] = useState("");
 	const [inputImage2, setInputImage2] = useState(null);
-	const [InputImage2preview, setInputImage2preview] = useState(null);
+	const [inputImage2preview, setInputImage2preview] = useState(null);
 
 	const [inputInfo3, setInputInfo3] = useState("");
 	const [inputImage3, setInputImage3] = useState(null);
-	const [inputImage3preview, setinputImage3preview] = useState(null);
+	const [inputImage3preview, setInputImage3preview] = useState(null);
+
+	const [fee, setFee] = useState("pay");
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
 		if (name === "info1") {
 			setInputInfo1(value);
+			setInputCount1(e.target.value.length);
 		} else if (name === "info2") {
 			setInputInfo2(value);
+			setInputCount2(e.target.value.length);
 		} else if (name === "info3") {
 			setInputInfo3(value);
+			setInputCount3(e.target.value.length);
 		}
 	};
 
+	const handleFree = (e) => {
+		setFee(e.target.value);
+		setMoney("0");
+	};
+
+	useEffect(() => {
+		console.log("지불:" + fee + "요금:" + money);
+	});
 	const onChangeApply = (dates) => {
 		const [start, end] = dates;
 
@@ -181,6 +201,21 @@ function CreateClassDetail(props) {
 		"# 뷰티",
 		"# 문화예술",
 	];
+	const themeImages = {
+		"# 조용한": quiet,
+		"# 스포츠": Sports,
+		"# 여행": Trip,
+		"# 힐링": Healing,
+		"# 액티비티": Activity,
+		"# 혼자": Alon,
+		"# 간단한": Simple,
+		"# 음악": Music,
+		"# 공예": Craft,
+		"# 기술": Skill,
+		"# 뷰티": Beauty,
+		"# 문화예술": Culture_arts,
+		// ... 다른 테마들에 대한 이미지 경로 추가 ...
+	};
 
 	const addTheme = (theme_item) => {
 		if (selectedTheme.includes(theme_item)) {
@@ -363,7 +398,7 @@ function CreateClassDetail(props) {
 		reader.readAsDataURL(e);
 		return new Promise((resolve) => {
 			reader.onload = () => {
-				setInputImage1preview(reader.result);
+				setInputImage2preview(reader.result);
 				resolve();
 			};
 		});
@@ -374,7 +409,7 @@ function CreateClassDetail(props) {
 		reader.readAsDataURL(e);
 		return new Promise((resolve) => {
 			reader.onload = () => {
-				setInputImage1preview(reader.result);
+				setInputImage3preview(reader.result);
 				resolve();
 			};
 		});
@@ -406,23 +441,28 @@ function CreateClassDetail(props) {
 			{option === "offline" ? (
 				<>
 					<div className="theme_wrapper">
+						{/* <div className="theme_test"> */}
 						<div className="theme_text">클래스의 테마를 선택해 주세요 ! </div>
-						<div>
-							{theme.map((item, index) => (
-								<button
-									className={
-										selectedTheme.includes(item)
-											? "select_theme_button"
-											: "theme_button"
-									}
-									key={index}
-									onClick={() => addTheme(item)}
-								>
-									{item}
-								</button>
-							))}
-						</div>
+
+						{theme.map((item, index) => (
+							<button
+								className={
+									selectedTheme.includes(item)
+										? "select_theme_button"
+										: "theme_button"
+								}
+								key={index}
+								onClick={() => addTheme(item)}
+							>
+								{" "}
+								<div className="theme_img_wrapper">
+									<img src={themeImages[item]} width={100} alt={item} />
+									<div className="theme_img_text">{item}</div>
+								</div>
+							</button>
+						))}
 					</div>
+					{/* </div> */}
 					<div className="middle_text">
 						<div className="_text">
 							수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
@@ -433,30 +473,76 @@ function CreateClassDetail(props) {
 						</div>
 					</div>
 					<div className="middle">
-						<div className="person">
-							<img src={person_img} alt=""></img>
+						<div className="person_money">
+							<img
+								className="person_money_icon"
+								width="64"
+								height="64"
+								src="https://img.icons8.com/cotton/64/conference-call.png"
+								alt="conference-call"
+							/>
+							<div className="person_money_label">수강 인원</div>
 							<input
+								className="person_money_input"
 								name="person"
+								// placeholder="인원수"
 								type="text"
 								value={person}
 								onChange={(e) => setPerson(e.target.value)}
 							></input>{" "}
 						</div>
-						<div className="money">
-							<img src={money_img} alt=""></img>
-							<input
-								name="money"
-								type="text"
-								value={money}
-								onChange={(e) => setMoney(e.target.value)}
-							></input>
+						<div className="person_money">
+							<div className="person_money_icon">
+								<img
+									className="person_money_icon_test"
+									width="55"
+									height="55"
+									src="https://img.icons8.com/ios/64/get-cash--v1.png"
+									alt="get-cash--v1"
+								/>
+							</div>
+							<div className="person_money_label">수강료</div>
+							<div className="radio_fee">
+								<div className="radio_input">
+									<input
+										type="radio"
+										value="pay"
+										checked={fee === "pay"}
+										onChange={(e) => setFee(e.target.value)}
+									></input>
+									<div className="radio_label">유료</div>
+									<div className="person_money_input_wrapper">
+										<input
+											className="person_money_input"
+											name="money"
+											type="number"
+											value={money}
+											min="1000"
+											placeholder="1000원~"
+											onChange={(e) => setMoney(e.target.value)}
+											disabled={fee === "free"}
+										></input>
+									</div>
+								</div>
+								<div className="radio_input">
+									<input
+										type="radio"
+										value="free"
+										checked={fee === "free"}
+										onChange={handleFree}
+									></input>
+									<div className="radio_label">무료</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div className="period_place_wrapper">
 						<div className="period_place">
-							<div className="period_place_label">신청 기간</div>
-							<div className="period_place_label_hint">
-								클래스 신청 기간을 선택해 주세요.{" "}
+							<div className="period_place_title_hint">
+								<div className="period_place_label">신청 기간</div>
+								<div className="period_place_label_hint">
+									클래스 신청 기간을 선택해 주세요.{" "}
+								</div>
 							</div>
 							<div className="period_place_choice">
 								<div className="calender-container">
@@ -486,9 +572,11 @@ function CreateClassDetail(props) {
 							</div>
 						</div>
 						<div className="period_place">
-							<div className="period_place_label">활동 기간</div>
-							<div className="period_place_label_hint">
-								클래스 활동 기간을 선택해 주세요.
+							<div className="period_place_title_hint">
+								<div className="period_place_label">활동 기간</div>
+								<div className="period_place_label_hint">
+									클래스 활동 기간을 선택해 주세요.
+								</div>
 							</div>
 
 							<div className="period_place_choice">
@@ -514,11 +602,12 @@ function CreateClassDetail(props) {
 							</div>
 						</div>
 						<div className="period_place">
-							<div className="period_place_label">활동 장소</div>
-							<div className="period_place_label_hint">
-								클래스 활동 장소를 선택해 주세요.
+							<div className="period_place_title_hint">
+								<div className="period_place_label">활동 장소</div>
+								<div className="period_place_label_hint">
+									클래스 활동 장소를 선택해 주세요.
+								</div>
 							</div>
-
 							<div className="period_place_choice">
 								{isOpen ? (
 									<div className="Address_modal_wrapper">
@@ -548,73 +637,316 @@ function CreateClassDetail(props) {
 						</div>
 					</div>
 					<div className="period_place">
-						<div className="period_place_label">상세 이미지 및 영상 업로드</div>
-						<div className="intro_detail_simple">
-							<div>1. </div>
-							<input
-								type="file"
-								name="infoimage1"
-								onChange={(e) => {
-									onChangeImage1(e.target.files[0]);
-								}}
-							/>
-							<input
-								type="text"
-								name="info1"
-								value={inputInfo1}
-								placeholder="해당 상세 이미지 및 영상에 대한 설명"
-								onChange={onChangeInput}
-							/>
+						<div className="period_place_title_hint">
+							<div className="period_place_label">
+								상세 이미지 및 영상 업로드
+							</div>
+							<div className="period_place_label_hint">
+								자신의 클래스의 퀄리티를 선보일만한 간단한 소개
+							</div>
 						</div>
-						<div className="intro_detail_simple">
-							<div>2. </div>
-							<input
-								type="file"
-								name="infoimage2"
-								onChange={(e) => {
-									onChangeImage2(e.target.files[0]);
-								}}
-							/>{" "}
-							<input
-								type="text"
-								name="info2"
-								value={inputInfo2}
-								placeholder="해당 상세 이미지 및 영상에 대한 설명"
-								onChange={onChangeInput}
-							/>
-						</div>
-						<div className="intro_detail_simple">
-							<div>3. </div>
-							<input
-								type="file"
-								name="infoimage3"
-								onChange={(e) => {
-									onChangeImage3(e.target.files[0]);
-								}}
-							/>
-							<input
-								type="text"
-								name="info3"
-								value={inputInfo3}
-								placeholder="해당 상세 이미지 및 영상에 대한 설명"
-								onChange={onChangeInput}
-							/>
-						</div>
+						<div className="all_intro">
+							<div className="intro_detail_simple">
+								<div>1. </div>
+								{inputImage1preview ? (
+									<>
+										<div className="editImg">
+											<img
+												src={inputImage1preview}
+												className="day_img_true"
+												alt="preview-img"
+											/>
+											<button
+												className="editImg_text"
+												onClick={() => {
+													const inputElement =
+														document.getElementById("infoimage1");
+													if (inputElement) {
+														inputElement.click();
+													}
+												}}
+											>
+												수정하기
+											</button>
+										</div>
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name="info1"
+												value={inputInfo1}
+												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												onChange={onChangeInput}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount1}</span>
+												<span>/500자</span>
+											</div>
+											<input
+												type="file"
+												id="infoimage1"
+												name="infoimage1"
+												style={{ display: "none" }}
+												onChange={(e) => {
+													onChangeImage1(e.target.files[0]);
+												}}
+											/>
+										</div>
+									</>
+								) : (
+									<>
+										<div>
+											<button
+												className="uploadImg_behind"
+												onClick={() => {
+													const inputElement =
+														document.getElementById("infoimage1");
+													if (inputElement) {
+														inputElement.click();
+													}
+												}}
+											>
+												<img
+													width="50"
+													height="50"
+													src="https://img.icons8.com/ios/50/image--v1.png"
+													alt="--v1"
+												/>
+											</button>
+										</div>
+										<input
+											type="file"
+											id="infoimage1"
+											style={{ display: "none" }}
+											onChange={(e) => {
+												onChangeImage1(e.target.files[0]);
+											}}
+										/>
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name="info1"
+												value={inputInfo1}
+												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												onChange={onChangeInput}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount1}</span>
+												<span>/500자</span>
+											</div>
+										</div>
+									</>
+								)}
+							</div>
 
+							<div className="intro_detail_simple">
+								<div>2. </div>
+								{inputImage2preview ? (
+									<>
+										<div className="editImg">
+											<img
+												src={inputImage2preview}
+												className="day_img_true"
+												alt="preview-img"
+											/>
+											<button
+												className="editImg_text"
+												onClick={() => {
+													const inputElement =
+														document.getElementById("infoimage2");
+													if (inputElement) {
+														inputElement.click();
+													}
+												}}
+											>
+												수정하기
+											</button>
+										</div>
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name="info2"
+												value={inputInfo2}
+												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												onChange={onChangeInput}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount2}</span>
+												<span>/500자</span>
+											</div>
+
+											<input
+												type="file"
+												id="infoimage2"
+												name="infoimage2"
+												style={{ display: "none" }}
+												onChange={(e) => {
+													onChangeImage2(e.target.files[0]);
+												}}
+											/>
+										</div>
+									</>
+								) : (
+									<>
+										<div>
+											<button
+												className="uploadImg_behind"
+												onClick={() => {
+													const inputElement =
+														document.getElementById("infoimage2");
+													if (inputElement) {
+														inputElement.click();
+													}
+												}}
+											>
+												<img
+													width="50"
+													height="50"
+													src="https://img.icons8.com/ios/50/image--v1.png"
+													alt="--v1"
+												/>
+											</button>
+										</div>
+										<input
+											type="file"
+											id="infoimage2"
+											style={{ display: "none" }}
+											onChange={(e) => {
+												onChangeImage2(e.target.files[0]);
+											}}
+										/>
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name="info2"
+												value={inputInfo2}
+												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												onChange={onChangeInput}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount2}</span>
+												<span>/500자</span>
+											</div>
+										</div>
+									</>
+								)}
+							</div>
+							<div className="intro_detail_simple">
+								<div>3. </div>
+								{inputImage3preview ? (
+									<>
+										<div className="editImg">
+											<img
+												src={inputImage3preview}
+												className="day_img_true"
+												alt="preview-img"
+											/>
+											<button
+												className="editImg_text"
+												onClick={() => {
+													const inputElement =
+														document.getElementById("infoimage3");
+													if (inputElement) {
+														inputElement.click();
+													}
+												}}
+											>
+												수정하기
+											</button>
+										</div>
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name="info3"
+												value={inputInfo3}
+												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												onChange={onChangeInput}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount3}</span>
+												<span>/500자</span>
+											</div>
+
+											<input
+												type="file"
+												id="infoimage3"
+												name="infoimage3"
+												style={{ display: "none" }}
+												onChange={(e) => {
+													onChangeImage3(e.target.files[0]);
+												}}
+											/>
+										</div>
+									</>
+								) : (
+									<>
+										<div>
+											<button
+												className="uploadImg_behind"
+												onClick={() => {
+													const inputElement =
+														document.getElementById("infoimage3");
+													if (inputElement) {
+														inputElement.click();
+													}
+												}}
+											>
+												<img
+													width="50"
+													height="50"
+													src="https://img.icons8.com/ios/50/image--v1.png"
+													alt="--v1"
+												/>
+											</button>
+										</div>
+										<input
+											type="file"
+											id="infoimage3"
+											style={{ display: "none" }}
+											onChange={(e) => {
+												onChangeImage3(e.target.files[0]);
+											}}
+										/>
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name="info3"
+												value={inputInfo3}
+												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												onChange={onChangeInput}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount3}</span>
+												<span>/500자</span>
+											</div>
+										</div>
+									</>
+								)}
+							</div>
+						</div>
 						<div className="period_place_label">활동 계획 및 소개서</div>
 						<div>
 							활동 계획표에 첨부되는 파일(이미지, 영상)은 클래스 상세소개에
-							들어갈 내용으로,
-						</div>
-						<div>
-							직접적인 활동 내용이 아닌 Day별 수업을 소개하는 파일(이미지, 영상)
-							입니다.
+							들어갈 내용으로, 직접적인 활동 내용이 아닌 Day별 수업을 소개하는
+							파일(이미지, 영상) 입니다.
 						</div>
 
 						<div className="dayclasswrapper">
 							<div>
 								{days.map((day) => (
 									<div key={day.id} className="day_input_box">
+										<div className="day_title_label">{day.id}</div>
 										<div className="file_input_split">
 											{day.dayImgpreview ? (
 												<>
@@ -666,8 +998,8 @@ function CreateClassDetail(props) {
 														<img
 															width="50"
 															height="50"
-															src="https://img.icons8.com/ios/50/FFFFFF/image--v1.png"
-															alt="addimg"
+															src="https://img.icons8.com/ios/50/image--v1.png"
+															alt="--v1"
 														/>
 													</button>
 													<input
@@ -685,7 +1017,6 @@ function CreateClassDetail(props) {
 											)}
 
 											<div>
-												<div>{day.id}</div>
 												<div className="label_row">
 													<input
 														className="input_box_long"
@@ -752,7 +1083,7 @@ function CreateClassDetail(props) {
 													/>
 												</div>
 												<div className="label_row">
-													<input
+													<textarea
 														className="input_box_long"
 														type="text"
 														multiple="true"
@@ -764,39 +1095,26 @@ function CreateClassDetail(props) {
 														}
 													/>
 												</div>
-												{days.length > 1 &&
-													day.id === days[days.length - 1].id && (
-														<button onClick={() => handleRemoveDay(day.id)}>
-															-
-														</button>
-													)}
 											</div>
+										</div>
+										<div className="remove_button">
+											{days.length > 1 &&
+												day.id === days[days.length - 1].id && (
+													<button
+														className="remove_button"
+														onClick={() => handleRemoveDay(day.id)}
+													>
+														<img src={minus} width={25} alt="minus" />
+													</button>
+												)}
 										</div>
 									</div>
 								))}
-								<button onClick={handleAddDay}>+</button>
-								<button onClick={handleSubmit}>Submit</button>
 							</div>
-							{/* <div className="dayclasswrapper">
-							<div> 사진 첨부 </div>
-							<div>
-								<div className="label_row">
-									제목: <input type="text" placeholder="제목을 입력해 주세요" />
-								</div>
-								<div className="label_row">
-									날짜: <input type="text" placeholder="제목을 입력해 주세요" />
-									시간: <input type="text" placeholder="제목을 입력해 주세요" />
-								</div>
-
-								<div className="label_row">
-									준비물:{" "}
-									<input type="text" placeholder="제목을 입력해 주세요" />
-								</div>
-								<div className="label_row">
-									내용: <input type="text" placeholder="제목을 입력해 주세요" />
-								</div>
-							</div> */}
 						</div>
+						<button className="add_button" onClick={handleAddDay}>
+							<img src={add} width={25} alt="minus" />
+						</button>
 					</div>
 					<div
 						style={{
