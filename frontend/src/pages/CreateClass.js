@@ -49,39 +49,6 @@ function CreateClass(props) {
 		}));
 	};
 
-	// const getUserData = async () => {
-	// 	try {
-	// 		const token = localStorage.getItem("token");
-
-	// 		if (!token) {
-	// 			throw new Error("Token is not available");
-	// 		}
-
-	// 		const response = await fetch(
-	// 			"http://localhost:8000/api/user/get_user_data/",
-	// 			{
-	// 				method: "POST",
-	// 				headers: {
-	// 					Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-	// 				},
-	// 			}
-	// 		);
-	// 		if (response.ok) {
-	// 			const user = await response.json();
-	// 			// const nickname = user.nickname;
-	// 			// const userImg = user.profileImg;
-	// 			// const userEmail = user.email;
-	// 			console.log(user);
-	// 		} else {
-	// 			// 예외처리
-	// 			throw new Error("Failed to fetch user data");
-	// 		}
-	// 	} catch (error) {
-	// 		// 예외처리
-	// 		throw new Error("Token is not available");
-	// 	}
-	// };
-
 	function handlePageChange() {
 		console.log(inputValues);
 		navigate("/createClass/detail", {
@@ -109,19 +76,6 @@ function CreateClass(props) {
 			};
 		});
 	};
-	// const [imagepreview, setImagepreview] = useState("");
-
-	// const encodeFileToBase64 = (fileBlob) => {
-	// 	const reader = new FileReader();
-	// 	reader.readAsDataURL(fileBlob);
-
-	// 	return new Promise((resolve) => {
-	// 		reader.onload = () => {
-	// 			setImagepreview(reader.result);
-	// 			resolve();
-	// 		};
-	// 	});
-	// };
 
 	return (
 		<div className="wrap">
@@ -132,16 +86,27 @@ function CreateClass(props) {
 							<div> 썸네일 이미지 및 영상 업로드</div>
 
 							<div className="img_wrapper">
-								{imagepreview && (
-									<img
-										src={imagepreview}
-										style={{
-											objectFit: "cover",
-											width: "100%",
-											height: "100%",
-										}}
-										alt="preview-img"
-									/>
+								{imagepreview ? (
+									<>
+										<img
+											src={imagepreview}
+											style={{
+												objectFit: "cover",
+												width: "100%",
+												height: "100%",
+											}}
+											alt="preview-img"
+										/>
+									</>
+								) : (
+									<>
+										<img
+											width="50"
+											height="50"
+											src="https://img.icons8.com/ios/50/image--v1.png"
+											alt="--v1"
+										/>
+									</>
 								)}
 							</div>
 						</div>
