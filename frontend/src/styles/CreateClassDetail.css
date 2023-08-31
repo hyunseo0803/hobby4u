@@ -1,3 +1,8 @@
+.person_money_input::-webkit-input-placeholder {
+	color: #5f5f5f;
+	padding: 5px;
+}
+
 .create_wrap {
 	margin-top: 10vh;
 	/* background-color: red; */
@@ -9,28 +14,54 @@
 }
 
 .theme_wrapper {
-	/* background-color: yellow; */
-	/* margin-top: 70px; */
+	/* display: flex; */
+	/* justify-content: center; */
+	width: 100%;
+	height: 100%;
+	background-color: rgb(241, 243, 255);
+	margin-top: 100px;
+	padding-left: 50px;
+	padding-right: 50px;
 	text-align: center;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
+	/* position: relative; */
 }
 .theme_text {
+	/* position: absolute; */
+	padding: 30px;
+	color: rgb(35, 41, 65);
+	/* background-color: red; */
+}
+
+.theme_button {
+	width: 100px;
+	height: 100%;
+	font-size: 15px;
+	border: none;
+	background-color: transparent;
+	text-align: center;
 	margin: 10px;
 }
-.theme_button {
-	width: 90px;
-	border-radius: 15px;
-	font-size: 15px;
-	border: 1px solid #5f5f5f;
-	background-color: white;
-	text-align: center;
-	margin: 4px;
+.theme_img_wrapper {
+	/* width: 100px; */
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.theme_img_text {
+	position: absolute;
+	top: 30px;
+	font-weight: 10px;
 }
 .select_theme_button {
 	width: 90px;
 	border-radius: 15px;
 	font-size: 15px;
-	border: 1px solid #5f5f5f;
-	background-color: pink;
+	border: none;
+	background-color: #ffd0ca;
 	text-align: center;
 	margin: 4px;
 }
@@ -38,16 +69,93 @@
 .middle_text {
 	margin-top: 30px;
 	/* background-color: red; */
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
 
 ._text {
 	color: #5f5f5f;
 	text-align: center;
 }
+
+.radio_fee {
+	margin: 10px;
+	/* background-color: yellow; */
+}
+.radio_input {
+	display: flex;
+	flex-direction: row;
+	height: 33px;
+}
+.radio_label {
+	/* text-align: center; */
+	/* justify-content: center; */
+	align-items: center;
+	display: flex;
+	margin: 15px;
+}
+.person_money {
+	width: 40%;
+	height: 100px;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	flex-direction: row;
+	margin: 5px;
+	background-color: #f8f9fa;
+	border-radius: 5px;
+}
+.person_money_label {
+	margin-right: 50px;
+}
+.person_money_input_wrapper {
+	align-items: center;
+	display: flex;
+}
+.person_money_input {
+	/* margin: 15px; */
+	height: 25px;
+	justify-content: center;
+	align-items: center;
+	border: none;
+	outline: none;
+	border-radius: 3px;
+	background-color: white;
+}
+
+.person_money_input::-webkit-inner-spin-button {
+	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+}
+.person_money_icon {
+	width: 64px;
+	height: 64px;
+	margin: 10px;
+	/* background-color: yellow; */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* text-align: center; */
+}
+.person_money_icon_test {
+	/* padding: 5px; */
+	/* background-color: blue; */
+	width: 55px;
+	height: 55px;
+	/* margin: auto;
+	display: block; */
+	/* justify-content: center; */
+	/* align-items: center; */
+}
+/* .money {
+	align-items: center;
+	justify-content: center;
+	margin: 5px;
+	background-color: yellow;
+} */
 .middle {
 	justify-content: center;
-	margin-top: 20px;
+	margin: 20px;
 	display: flex;
 	flex-direction: row;
 	/* background-color: yellow; */
@@ -56,21 +164,34 @@
 	justify-content: center;
 	display: flex;
 	flex-direction: row;
+	/* margin-left: 20%; */
+	/* margin-right: 20%; */
 }
 .period_place {
 	/* background-color: yellow; */
-	justify-content: center;
+	justify-content: space-evenly;
 	/* width: 350px; */
 	margin: 15px;
 	align-items: center;
 	text-align: center;
+	margin-right: 5%;
 }
-.period_place_label {
+/* .period_place_label {
 	padding: 3px;
 	text-align: center;
 	border-radius: 10px;
 	background-color: #4a4f5a;
 	color: white;
+} */
+
+.period_place_title_hint {
+	display: flex;
+	flex-direction: row;
+}
+.period_place_label {
+	text-align: left;
+	left: 10px;
+	font-size: 20px;
 }
 .period_place_label_hint {
 	padding: 10px;
@@ -83,6 +204,7 @@
 	background-color: red;
 } */
 .datepicker {
+	margin-top: 10px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -125,7 +247,9 @@
 	background: rgba(0, 0, 0, 0.8);
 	z-index: 1;
 }
-
+.place_search_icon_wrapper {
+	margin-top: 30px;
+}
 .place_search_button {
 	width: 300px;
 	height: 35px;
@@ -135,10 +259,15 @@
 	font-size: 12px;
 	text-align: left;
 }
-
+.all_intro {
+	margin: 20px;
+}
 .intro_detail_simple {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	/* background-color: red; */
 }
 
 .dayclasswrapper {
@@ -148,7 +277,14 @@
 	padding: 10px;
 	margin-top: 30px;
 	width: 100%;
+	border-radius: 5px;
 	background-color: #f1f3f5;
+}
+
+.day_title_label {
+	font-size: 20px;
+	font-weight: bolder;
+	letter-spacing: 2px;
 }
 
 .file_input_split {
@@ -167,27 +303,73 @@
 	background-color: transparent;
 	border: none;
 }
+.info_box_long {
+	width: 950px;
+	height: 90px;
+	border: none;
+	outline: none;
+	/* margin: 15px; */
+	border-radius: 5px;
+	padding: 5px 8px;
+	overflow: auto;
+	resize: none;
+	background-color: white;
+}
+
+.info_box_long::-webkit-scrollbar {
+	width: 10px;
+}
+.info_box_long::-webkit-scrollbar-thumb {
+	background-color: #2f3542;
+	border-radius: 10px;
+}
+.info_box_long::-webkit-scrollbar-track {
+	background-color: rgb(158, 158, 158);
+	border-radius: 10px;
+	box-shadow: inset 0px 0px 2px white;
+}
+
+/* .word_how_many {
+	justify-content: flex-end;
+} */
+.word_info {
+	background-color: #f1f3f5;
+	height: 125px;
+	position: relative;
+	border-radius: 5px;
+	padding: 10px;
+}
+.word_how_many {
+	text-align: right;
+	margin-top: 3px;
+	margin-bottom: 1px;
+	position: absolute;
+	right: 15px;
+	bottom: 0.5px;
+	color: #999999;
+}
 .day_img_true {
 	object-fit: cover;
 	width: 130px;
 	height: 130px;
 	align-items: center;
-	margin-top: 15px;
-	margin-left: 15px;
-	margin-right: 15px;
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
 	margin-bottom: 5px;
 	border-radius: 5px;
 }
 .uploadImg_behind {
 	align-items: center;
 	text-align: center;
-	margin: 15px;
+	margin: auto;
+	margin-right: 15px;
 	justify-content: center;
 	width: 130px;
 	height: 130px;
-	background-color: #576191;
+	background-color: white;
 	border-radius: 5px;
-	border: none;
+	border: dashed;
 }
 .file_input {
 	align-items: center;
@@ -196,7 +378,7 @@
 	justify-content: center;
 	width: 130px;
 	height: 130px;
-	background-color: #576191;
+	/* background-color: #576191; */
 	border-radius: 5px;
 	border: none;
 	display: none;
@@ -209,11 +391,14 @@
 .day_input_box {
 	justify-content: center;
 	width: 100%;
+	/* margin: 10px; */
 }
 .input_box_long {
-	width: 800px;
+	width: 950px;
+	height: 100%;
 	border: none;
 	outline: none;
+	resize: none;
 	margin: 2px;
 	border-radius: 5px;
 
@@ -238,6 +423,7 @@
 	background-color: white;
 }
 .last_row {
+	padding: 10px;
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
@@ -245,6 +431,7 @@
 	align-items: center;
 }
 .filebox {
+	/* padding: 10px; */
 	justify-content: center;
 	align-items: center;
 	text-align: center;
@@ -264,15 +451,17 @@
 }
 .filebox label {
 	display: inline-block;
-	padding: 10px 20px;
+	/* align-items: center; */
+	padding: 7px;
 	color: #fff;
 	vertical-align: middle;
 	background-color: #3a3a3a;
 	border-radius: 6px;
 	cursor: pointer;
-	width: 10%;
-	height: 40px;
+	width: 90px;
+	height: 35px;
 	margin-right: 10px;
+	font-size: 14px;
 }
 .filebox input[type="file"] {
 	position: absolute;
@@ -282,8 +471,24 @@
 	overflow: hidden;
 	border: 0;
 }
+.add_button {
+	width: 99%;
+	margin-top: 10px;
+	padding: 3px;
+	border: none;
+	border-radius: 8px;
+	/* margin: auto; */
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+	background-color: white;
+}
+.remove_button {
+	align-items: center;
+	justify-content: center;
+	border: none;
+}
 .last_text {
-	padding: 10px;
+	padding: 25px;
+	/* margin: 10px; */
 	margin-top: 20px;
 	text-align: center;
 	justify-content: center;
@@ -297,13 +502,13 @@
 	align-items: center;
 }
 .basic_text {
-	font-size: 14px;
+	font-size: 13px;
 }
 .important_text {
 	color: rgb(219, 55, 55);
 	margin-left: 5px;
 	margin-right: 5px;
-	font-size: 16px;
+	font-size: 14px;
 }
 .submit_button_wrapper {
 	margin: 25px;
