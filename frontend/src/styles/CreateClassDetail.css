@@ -172,9 +172,10 @@
 	justify-content: space-evenly;
 	/* width: 350px; */
 	margin: 15px;
+	padding: 10px;
 	align-items: center;
 	text-align: center;
-	margin-right: 5%;
+	/* margin-right: 5%; */
 }
 /* .period_place_label {
 	padding: 3px;
@@ -262,12 +263,19 @@
 .all_intro {
 	margin: 20px;
 }
+
+.daydetail_all_wrapper {
+	margin: 15px;
+	padding: 10px;
+	/* background-color: red; */
+}
 .intro_detail_simple {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
 	/* background-color: red; */
+	margin: 10px;
 }
 
 .dayclasswrapper {

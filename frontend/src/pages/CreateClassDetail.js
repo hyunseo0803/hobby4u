@@ -963,6 +963,8 @@ function CreateClassDetail(props) {
 								)}
 							</div>
 						</div>
+					</div>
+					<div className="daydetail_all_wrapper">
 						<div className="period_place_label">활동 계획 및 소개서</div>
 						<div>
 							활동 계획표에 첨부되는 파일(이미지, 영상)은 클래스 상세소개에
