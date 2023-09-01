@@ -666,11 +666,9 @@ function CreateClassDetail(props) {
 					</div>
 					<div className="period_place">
 						<div className="period_place_title_hint">
-							<div className="period_place_label">
-								상세 이미지 및 영상 업로드
-							</div>
+							<div className="period_place_label">나의 클래스 선보이기</div>
 							<div className="period_place_label_hint">
-								자신의 클래스의 퀄리티를 선보일만한 간단한 소개
+								자신의 클래스를 사람들이 이끌릴만한 간단한 소개
 							</div>
 						</div>
 						<div className="all_intro">
@@ -704,7 +702,7 @@ function CreateClassDetail(props) {
 												type="text"
 												name="info1"
 												value={inputInfo1}
-												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												placeholder="이미지 및 간단한 소개"
 												onChange={onChangeInput}
 											/>
 											<div className="word_how_many">
@@ -758,7 +756,7 @@ function CreateClassDetail(props) {
 												type="text"
 												name="info1"
 												value={inputInfo1}
-												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												placeholder="이미지 및 간단한 소개"
 												onChange={onChangeInput}
 											/>
 											<div className="word_how_many">
@@ -800,7 +798,7 @@ function CreateClassDetail(props) {
 												type="text"
 												name="info2"
 												value={inputInfo2}
-												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												placeholder="이미지 및 간단한 소개"
 												onChange={onChangeInput}
 											/>
 											<div className="word_how_many">
@@ -855,7 +853,7 @@ function CreateClassDetail(props) {
 												type="text"
 												name="info2"
 												value={inputInfo2}
-												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												placeholder="이미지 및 간단한 소개"
 												onChange={onChangeInput}
 											/>
 											<div className="word_how_many">
@@ -896,7 +894,7 @@ function CreateClassDetail(props) {
 												type="text"
 												name="info3"
 												value={inputInfo3}
-												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												placeholder="이미지 및 간단한 소개"
 												onChange={onChangeInput}
 											/>
 											<div className="word_how_many">
@@ -951,7 +949,7 @@ function CreateClassDetail(props) {
 												type="text"
 												name="info3"
 												value={inputInfo3}
-												placeholder="해당 상세 이미지 및 영상에 대한 설명"
+												placeholder="이미지 및 간단한 소개"
 												onChange={onChangeInput}
 											/>
 											<div className="word_how_many">
