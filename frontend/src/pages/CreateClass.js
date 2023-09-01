@@ -63,18 +63,35 @@ function CreateClass(props) {
 
 	const [imageSrc, setImageSrc] = useState(null);
 	const [imagepreview, setImagepreview] = useState("");
+	const [videopreview, setVideopreview] = useState("");
+
+	const [isImage, setIsImage] = useState("");
 
 	const uploadfile = (e) => {
-		setImageSrc(e);
+		const file = e;
+		setImageSrc(file);
 		const reader = new FileReader();
-		reader.readAsDataURL(e);
 
-		return new Promise((resolve) => {
-			reader.onload = () => {
+		// return new Promise((resolve) => {
+		reader.onload = () => {
+			if (file.type.startsWith("image/")) {
 				setImagepreview(reader.result);
-				resolve();
-			};
-		});
+				console.log("이미지 미리보기 저장됨");
+				setIsImage(true);
+
+				// resolve();
+			} else if (file.type.startsWith("video/")) {
+				setVideopreview(reader.result);
+				console.log("동영상 미리보기 저장됨");
+
+				setIsImage(false);
+				// resolve();
+			}
+		};
+		reader.readAsDataURL(file);
+
+		// }
+		// );
 	};
 
 	return (
@@ -86,23 +103,35 @@ function CreateClass(props) {
 							<div> 썸네일 이미지 및 영상 업로드</div>
 
 							<div className="img_wrapper">
-								{imagepreview ? (
+								{imagepreview || videopreview ? (
 									<>
-										<img
-											src={imagepreview}
-											style={{
-												objectFit: "cover",
-												width: "100%",
-												height: "100%",
-											}}
-											alt="preview-img"
-										/>
+										{isImage ? (
+											<img
+												src={imagepreview}
+												style={{
+													objectFit: "contain",
+													width: "100%",
+													height: "100%",
+												}}
+												alt="preview-img"
+											/>
+										) : (
+											<video
+												src={videopreview}
+												style={{
+													objectFit: "contain",
+													width: "100%",
+													height: "100%",
+												}}
+												controls
+											/>
+										)}
 									</>
 								) : (
 									<>
 										<img
-											width="50"
-											height="50"
+											width="80"
+											height="80"
 											src="https://img.icons8.com/ios/50/image--v1.png"
 											alt="--v1"
 										/>
