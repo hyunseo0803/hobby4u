@@ -305,30 +305,58 @@ function CreateClassDetail(props) {
 		setDays((prevDays) => prevDays.filter((day) => day.id !== id));
 	};
 
-	const handleChange = (id, field, value) => {
+	//Day별 입력창 변경 이벤트 처리 함수 , id, 필드이름, 입력값
+	const handleChange = async (id, field, value) => {
+		//파일 읽기
 		const reader = new FileReader();
 
-		reader.readAsDataURL(value);
-		reader.onload = () => {
+		//파일 읽기 작업 완료 후 호출, 핸들러 내에서 파일 읽기 결과 처리
+		reader.onload = async () => {
+			try {
+				//Promise.all로 모든 day를 동시에 업데이트
+				const updatedDays = await Promise.all(
+					days.map(async (day) => {
+						//각 day를 확인하고 일치할 경우, 해당 입력값 저장.
+						//단, dayImg일 경우 변환된 이미지를 dayImgpreview(미리보기) 필드에 저장
+						if (day.id === id) {
+							return {
+								...day,
+								[field]: value,
+								dayImgpreview:
+									field === "dayImg" ? reader.result : day.dayImgpreview,
+							};
+						}
+						return day;
+					})
+				);
+				//업데이트 된 day목록 updatedDays로 상태 업데이트
+				setDays(updatedDays);
+				//에러 출력
+			} catch (error) {
+				console.error(error);
+			}
+		};
+		//필드가 dayImg인 경우 파일 읽기
+		if (field === "dayImg") {
+			try {
+				reader.readAsDataURL(value);
+			} catch (error) {
+				console.error(error);
+			}
+		} else {
+			// 다른 필드일 경우, 입력값 직접 업데이트
 			setDays((prevDays) =>
 				prevDays.map((day) =>
 					day.id === id
-						? { ...day, [field]: value, dayImgpreview: reader.result }
+						? {
+								...day,
+								[field]: value,
+						  }
 						: day
 				)
 			);
-		};
-
-		return new Promise((resolve) => {
-			reader.onloadend = () => {
-				resolve();
-			};
-		});
+		}
 	};
-
-	// const handleFileChange = (event) => {
-	// 	setFile(event.target.files[0]);
-	// };
 
 	const handleSubmit = () => {
 		const token = localStorage.getItem("token");
