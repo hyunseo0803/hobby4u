@@ -56,6 +56,7 @@ function CreateClassDetail(props) {
 			id: "day1",
 			dayImg: null,
 			dayImgpreview: "",
+			dayVideopreview: "",
 			title: "",
 			date: new Date(),
 			startTime: "",
@@ -81,6 +82,14 @@ function CreateClassDetail(props) {
 	const [inputImage3preview, setInputImage3preview] = useState(null);
 
 	const [fee, setFee] = useState("pay");
+
+	const Simple_menu = [
+		"테마 선택",
+		"인원 및 수강료",
+		"활동 기간 및 장소",
+		"Day별 계획",
+		"활동계획서 파일",
+	];
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
@@ -186,6 +195,12 @@ function CreateClassDetail(props) {
 	const info = location.state.info;
 	const option = location.state.option;
 	const imageSrc = location.state.imageSrc;
+	const imagepreview = location.state.imagepreview;
+	const videopreview = location.state.videopreview;
+
+	const [isImage, setIsImage] = useState("");
+
+	useEffect(() => {});
 
 	const theme = [
 		"# 조용한",
@@ -201,21 +216,6 @@ function CreateClassDetail(props) {
 		"# 뷰티",
 		"# 문화예술",
 	];
-	const themeImages = {
-		"# 조용한": quiet,
-		"# 스포츠": Sports,
-		"# 여행": Trip,
-		"# 힐링": Healing,
-		"# 액티비티": Activity,
-		"# 혼자": Alon,
-		"# 간단한": Simple,
-		"# 음악": Music,
-		"# 공예": Craft,
-		"# 기술": Skill,
-		"# 뷰티": Beauty,
-		"# 문화예술": Culture_arts,
-		// ... 다른 테마들에 대한 이미지 경로 추가 ...
-	};
 
 	const addTheme = (theme_item) => {
 		if (selectedTheme.includes(theme_item)) {
@@ -252,11 +252,10 @@ function CreateClassDetail(props) {
 						if (status === kakao.maps.services.Status.OK) {
 							const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-							// 결과값으로 받은 위치를 마커로 표시합니다
-							// const marker = new kakao.maps.Marker({
-							// 	position: coords,
-							// 	map: map,
-							// });
+							const marker = new kakao.maps.Marker({
+								position: coords,
+								map: map,
+							});
 
 							// 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
 							map.setCenter(coords);
@@ -291,6 +290,7 @@ function CreateClassDetail(props) {
 			title: "",
 			dayImg: "",
 			dayImgpreview: "",
+			dayVideopreview: "",
 			date: "",
 			startTime: "",
 			endTime: "",
@@ -323,14 +323,22 @@ function CreateClassDetail(props) {
 								...day,
 								[field]: value,
 								dayImgpreview:
-									field === "dayImg" ? reader.result : day.dayImgpreview,
+									field === "dayImg" && value.type.startsWith("image/")
+										? reader.result
+										: day.dayImgpreview,
+								dayVideopreview:
+									field === "dayImg" && value.type.startsWith("video/")
+										? reader.result
+										: day.dayVideopreview,
 							};
 						}
 						return day;
 					})
 				);
+
 				//업데이트 된 day목록 updatedDays로 상태 업데이트
 				setDays(updatedDays);
+
 				//에러 출력
 			} catch (error) {
 				console.error(error);
@@ -339,6 +347,11 @@ function CreateClassDetail(props) {
 		//필드가 dayImg인 경우 파일 읽기
 		if (field === "dayImg") {
 			try {
+				if (value.type.startsWith("image/")) {
+					setIsImage(true);
+				} else {
+					setIsImage(false);
+				}
 				reader.readAsDataURL(value);
 			} catch (error) {
 				console.error(error);
@@ -468,98 +481,154 @@ function CreateClassDetail(props) {
 		<div className="create_wrap">
 			{option === "offline" ? (
 				<>
-					<div className="theme_wrapper">
-						{/* <div className="theme_test"> */}
-						<div className="theme_text">클래스의 테마를 선택해 주세요 ! </div>
+					<div className="follow_bar_wrapper">
+						<ul className="follow_bar">
+							{Simple_menu.map((item, index) => (
+								<li key={index}>{item}</li>
+							))}
+						</ul>
+						{/* {Simple_menu} */}
+					</div>
+					<div className="all_title">TITLE : {title}</div>
 
-						{theme.map((item, index) => (
-							<button
-								className={
-									selectedTheme.includes(item)
-										? "select_theme_button"
-										: "theme_button"
-								}
-								key={index}
-								onClick={() => addTheme(item)}
-							>
-								{" "}
-								<div className="theme_img_wrapper">
-									<img src={themeImages[item]} width={100} alt={item} />
-									<div className="theme_img_text">{item}</div>
-								</div>
-							</button>
-						))}
+					<div className="all_img_wrapper">
+						{imagepreview || videopreview ? (
+							<>
+								{isImage ? (
+									<img
+										style={{
+											objectFit: "cover",
+											width: "45%",
+											height: "100%",
+											justifyContent: "center",
+										}}
+										src={imagepreview}
+										alt=""
+									/>
+								) : (
+									<video
+										style={{
+											objectFit: "cover",
+											width: "45%",
+											height: "100%",
+											justifyContent: "center",
+										}}
+										controls
+										src={videopreview}
+										alt=""
+									/>
+								)}
+							</>
+						) : null}
 					</div>
-					{/* </div> */}
-					<div className="middle_text">
-						<div className="_text">
-							수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
-							자율적으로 책정해주세요.
-						</div>
-						<div className="_text">
-							수강료는 개인 당 수강료가 아닌 전체 수강인원에 대한 수강료입니다.
-						</div>
+
+					<div
+						style={{
+							fontSize: "10",
+							justifyContent: "center",
+							textAlign: "center",
+						}}
+					>
+						{info}
 					</div>
-					<div className="middle">
-						<div className="person_money">
-							<img
-								className="person_money_icon"
-								width="64"
-								height="64"
-								src="https://img.icons8.com/cotton/64/conference-call.png"
-								alt="conference-call"
-							/>
-							<div className="person_money_label">수강 인원</div>
-							<input
-								className="person_money_input"
-								name="person"
-								// placeholder="인원수"
-								type="text"
-								value={person}
-								onChange={(e) => setPerson(e.target.value)}
-							></input>{" "}
-						</div>
-						<div className="person_money">
-							<div className="person_money_icon">
-								<img
-									className="person_money_icon_test"
-									width="55"
-									height="55"
-									src="https://img.icons8.com/ios/64/get-cash--v1.png"
-									alt="get-cash--v1"
-								/>
-							</div>
-							<div className="person_money_label">수강료</div>
-							<div className="radio_fee">
-								<div className="radio_input">
-									<input
-										type="radio"
-										value="pay"
-										checked={fee === "pay"}
-										onChange={(e) => setFee(e.target.value)}
-									></input>
-									<div className="radio_label">유료</div>
-									<div className="person_money_input_wrapper">
-										<input
-											className="person_money_input"
-											name="money"
-											type="number"
-											value={money}
-											min="1000"
-											placeholder="1000원~"
-											onChange={(e) => setMoney(e.target.value)}
-											disabled={fee === "free"}
-										></input>
+
+					<div className="theme_wrapper_center">
+						<div className="theme_wrapper">
+							{/* <div className="theme_test"> */}
+							{/* <div className="theme_text">클래스 테마</div> */}
+
+							{theme.map((item, index) => (
+								<button
+									className={
+										selectedTheme.includes(item)
+											? "select_theme_button"
+											: "theme_button"
+									}
+									key={index}
+									onClick={() => addTheme(item)}
+								>
+									{" "}
+									<div className="theme_text_wrapper">
+										{/* <img src={themeImages[item]} width={100} alt={item} /> */}
+										{item}
 									</div>
+								</button>
+							))}
+						</div>
+						{/* </div> */}
+						<div className="person_money_wrapper">
+							<div className="middle_text">
+								<div className="_text">
+									수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
+									자율적으로 책정해주세요.
 								</div>
-								<div className="radio_input">
+								<div className="_text">
+									수강료는 개인 당 수강료가 아닌 전체 수강인원에 대한
+									수강료입니다.
+								</div>
+							</div>
+							<div className="middle">
+								<div className="person_money">
+									<img
+										className="person_money_icon"
+										width="64"
+										height="64"
+										src="https://img.icons8.com/cotton/64/conference-call.png"
+										alt="conference-call"
+									/>
+									<div className="person_money_label">수강 인원</div>
 									<input
-										type="radio"
-										value="free"
-										checked={fee === "free"}
-										onChange={handleFree}
-									></input>
-									<div className="radio_label">무료</div>
+										className="person_money_input"
+										name="person"
+										// placeholder="인원수"
+										type="number"
+										value={person}
+										onChange={(e) => setPerson(e.target.value)}
+									></input>{" "}
+								</div>
+								<div className="person_money">
+									<div className="person_money_icon">
+										<img
+											className="person_money_icon_test"
+											width="55"
+											height="55"
+											src="https://img.icons8.com/ios/64/get-cash--v1.png"
+											alt="get-cash--v1"
+										/>
+									</div>
+									<div className="person_money_label">수강료</div>
+									<div className="radio_fee">
+										<div className="radio_input">
+											<input
+												type="radio"
+												value="pay"
+												checked={fee === "pay"}
+												onChange={(e) => setFee(e.target.value)}
+											></input>
+											<div className="radio_label">유료</div>
+											<div className="person_money_input_wrapper">
+												<input
+													className="person_money_input"
+													name="money"
+													type="number"
+													value={money}
+													min="1000"
+													placeholder="1000원~"
+													onChange={(e) => setMoney(e.target.value)}
+													disabled={fee === "free"}
+												></input>
+											</div>
+										</div>
+										<div className="radio_input">
+											<input
+												type="radio"
+												value="free"
+												checked={fee === "free"}
+												onChange={handleFree}
+											></input>
+											<div className="radio_label">무료</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -591,8 +660,7 @@ function CreateClassDetail(props) {
 									<div className="selected_result">
 										{applyEndDate !== null ? (
 											<div className="calender-box">
-												신청 기간: {toStringApplyStartDate} -{" "}
-												{toStringApplyEndDate}
+												{toStringApplyStartDate} - {toStringApplyEndDate}
 											</div>
 										) : null}
 									</div>
@@ -623,8 +691,7 @@ function CreateClassDetail(props) {
 							<div className="selected_result">
 								{activityEndDate !== null ? (
 									<div className="calender-box">
-										활동기간: {toStringActivityStartDate} -{" "}
-										{toStringActivityEndDate}
+										{toStringActivityStartDate} - {toStringActivityEndDate}
 									</div>
 								) : null}
 							</div>
@@ -650,11 +717,21 @@ function CreateClassDetail(props) {
 								) : null}
 								{address ? (
 									<>
-										<div>{address}</div>
 										<div
 											className="map"
-											style={{ width: 380, height: 250 }}
+											style={{
+												justifyContent: "center",
+												// marginTop: 10,
+												width: 300,
+												height: 245,
+												margin: "auto",
+											}}
 										></div>
+										<div className="selected_result">
+											{address !== null ? (
+												<div className="calender-box">{address}</div>
+											) : null}
+										</div>
 									</>
 								) : (
 									<div className="place_search_icon_wrapper">
@@ -666,7 +743,7 @@ function CreateClassDetail(props) {
 					</div>
 					<div className="period_place">
 						<div className="period_place_title_hint">
-							<div className="period_place_label">나의 클래스 선보이기</div>
+							<div className="large_label">나의 클래스 선보이기</div>
 							<div className="period_place_label_hint">
 								자신의 클래스를 사람들이 이끌릴만한 간단한 소개
 							</div>
@@ -963,8 +1040,8 @@ function CreateClassDetail(props) {
 						</div>
 					</div>
 					<div className="daydetail_all_wrapper">
-						<div className="period_place_label">활동 계획 및 소개서</div>
-						<div>
+						<div className="large_label">활동 계획 및 소개서</div>
+						<div className="next_label_hint">
 							활동 계획표에 첨부되는 파일(이미지, 영상)은 클래스 상세소개에
 							들어갈 내용으로, 직접적인 활동 내용이 아닌 Day별 수업을 소개하는
 							파일(이미지, 영상) 입니다.
@@ -976,14 +1053,27 @@ function CreateClassDetail(props) {
 									<div key={day.id} className="day_input_box">
 										<div className="day_title_label">{day.id}</div>
 										<div className="file_input_split">
-											{day.dayImgpreview ? (
+											{day.dayImgpreview || day.dayVideopreview ? (
 												<>
 													<div className="editImg">
-														<img
-															src={day.dayImgpreview}
-															className="day_img_true"
-															alt="preview-img"
-														/>
+														{isImage ? (
+															<img
+																src={day.dayImgpreview}
+																className="day_img_true"
+																alt="preview-img"
+															/>
+														) : (
+															<video
+																className="day_img_true"
+																src={day.dayVideopreview}
+																style={{
+																	objectFit: "contain",
+																	width: "50%",
+																	height: "100%",
+																}}
+																controls
+															/>
+														)}
 														<button
 															className="editImg_text"
 															onClick={() => {
@@ -1043,8 +1133,9 @@ function CreateClassDetail(props) {
 													/>
 												</>
 											)}
-
-											<div>
+										</div>
+										<div>
+											<div className="day_class_input">
 												<div className="label_row">
 													<input
 														className="input_box_long"
@@ -1125,7 +1216,7 @@ function CreateClassDetail(props) {
 												</div>
 											</div>
 										</div>
-										<div className="remove_button">
+										<div className="remove_button_wrapper">
 											{days.length > 1 &&
 												day.id === days[days.length - 1].id && (
 													<button
@@ -1140,9 +1231,11 @@ function CreateClassDetail(props) {
 								))}
 							</div>
 						</div>
-						<button className="add_button" onClick={handleAddDay}>
-							<img src={add} width={25} alt="minus" />
-						</button>
+						<div className="add_button_wrapper">
+							<button className="add_button" onClick={handleAddDay}>
+								<img src={add} width={25} alt="minus" />
+							</button>
+						</div>
 					</div>
 					<div
 						style={{

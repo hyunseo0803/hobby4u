@@ -7,63 +7,102 @@
 	margin-top: 10vh;
 	/* background-color: red; */
 	/* height: 600px; */
-	margin-left: 7%;
-	margin-right: 7%;
+	margin-left: 4%;
+	margin-right: 4%;
 	/* justify-content: center; */
 	/* align-items: center; */
 }
-
+/* .follow_bar_wrapper {
+	position: absolute;
+} */
+.follow_bar {
+	position: fixed;
+	top: 100px;
+	right: 5px;
+	z-index: 1;
+	background-color: #fff;
+}
+.large_label {
+	text-align: left;
+	margin-left: 5%;
+	font-size: 20px;
+	margin-top: 10px;
+}
+.theme_wrapper_center {
+	justify-content: center;
+	align-items: center;
+	/* text-align: center; */
+	display: flex;
+	flex-direction: column;
+}
 .theme_wrapper {
 	/* display: flex; */
 	/* justify-content: center; */
-	width: 100%;
+	width: 80%;
 	height: 100%;
 	background-color: rgb(241, 243, 255);
-	margin-top: 100px;
-	padding-left: 50px;
-	padding-right: 50px;
+	margin-top: 30px;
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+
+	/* padding-right: 50px; */
 	text-align: center;
 	align-items: center;
 	justify-content: center;
 	border-radius: 10px;
 	/* position: relative; */
 }
+.theme_person_money_div {
+	display: flex;
+	flex-direction: row;
+}
 .theme_text {
 	/* position: absolute; */
-	padding: 30px;
+	font-size: larger;
+	padding: 15px;
 	color: rgb(35, 41, 65);
 	/* background-color: red; */
 }
 
 .theme_button {
-	width: 100px;
-	height: 100%;
+	width: 110px;
+	height: 30px;
 	font-size: 15px;
 	border: none;
 	background-color: transparent;
 	text-align: center;
 	margin: 10px;
 }
-.theme_img_wrapper {
-	/* width: 100px; */
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+.select_theme_button {
+	width: 110px;
+	height: 30px;
+	font-size: 15px;
+	/* border: ; */
+	background-color: transparent;
+	text-align: center;
+	margin: 10px;
+
+	/* width: 90px; */
+	border-radius: 15px;
+	/* font-size: 15px; */
+	border: none;
+	background-color: white;
+	/* text-align: center; */
+	/* margin: 4px; */
 }
+
 .theme_img_text {
 	position: absolute;
 	top: 30px;
 	font-weight: 10px;
 }
-.select_theme_button {
-	width: 90px;
-	border-radius: 15px;
-	font-size: 15px;
-	border: none;
-	background-color: #ffd0ca;
-	text-align: center;
-	margin: 4px;
+
+.person_money_wrapper {
+	/* background-color: yellow; */
+	width: 70%;
+	margin: 20px;
 }
 
 .middle_text {
@@ -94,14 +133,15 @@
 	margin: 15px;
 }
 .person_money {
-	width: 40%;
+	width: 100%;
 	height: 100px;
 	align-items: center;
 	justify-content: center;
 	display: flex;
 	flex-direction: row;
-	margin: 5px;
-	background-color: #f8f9fa;
+	margin-top: 20px;
+
+	background-color: rgb(223, 195, 243);
 	border-radius: 5px;
 }
 .person_money_label {
@@ -156,8 +196,8 @@
 .middle {
 	justify-content: center;
 	margin: 20px;
-	display: flex;
-	flex-direction: row;
+	/* display: flex; */
+	/* flex-direction: row; */
 	/* background-color: yellow; */
 }
 .period_place_wrapper {
@@ -169,35 +209,58 @@
 }
 .period_place {
 	/* background-color: yellow; */
-	justify-content: space-evenly;
+	justify-content: center;
 	/* width: 350px; */
-	margin: 15px;
+	margin: 30px;
 	padding: 10px;
 	align-items: center;
 	text-align: center;
 	/* margin-right: 5%; */
 }
-/* .period_place_label {
+.all_img_wrapper {
+	position: relative;
+	width: 100%;
+	height: 400px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin: 15px;
+	/* background-color: red; */
+	/* margin-top: 100px; */
+}
+
+.all_title {
 	padding: 3px;
 	text-align: center;
-	border-radius: 10px;
-	background-color: #4a4f5a;
-	color: white;
-} */
+	font-size: 20px;
+}
 
 .period_place_title_hint {
+	margin-bottom: 10px;
 	display: flex;
 	flex-direction: row;
 }
 .period_place_label {
 	text-align: left;
-	left: 10px;
+	/* left: 100px; */
+	/* margin-left: 10px; */
+
 	font-size: 20px;
+	margin-top: 10px;
 }
 .period_place_label_hint {
 	padding: 10px;
 	font-size: 14px;
 	color: #4a4f5a;
+	margin-top: 10px;
+}
+.next_label_hint {
+	text-align: left;
+	margin-left: 5%;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	font-size: 15px;
 }
 /* .period_place_choice {
 	margin-top: 10px;
@@ -279,12 +342,14 @@
 }
 
 .dayclasswrapper {
-	display: flex;
-	flex-direction: row;
+	/* display: flex;
+	flex-direction: row; */
 	justify-content: center;
+	align-items: center;
 	padding: 10px;
-	margin-top: 30px;
-	width: 100%;
+	/* margin-top: 30px; */
+	margin: auto;
+	width: 85%;
 	border-radius: 5px;
 	background-color: #f1f3f5;
 }
@@ -297,9 +362,11 @@
 }
 
 .file_input_split {
-	justify-content: center;
-	flex-direction: row;
+	/* margin: auto; */
+	/* justify-content: center; */
+	/* flex-direction: column; */
 	display: flex;
+	/* background-color: yellow; */
 }
 .editImg {
 	display: flex;
@@ -307,7 +374,9 @@
 	color: #5f5f5f;
 	size: 10px;
 }
-
+/* .day_class_input {
+	background-color: red;
+} */
 .editImg_text {
 	background-color: transparent;
 	border: none;
@@ -358,14 +427,17 @@
 	color: #999999;
 }
 .day_img_true {
+	justify-content: center;
+	display: flex;
+	margin: auto;
 	object-fit: cover;
-	width: 130px;
-	height: 130px;
+	width: 50%;
+	height: 100%;
 	align-items: center;
-	margin-top: 10px;
+	/* margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
-	margin-bottom: 5px;
+	margin-bottom: 5px; */
 	border-radius: 5px;
 }
 .uploadImg_behind {
@@ -373,6 +445,7 @@
 	text-align: center;
 	margin: auto;
 	margin-right: 15px;
+	margin-left: 15px;
 	justify-content: center;
 	width: 130px;
 	height: 130px;
@@ -398,8 +471,12 @@
 	justify-content: flex-start;
 }
 .day_input_box {
+	flex-direction: column;
 	justify-content: center;
 	width: 100%;
+	display: flex;
+	/* background-color: blue; */
+	align-items: center;
 	/* margin: 10px; */
 }
 .input_box_long {
@@ -480,19 +557,34 @@
 	overflow: hidden;
 	border: 0;
 }
-.add_button {
-	width: 99%;
+.add_button_wrapper {
+	width: 100%;
 	margin-top: 10px;
 	padding: 3px;
 	border: none;
 	border-radius: 8px;
-	/* margin: auto; */
+	justify-content: center;
+	display: flex;
+}
+.add_button {
+	width: 85%;
+	margin-top: 10px;
+	padding: 3px;
+	border: none;
+	border-radius: 8px;
 	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 	background-color: white;
 }
-.remove_button {
+.remove_button_wrapper {
+	display: flex;
 	align-items: center;
 	justify-content: center;
+	border: none;
+	margin: 5px;
+}
+.remove_button {
+	/* align-items: center;
+	justify-content: center; */
 	border: none;
 }
 .last_text {
