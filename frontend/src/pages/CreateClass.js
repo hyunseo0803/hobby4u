@@ -57,6 +57,8 @@ function CreateClass(props) {
 				info: inputValues.info,
 				option: inputValues.option,
 				imageSrc: imageSrc,
+				imagepreview: imagepreview,
+				videopreview: videopreview,
 			},
 		});
 	}
