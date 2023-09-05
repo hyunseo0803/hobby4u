@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../styles/CreateClass.css";
 import { useNavigate } from "react-router-dom";
+import { XCircleFillIcon } from "@primer/octicons-react";
 
 function CreateClass(props) {
 	const navigate = useNavigate();
 
 	const [token, SetToken] = useState();
+	const [isNext, setIsNext] = useState(false);
 
 	// 제목, 소개, 옵션 값 저장
 	const [inputValues, setInputValues] = useState({
@@ -49,6 +51,14 @@ function CreateClass(props) {
 		}));
 	};
 
+	const handleRemoveImg = () => {
+		if (window.confirm("정말 삭제합니까?")) {
+			setImageSrc(null);
+			setImagepreview(null);
+			setVideopreview(null);
+		}
+	};
+
 	function handlePageChange() {
 		console.log(inputValues);
 		navigate("/createClass/detail", {
@@ -63,6 +73,18 @@ function CreateClass(props) {
 		});
 	}
 
+	useEffect(() => {
+		if (inputValues.title && inputValues.info && inputValues.option !== null) {
+			setIsNext(true);
+		} else if (
+			inputValues.title ||
+			inputValues.info ||
+			inputValues.option !== null
+		) {
+			setIsNext(false);
+		}
+	}, [inputValues.title, inputValues.info, inputValues.option]);
+
 	const [imageSrc, setImageSrc] = useState(null);
 	const [imagepreview, setImagepreview] = useState("");
 	const [videopreview, setVideopreview] = useState("");
@@ -71,42 +93,42 @@ function CreateClass(props) {
 
 	const uploadfile = (e) => {
 		const file = e;
-		setImageSrc(file);
-		const reader = new FileReader();
 
-		// return new Promise((resolve) => {
-		reader.onload = () => {
-			if (file.type.startsWith("image/")) {
-				setImagepreview(reader.result);
-				console.log("이미지 미리보기 저장됨");
-				setIsImage(true);
+		if (file) {
+			const reader = new FileReader();
 
-				// resolve();
-			} else if (file.type.startsWith("video/")) {
-				setVideopreview(reader.result);
-				console.log("동영상 미리보기 저장됨");
+			reader.onload = () => {
+				if (file.type.startsWith("image/")) {
+					setImageSrc(file);
+					setImagepreview(reader.result);
+					console.log("이미지 미리보기 저장됨");
+					setIsImage(true);
+				} else if (file.type.startsWith("video/")) {
+					setImageSrc(file); // 파일 선택 시 이전 이미지 정보도 초기화하지 않음
+					setVideopreview(reader.result);
+					console.log("동영상 미리보기 저장됨");
+					setIsImage(false);
+				}
+			};
 
-				setIsImage(false);
-				// resolve();
-			}
-		};
-		reader.readAsDataURL(file);
-
-		// }
-		// );
+			reader.readAsDataURL(file);
+		}
 	};
 
 	return (
 		<div className="wrap">
 			{token ? (
 				<>
-					<div className="component_wrapper">
-						<div className="left_wrapper">
-							<div> 썸네일 이미지 및 영상 업로드</div>
+					{/* <div style={{ marginTop: 60, marginBottom: 20, fontSize: 20 }}>
+						{" "}
+						썸네일 이미지 및 영상 업로드
+					</div> */}
 
-							<div className="img_wrapper">
-								{imagepreview || videopreview ? (
-									<>
+					<div className="component_wrapper">
+						<div className="rL_wrapper">
+							{imagepreview || videopreview ? (
+								<>
+									<div className="img_wrapper" style={{ border: "none" }}>
 										{isImage ? (
 											<img
 												src={imagepreview}
@@ -128,43 +150,70 @@ function CreateClass(props) {
 												controls
 											/>
 										)}
-									</>
-								) : (
-									<>
+										<button className="remove_icon" onClick={handleRemoveImg}>
+											<XCircleFillIcon size={24} />
+										</button>
+									</div>
+								</>
+							) : (
+								<>
+									<div className="img_wrapper" style={{ border: "dashed" }}>
 										<img
 											width="80"
 											height="80"
 											src="https://img.icons8.com/ios/50/image--v1.png"
 											alt="--v1"
 										/>
-									</>
-								)}
-							</div>
+									</div>
+								</>
+							)}
 						</div>
-						<div className="right_wrapper">
+						<div className="rL_wrapper">
 							{" "}
+							<label className="btnStart" htmlFor="ex_file">
+								<div className="file-selector-button" width={100}>
+									<p
+										style={{
+											textAlign: "center",
+											padding: 3,
+										}}
+									>
+										파일 선택
+									</p>
+								</div>
+								{imageSrc && (
+									<div style={{ padding: 3, marginLeft: 5 }}>
+										{imageSrc.name}
+									</div>
+								)}
+							</label>
 							<input
+								accept="image/*,video/*"
+								id="ex_file"
 								type="file"
 								onChange={(e) => {
 									uploadfile(e.target.files[0]);
 								}}
-							/>
-							<input
-								type="text"
-								name="title"
-								value={inputValues.title}
-								onChange={handleInputChange}
-								className="Input_title"
-								placeholder="제목을 입력해 주세요 "
-							></input>
-							<input
-								type="text"
-								name="info"
-								value={inputValues.info}
-								onChange={handleInputChange}
-								className="Input_info"
-								placeholder="나만의 클래스를 간단히 소개해주세요"
-							></input>
+							/>{" "}
+							<div className="background_gray">
+								<input
+									type="text"
+									name="title"
+									value={inputValues.title}
+									onChange={handleInputChange}
+									className="Input_title"
+									placeholder="제목을 입력해 주세요 "
+								></input>
+								<textarea
+									type="text"
+									name="info"
+									value={inputValues.info}
+									onChange={handleInputChange}
+									className="Input_info"
+									placeholder="나만의 클래스를 간단히 소개해주세요"
+									maxlength="165"
+								></textarea>
+							</div>
 							<div>
 								<label>
 									<input
@@ -173,6 +222,7 @@ function CreateClass(props) {
 										value="offline"
 										checked={inputValues.option === "offline"}
 										onChange={handleRadioChange}
+										className="radio_button"
 									/>
 									오프라인 클래스
 								</label>
@@ -183,14 +233,21 @@ function CreateClass(props) {
 										value="online"
 										checked={inputValues.option === "online"}
 										onChange={handleRadioChange}
+										className="radio_button"
 									/>
 									온라인 클래스
 								</label>
 							</div>
-							<div>
-								<button onClick={handlePageChange}>NEXT</button>
-							</div>
 						</div>
+					</div>
+					<div>
+						<button
+							id={isNext ? "next" : "disabled"}
+							onClick={handlePageChange}
+							disabled={!isNext}
+						>
+							NEXT
+						</button>
 					</div>
 				</>
 			) : (
