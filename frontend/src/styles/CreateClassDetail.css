@@ -16,18 +16,12 @@
 	z-index: 1;
 	background-color: #fff;
 }
+
 .large_label {
-	text-align: left;
-	margin-left: 5%;
 	font-size: 20px;
 	margin-top: 10px;
 }
-.theme_wrapper_center {
-	justify-content: center;
-	align-items: center;
-	display: flex;
-	flex-direction: column;
-}
+
 .theme_wrapper {
 	width: 80%;
 	height: 100%;
@@ -41,15 +35,6 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: 10px;
-}
-.theme_person_money_div {
-	display: flex;
-	flex-direction: row;
-}
-.theme_text {
-	font-size: larger;
-	padding: 15px;
-	color: rgb(35, 41, 65);
 }
 
 .theme_button {
@@ -86,15 +71,23 @@
 ._text {
 	color: #5f5f5f;
 	text-align: center;
+	font-size: 13px;
 }
 
 .radio_fee {
 	margin: 10px;
 }
-.radio_input {
+.flex_row {
 	display: flex;
 	flex-direction: row;
-	height: 33px;
+}
+
+.flex_center {
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* background-color: red; */
 }
 .radio_label {
 	align-items: center;
@@ -103,23 +96,20 @@
 }
 .person_money {
 	width: 100%;
-	height: 100px;
+	/* height: 100px; */
 	align-items: center;
 	justify-content: center;
 	display: flex;
 	flex-direction: row;
 	margin-top: 20px;
-
+	margin: 20px;
 	background-color: rgb(223, 195, 243);
 	border-radius: 5px;
 }
 .person_money_label {
-	margin-right: 50px;
+	margin-right: 20px;
 }
-.person_money_input_wrapper {
-	align-items: center;
-	display: flex;
-}
+
 .person_money_input {
 	height: 25px;
 	justify-content: center;
@@ -135,24 +125,7 @@
 	-moz-appearance: none;
 	-webkit-appearance: none;
 }
-.person_money_icon {
-	width: 64px;
-	height: 64px;
-	margin: 10px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
 
-.middle {
-	justify-content: center;
-	margin: 20px;
-}
-.period_place_wrapper {
-	justify-content: center;
-	display: flex;
-	flex-direction: row;
-}
 .period_place {
 	justify-content: center;
 	margin: 30px;
@@ -171,20 +144,8 @@
 	margin: 15px;
 }
 
-.all_title {
-	padding: 3px;
-	text-align: center;
-	font-size: 20px;
-}
-
-.period_place_title_hint {
-	margin-bottom: 10px;
-	display: flex;
-	flex-direction: row;
-}
 .period_place_label {
 	text-align: left;
-
 	font-size: 20px;
 	margin-top: 10px;
 }
@@ -194,7 +155,7 @@
 	color: #4a4f5a;
 	margin-top: 10px;
 }
-.next_label_hint {
+.detail_class_label_hint {
 	text-align: left;
 	margin-left: 5%;
 	margin-top: 10px;
@@ -202,12 +163,6 @@
 	font-size: 15px;
 }
 
-.datepicker {
-	margin-top: 10px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
 .selected_result {
 	font-size: 17px;
 	margin-top: 10px;
@@ -246,20 +201,9 @@
 	z-index: 1;
 }
 
-.all_intro {
-	margin: 20px;
-}
-
 .daydetail_all_wrapper {
 	margin: 15px;
 	padding: 10px;
-}
-.intro_detail_simple {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	margin: 10px;
 }
 
 .dayclasswrapper {
@@ -279,9 +223,6 @@
 	margin: 5px;
 }
 
-.file_input_split {
-	display: flex;
-}
 .editImg {
 	display: flex;
 	flex-direction: column;
@@ -356,73 +297,17 @@
 	border-radius: 5px;
 	border: dashed;
 }
-.file_input {
-	align-items: center;
-	text-align: center;
-	margin: 15px;
-	justify-content: center;
-	width: 130px;
-	height: 130px;
-	border-radius: 5px;
-	border: none;
-	display: none;
-}
-.label_row {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-}
-.day_input_box {
-	flex-direction: column;
-	justify-content: center;
-	width: 100%;
-	display: flex;
-	align-items: center;
-}
-.input_box_long {
-	width: 950px;
-	height: 100%;
+
+.day_input_text {
 	border: none;
 	outline: none;
 	resize: none;
 	margin: 2px;
 	border-radius: 5px;
-
 	background-color: white;
 }
 
-.input_box_middle {
-	width: 400px;
-	border: none;
-	outline: none;
-	background-color: white;
-	margin: 2px;
-	border-radius: 5px;
-}
-.input_box_short {
-	width: 200px;
-	border: none;
-	outline: none;
-	margin: 2px;
-	border-radius: 5px;
-
-	background-color: white;
-}
-.last_row {
-	padding: 10px;
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	text-align: center;
-	align-items: center;
-}
-.filebox {
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	margin-top: 20px;
-}
-.filebox .upload-name {
+.flex_center .upload-name {
 	display: inline-block;
 	height: 40px;
 	padding: 10px 10px;
@@ -433,7 +318,7 @@
 	color: #999999;
 	outline: none;
 }
-.filebox label {
+.flex_center label {
 	display: inline-block;
 	padding: 7px;
 	color: #fff;
@@ -446,7 +331,7 @@
 	margin-right: 10px;
 	font-size: 14px;
 }
-.filebox input[type="file"] {
+.flex_center input[type="file"] {
 	position: absolute;
 	width: 0;
 	height: 0;
@@ -472,33 +357,15 @@
 	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 	background-color: white;
 }
-.remove_button_wrapper {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: none;
-	margin: 5px;
-}
-.remove_button {
-	border: none;
-}
-.last_text {
+
+.long_text_zip {
 	padding: 25px;
 	margin-top: 20px;
 	text-align: center;
 	justify-content: center;
 	align-items: center;
 }
-.last_text_row {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	text-align: center;
-	align-items: center;
-}
-.basic_text {
-	font-size: 13px;
-}
+
 .important_text {
 	color: rgb(219, 55, 55);
 	margin-left: 5px;

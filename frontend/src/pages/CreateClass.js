@@ -119,7 +119,7 @@ function CreateClass(props) {
 		<div className="wrap">
 			{token ? (
 				<>
-					<div className="component_wrapper">
+					<div className="component_row_wrapper" style={{ marginTop: 10 }}>
 						<div className="rL_wrapper">
 							{imagepreview || videopreview ? (
 								<>
@@ -165,7 +165,7 @@ function CreateClass(props) {
 						</div>
 						<div className="rL_wrapper">
 							{" "}
-							<label className="btnStart" htmlFor="ex_file">
+							<label className="component_row_wrapper" htmlFor="ex_file">
 								<div className="file-selector-button" width={100}>
 									<p
 										style={{
@@ -190,13 +190,14 @@ function CreateClass(props) {
 									uploadfile(e.target.files[0]);
 								}}
 							/>{" "}
-							<div className="background_gray">
+							<div className="background_input">
 								<input
 									type="text"
 									name="title"
 									value={inputValues.title}
 									onChange={handleInputChange}
-									className="Input_title"
+									className="Input_"
+									style={{ height: 30 }}
 									placeholder="제목을 입력해 주세요 "
 								></input>
 								<textarea
@@ -204,7 +205,8 @@ function CreateClass(props) {
 									name="info"
 									value={inputValues.info}
 									onChange={handleInputChange}
-									className="Input_info"
+									className="Input_"
+									style={{ resize: "none", height: 180 }}
 									placeholder="나만의 클래스를 간단히 소개해주세요"
 									maxlength="165"
 								></textarea>
@@ -237,7 +239,15 @@ function CreateClass(props) {
 					</div>
 					<div>
 						<button
-							id={isNext ? "next" : "disabled"}
+							className="next"
+							style={
+								isNext
+									? { color: "white", backgroundColor: "rgb(237, 99, 99)" }
+									: {
+											color: "rgb(252, 247, 240)",
+											backgroundColor: "rgb(235, 179, 179)",
+									  }
+							}
 							onClick={handlePageChange}
 							disabled={!isNext}
 						>

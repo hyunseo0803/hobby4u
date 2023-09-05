@@ -441,9 +441,13 @@ function CreateClassDetail(props) {
 								<li key={index}>{item}</li>
 							))}
 						</ul>
-						{/* {Simple_menu} */}
 					</div>
-					<div className="all_title">TITLE : {title}</div>
+					<div
+						className="large_label"
+						style={{ padding: 20, textAlign: "center" }}
+					>
+						TITLE : {title}
+					</div>
 
 					{imagepreview || videopreview ? (
 						<>
@@ -486,7 +490,7 @@ function CreateClassDetail(props) {
 						{info}
 					</div>
 
-					<div className="theme_wrapper_center">
+					<div className="flex_center" style={{ flexDirection: "column" }}>
 						<div className="theme_wrapper">
 							{theme.map((item, index) => (
 								<button
@@ -513,12 +517,13 @@ function CreateClassDetail(props) {
 									수강료입니다.
 								</div>
 							</div>
-							<div className="middle">
+							<div className="flex_center" style={{ margin: 20 }}>
 								<div className="person_money">
 									<img
-										className="person_money_icon"
-										width="64"
-										height="64"
+										className="flex_center"
+										style={{ margin: 10 }}
+										width={64}
+										height={64}
 										src="https://img.icons8.com/cotton/64/conference-call.png"
 										alt="conference-call"
 									/>
@@ -534,6 +539,8 @@ function CreateClassDetail(props) {
 								<div className="person_money">
 									<div className="person_money_icon">
 										<img
+											className="flex_center"
+											style={{ margin: 10 }}
 											width={55}
 											height={55}
 											src="https://img.icons8.com/ios/64/get-cash--v1.png"
@@ -542,7 +549,7 @@ function CreateClassDetail(props) {
 									</div>
 									<div className="person_money_label">수강료</div>
 									<div className="radio_fee">
-										<div className="radio_input">
+										<div className="flex_row" style={{ height: 33 }}>
 											<input
 												type="radio"
 												value="pay"
@@ -550,7 +557,7 @@ function CreateClassDetail(props) {
 												onChange={(e) => setFee(e.target.value)}
 											></input>
 											<div className="radio_label">유료</div>
-											<div className="person_money_input_wrapper">
+											<div className="flex_center">
 												<input
 													className="person_money_input"
 													name="money"
@@ -563,7 +570,7 @@ function CreateClassDetail(props) {
 												></input>
 											</div>
 										</div>
-										<div className="radio_input">
+										<div className="flex_row" style={{ height: 33 }}>
 											<input
 												type="radio"
 												value="free"
@@ -577,19 +584,21 @@ function CreateClassDetail(props) {
 							</div>
 						</div>
 					</div>
-					<div className="period_place_wrapper">
+					<div className="flex_row" style={{ justifyContent: "center" }}>
 						<div className="period_place">
-							<div className="period_place_title_hint">
+							<div className="flex_row" style={{ marginBottom: 10 }}>
 								<div className="period_place_label">신청 기간</div>
 								<div className="period_place_label_hint">
 									클래스 신청 기간을 선택해 주세요.{" "}
 								</div>
 							</div>
-							<div className="period_place_choice">
+							<div>
 								<div className="calender-container">
 									<div className="calender-box">
-										{/* <div className="date">시작날짜</div> */}
-										<div className="datepicker">
+										<div
+											className="flex_center"
+											style={{ marginTop: 10, height: 245 }}
+										>
 											<DatePicker
 												locale={ko}
 												selected={applyStartDate}
@@ -612,7 +621,7 @@ function CreateClassDetail(props) {
 							</div>
 						</div>
 						<div className="period_place">
-							<div className="period_place_title_hint">
+							<div className="flex_row" style={{ marginBottom: 10 }}>
 								<div className="period_place_label">활동 기간</div>
 								<div className="period_place_label_hint">
 									클래스 활동 기간을 선택해 주세요.
@@ -621,15 +630,20 @@ function CreateClassDetail(props) {
 
 							<div className="period_place_choice">
 								<div className="datepicker">
-									<DatePicker
-										locale={ko}
-										selected={activityStartDate}
-										onChange={onChangeActivity}
-										startDate={activityStartDate}
-										endDate={activityEndDate}
-										selectsRange
-										inline
-									/>
+									<div
+										className="flex_center"
+										style={{ marginTop: 10, height: 245 }}
+									>
+										<DatePicker
+											locale={ko}
+											selected={activityStartDate}
+											onChange={onChangeActivity}
+											startDate={activityStartDate}
+											endDate={activityEndDate}
+											selectsRange
+											inline
+										/>
+									</div>
 								</div>
 							</div>
 							<div className="selected_result">
@@ -641,31 +655,33 @@ function CreateClassDetail(props) {
 							</div>
 						</div>
 						<div className="period_place">
-							<div className="period_place_title_hint">
+							<div className="flex_row" style={{ marginBottom: 10 }}>
 								<div className="period_place_label">활동 장소</div>
 								<div className="period_place_label_hint">
 									클래스 활동 장소를 선택해 주세요.
 								</div>
 							</div>
 							<div className="period_place_choice">
-								{isOpen ? (
-									<div className="Address_modal_wrapper">
-										<div className="Address_modal_content">
-											<DaumPostCode
-												setModalOpen={isOpen}
-												onComplete={handleComplete}
-												className="post-code"
-											/>
+								<div className="flext_center">
+									{isOpen ? (
+										<div className="Address_modal_wrapper">
+											<div className="Address_modal_content">
+												<DaumPostCode
+													setModalOpen={isOpen}
+													onComplete={handleComplete}
+													className="post-code"
+												/>
+											</div>
 										</div>
-									</div>
-								) : null}
+									) : null}
+								</div>
 								{address ? (
 									<>
 										<div
 											className="map"
 											style={{
 												justifyContent: "center",
-												width: 300,
+												width: "100%",
 												height: 245,
 												margin: "auto",
 											}}
@@ -677,7 +693,10 @@ function CreateClassDetail(props) {
 										</div>
 									</>
 								) : (
-									<div style={{ marginTop: 30 }}>
+									<div
+										className="flex_center"
+										style={{ width: "100%", height: 245 }}
+									>
 										<img src={Place_search_icon} onClick={handleModal} alt="" />
 									</div>
 								)}
@@ -685,14 +704,26 @@ function CreateClassDetail(props) {
 						</div>
 					</div>
 					<div className="period_place">
-						<div className="period_place_title_hint">
-							<div className="large_label">나의 클래스 선보이기</div>
+						<div className="flex_row" style={{ marginBottom: 10 }}>
+							<div
+								className="large_label"
+								style={{ marginLeft: "5%", textAlign: "left" }}
+							>
+								나의 클래스 선보이기
+							</div>
 							<div className="period_place_label_hint">
 								자신의 클래스를 사람들이 이끌릴만한 간단한 소개
 							</div>
 						</div>
-						<div className="all_intro">
-							<div className="intro_detail_simple">
+						<div style={{ margin: 20 }}>
+							<div
+								className="flex_row"
+								style={{
+									alignItems: "center",
+									justifyContent: "center",
+									margin: 10,
+								}}
+							>
 								<div>1. </div>
 								{inputImage1preview ? (
 									<>
@@ -788,7 +819,14 @@ function CreateClassDetail(props) {
 								)}
 							</div>
 
-							<div className="intro_detail_simple">
+							<div
+								className="flex_row"
+								style={{
+									alignItems: "center",
+									justifyContent: "center",
+									margin: 10,
+								}}
+							>
 								<div>2. </div>
 								{inputImage2preview ? (
 									<>
@@ -884,7 +922,14 @@ function CreateClassDetail(props) {
 									</>
 								)}
 							</div>
-							<div className="intro_detail_simple">
+							<div
+								className="flex_row"
+								style={{
+									alignItems: "center",
+									justifyContent: "center",
+									margin: 10,
+								}}
+							>
 								<div>3. </div>
 								{inputImage3preview ? (
 									<>
@@ -983,8 +1028,13 @@ function CreateClassDetail(props) {
 						</div>
 					</div>
 					<div className="daydetail_all_wrapper">
-						<div className="large_label">활동 계획 및 소개서</div>
-						<div className="next_label_hint">
+						<div
+							className="large_label"
+							style={{ marginLeft: "5%", textAlign: "left" }}
+						>
+							활동 계획 및 소개서
+						</div>
+						<div className="detail_class_label_hint">
 							활동 계획표에 첨부되는 파일(이미지, 영상)은 클래스 상세소개에
 							들어갈 내용으로, 직접적인 활동 내용이 아닌 Day별 수업을 소개하는
 							파일(이미지, 영상) 입니다.
@@ -993,9 +1043,13 @@ function CreateClassDetail(props) {
 						<div className="dayclasswrapper">
 							<div>
 								{days.map((day) => (
-									<div key={day.id} className="day_input_box">
+									<div
+										key={day.id}
+										className="flex_center"
+										style={{ flexDirection: "column" }}
+									>
 										<div className="day_title_label">{day.id}</div>
-										<div className="file_input_split">
+										<div>
 											{day.dayImgpreview || day.dayVideopreview ? (
 												<>
 													<div className="editImg">
@@ -1079,9 +1133,13 @@ function CreateClassDetail(props) {
 										</div>
 										<div>
 											<div className="day_class_input">
-												<div className="label_row">
+												<div
+													className="flex_row"
+													style={{ justifyContent: "flex-start" }}
+												>
 													<input
-														className="input_box_long"
+														className="day_input_text"
+														style={{ width: 950 }}
 														type="text"
 														maxLength={50}
 														name={`title_${day.id}`}
@@ -1092,9 +1150,13 @@ function CreateClassDetail(props) {
 														}
 													/>
 												</div>
-												<div className="label_row">
+												<div
+													className="flex_row"
+													style={{ justifyContent: "flex-start" }}
+												>
 													<input
-														className="input_box_middle"
+														className="day_input_text"
+														style={{ width: 400 }}
 														type="date"
 														dateFormat="yyyy-MM-dd"
 														name={`date_${day.id}`}
@@ -1106,7 +1168,8 @@ function CreateClassDetail(props) {
 													/>
 
 													<input
-														className="input_box_short"
+														className="day_input_text"
+														style={{ width: 200 }}
 														type="time"
 														name={`startTime_${day.id}`}
 														placeholder="시간"
@@ -1117,7 +1180,8 @@ function CreateClassDetail(props) {
 													/>
 													<div>-</div>
 													<input
-														className="input_box_short"
+														className="day_input_text"
+														style={{ width: 200 }}
 														type="time"
 														name={`endTime_${day.id}`}
 														placeholder="시간"
@@ -1127,9 +1191,13 @@ function CreateClassDetail(props) {
 														}
 													/>
 												</div>
-												<div className="label_row">
+												<div
+													className="flex_row"
+													style={{ justifyContent: "flex-start" }}
+												>
 													<input
-														className="input_box_middle"
+														className="day_input_text"
+														style={{ width: 400 }}
 														type="text"
 														multiple="false"
 														name={`preparation_${day.id}`}
@@ -1144,9 +1212,13 @@ function CreateClassDetail(props) {
 														}
 													/>
 												</div>
-												<div className="label_row">
+												<div
+													className="flex_row"
+													style={{ justifyContent: "flex-start" }}
+												>
 													<textarea
-														className="input_box_long"
+														className="day_input_text"
+														style={{ width: 950 }}
 														type="text"
 														multiple="true"
 														name={`content_${day.id}`}
@@ -1159,7 +1231,7 @@ function CreateClassDetail(props) {
 												</div>
 											</div>
 										</div>
-										<div className="remove_button_wrapper">
+										<div style={{ border: "none" }}>
 											{days.length > 1 &&
 												day.id === days[days.length - 1].id && (
 													<button
@@ -1189,7 +1261,10 @@ function CreateClassDetail(props) {
 							margin: "30px 0 20px",
 						}}
 					></div>
-					<div className="last_row">
+					<div
+						className="flex_center"
+						style={{ padding: 10, flexDirection: "row" }}
+					>
 						<img
 							width="35"
 							height="35"
@@ -1204,7 +1279,7 @@ function CreateClassDetail(props) {
 							alt="round-pushpin-emoji"
 						/>
 					</div>
-					<div class="filebox">
+					<div class="flex_center" style={{ marginTop: 20 }}>
 						<label for="file">파일찾기</label>
 						<input
 							type="file"
@@ -1221,20 +1296,20 @@ function CreateClassDetail(props) {
 							readOnly
 						/>
 					</div>
-					<div className="last_text">
-						<div className="last_text_row">
-							<div className="basic_text">위 파일은</div>
+					<div className="long_text_zip">
+						<div className="flex_center" style={{ flexDirection: "row" }}>
+							<div className="_text">위 파일은</div>
 							<div className="important_text">
 								(클래스 이름)(작성자)_활동계획서 및 상세일.확장자
 							</div>
-							<div className="basic_text">이름으로 업로드 해주세요.</div>
+							<div className="_text">이름으로 업로드 해주세요.</div>
 						</div>
 						<div className="last_text_row">
-							<div className="basic_text">파일 안에 꼭 있어야하는 내용</div>
+							<div className="_text">파일 안에 꼭 있어야하는 내용</div>
 							<div className="important_text">
 								클래스 소개 및 일별 상세 활동 소개, 준비물, 연락 가능한 연락망{" "}
 							</div>
-							<div className="basic_text">
+							<div className="_text">
 								이 포함되지 않았을 시 클래스 업로드에 제약이 있을 수 있습니다.
 							</div>
 						</div>
