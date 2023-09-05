@@ -119,11 +119,6 @@ function CreateClass(props) {
 		<div className="wrap">
 			{token ? (
 				<>
-					{/* <div style={{ marginTop: 60, marginBottom: 20, fontSize: 20 }}>
-						{" "}
-						썸네일 이미지 및 영상 업로드
-					</div> */}
-
 					<div className="component_wrapper">
 						<div className="rL_wrapper">
 							{imagepreview || videopreview ? (

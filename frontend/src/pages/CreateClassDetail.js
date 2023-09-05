@@ -6,18 +6,6 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/esm/locale";
 import minus from "../assets/day_class_minus.png";
 import add from "../assets/day_class_add.png";
-import Skill from "../assets/Skill.png";
-import Activity from "../assets/Activity.png";
-import Alon from "../assets/Alon.png";
-import Craft from "../assets/Craft.png";
-import Culture_arts from "../assets/Culture_arts.png";
-import Music from "../assets/Music.png";
-import Simple from "../assets/Simple.png";
-import Trip from "../assets/Trip.png";
-import Beauty from "../assets/Beauty.png";
-import quiet from "../assets/quiet.png";
-import Sports from "../assets/Sports.png";
-import Healing from "../assets/Healing.png";
 
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
@@ -110,9 +98,6 @@ function CreateClassDetail(props) {
 		setMoney("0");
 	};
 
-	useEffect(() => {
-		console.log("지불:" + fee + "요금:" + money);
-	});
 	const onChangeApply = (dates) => {
 		const [start, end] = dates;
 
@@ -172,8 +157,6 @@ function CreateClassDetail(props) {
 	const handleComplete = (data) => {
 		let fullAddress = `${data.address}`;
 
-		console.log(fullAddress);
-		console.log(typeof fullAddress);
 		setAdress(fullAddress);
 
 		setIsOpen(false);
@@ -181,8 +164,6 @@ function CreateClassDetail(props) {
 			loadMap(fullAddress);
 		}
 	};
-	//fullAddress -> 전체 주소반환
-	// };
 
 	function handleModal() {
 		setIsOpen(true);
@@ -252,7 +233,7 @@ function CreateClassDetail(props) {
 						if (status === kakao.maps.services.Status.OK) {
 							const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-							const marker = new kakao.maps.Marker({
+							new kakao.maps.Marker({
 								position: coords,
 								map: map,
 							});
@@ -269,18 +250,6 @@ function CreateClassDetail(props) {
 			document.head.removeChild(script);
 		};
 	}
-
-	// const encodeFileToBase64 = (fileBlob) => {
-	// 	const reader = new FileReader();
-	// 	reader.readAsDataURL(fileBlob);
-
-	// 	return new Promise((resolve) => {
-	// 		reader.onload = () => {
-	// 			setImageSrc(reader.result);
-	// 			resolve();
-	// 		};
-	// 	});
-	// };
 	const handleAddDay = () => {
 		const lastDay = days[days.length - 1];
 		const lastDayNumber = parseInt(lastDay.id.replace("day", ""));
@@ -404,9 +373,6 @@ function CreateClassDetail(props) {
 				formData.append(`dayImg[${day.id}]`, day.dayImg);
 			}
 		});
-		// days.forEach((day) => {
-		// 	formData.append(`dayImg[${day.id}]`, day.dayImg);
-		// });
 
 		axios
 			.post("http://localhost:8000/api/post/submit_data/", formData, {
@@ -465,18 +431,6 @@ function CreateClassDetail(props) {
 		handleChange(dayId, "dayImg", value);
 	};
 
-	// const reader = new FileReader();
-	// reader.readAsDataURL(e);
-
-	// return new Promise((resolve) => {
-	// 	reader.onload = () => {
-	// 		setImagepreview(reader.result);
-	// 		resolve();
-	// 	};
-	// };
-	// });
-	// console.log(e);
-	// };
 	return (
 		<div className="create_wrap">
 			{option === "offline" ? (
@@ -534,9 +488,6 @@ function CreateClassDetail(props) {
 
 					<div className="theme_wrapper_center">
 						<div className="theme_wrapper">
-							{/* <div className="theme_test"> */}
-							{/* <div className="theme_text">클래스 테마</div> */}
-
 							{theme.map((item, index) => (
 								<button
 									className={
@@ -547,15 +498,10 @@ function CreateClassDetail(props) {
 									key={index}
 									onClick={() => addTheme(item)}
 								>
-									{" "}
-									<div className="theme_text_wrapper">
-										{/* <img src={themeImages[item]} width={100} alt={item} /> */}
-										{item}
-									</div>
+									<div className="theme_text_wrapper">{item}</div>
 								</button>
 							))}
 						</div>
-						{/* </div> */}
 						<div className="person_money_wrapper">
 							<div className="middle_text">
 								<div className="_text">
@@ -580,7 +526,6 @@ function CreateClassDetail(props) {
 									<input
 										className="person_money_input"
 										name="person"
-										// placeholder="인원수"
 										type="number"
 										value={person}
 										onChange={(e) => setPerson(e.target.value)}
@@ -721,7 +666,6 @@ function CreateClassDetail(props) {
 											className="map"
 											style={{
 												justifyContent: "center",
-												// marginTop: 10,
 												width: 300,
 												height: 245,
 												margin: "auto",
