@@ -491,9 +491,9 @@ function CreateClassDetail(props) {
 					</div>
 					<div className="all_title">TITLE : {title}</div>
 
-					<div className="all_img_wrapper">
-						{imagepreview || videopreview ? (
-							<>
+					{imagepreview || videopreview ? (
+						<>
+							<div className="all_img_wrapper">
 								{isImage ? (
 									<img
 										style={{
@@ -518,9 +518,9 @@ function CreateClassDetail(props) {
 										alt=""
 									/>
 								)}
-							</>
-						) : null}
-					</div>
+							</div>
+						</>
+					) : null}
 
 					<div
 						style={{
