@@ -534,9 +534,8 @@ function CreateClassDetail(props) {
 								<div className="person_money">
 									<div className="person_money_icon">
 										<img
-											className="person_money_icon_test"
-											width="55"
-											height="55"
+											width={55}
+											height={55}
 											src="https://img.icons8.com/ios/64/get-cash--v1.png"
 											alt="get-cash--v1"
 										/>
@@ -678,7 +677,7 @@ function CreateClassDetail(props) {
 										</div>
 									</>
 								) : (
-									<div className="place_search_icon_wrapper">
+									<div style={{ marginTop: 30 }}>
 										<img src={Place_search_icon} onClick={handleModal} alt="" />
 									</div>
 								)}

@@ -37,22 +37,6 @@
 	position: relative;
 }
 
-.img_container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.img {
-	width: 70px;
-}
-
-.Img_upload {
-	width: 130px;
-	height: 30px;
-	border: none;
-}
-
 .remove_icon {
 	position: absolute;
 	right: 0px;
