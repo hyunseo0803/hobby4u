@@ -71,13 +71,11 @@ function CreateClassDetail(props) {
 
 	const [fee, setFee] = useState("pay");
 
-	const Simple_menu = [
-		"테마 선택",
-		"인원 및 수강료",
-		"활동 기간 및 장소",
-		"Day별 계획",
-		"활동계획서 파일",
-	];
+	const [All_select_theme, setAllselecttheme] = useState(false);
+	const [All_person_money, setAllpersonmoney] = useState(false);
+	const [All_period_place, setAllperiodplace] = useState(false);
+	const [All_day_plan, setAlldayplan] = useState(false);
+	const [All_plan_file, setAllplanfile] = useState(false);
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
@@ -181,8 +179,6 @@ function CreateClassDetail(props) {
 
 	const [isImage, setIsImage] = useState("");
 
-	useEffect(() => {});
-
 	const theme = [
 		"# 조용한",
 		"# 스포츠",
@@ -205,9 +201,60 @@ function CreateClassDetail(props) {
 			setSelectedTheme([...selectedTheme, theme_item]);
 		}
 	};
+
 	useEffect(() => {
-		console.log(selectedTheme);
-	}, [selectedTheme]);
+		const isAtLeastOneDayValid = days.some(
+			(day) =>
+				day.title !== "" &&
+				day.date !== null &&
+				day.startTime !== "" &&
+				day.endTime !== "" &&
+				day.content !== "" &&
+				day.preparation !== ""
+		);
+		if (selectedTheme.length !== 0) {
+			setAllselecttheme(true);
+		} else {
+			setAllselecttheme(false);
+		}
+		if (person && money !== "") {
+			setAllpersonmoney(true);
+		} else {
+			setAllpersonmoney(false);
+		}
+		if (
+			applyStartDate &&
+			applyEndDate &&
+			activityStartDate &&
+			activityEndDate &&
+			address !== ""
+		) {
+			setAllperiodplace(true);
+		} else {
+			setAllperiodplace(false);
+		}
+		if (isAtLeastOneDayValid) {
+			setAlldayplan(true);
+		} else {
+			setAlldayplan(false);
+		}
+		if (file !== null) {
+			setAllplanfile(true);
+		} else {
+			setAllplanfile(false);
+		}
+	}, [
+		selectedTheme,
+		person,
+		money,
+		applyEndDate,
+		applyStartDate,
+		activityEndDate,
+		activityStartDate,
+		address,
+		days,
+		file,
+	]);
 
 	function loadMap(address) {
 		// Kakao Maps API 스크립트를 동적으로 로드
@@ -437,9 +484,21 @@ function CreateClassDetail(props) {
 				<>
 					<div className="follow_bar_wrapper">
 						<ul className="follow_bar">
-							{Simple_menu.map((item, index) => (
-								<li key={index}>{item}</li>
-							))}
+							<li style={{ listStyle: "none" }}>
+								{All_select_theme ? "o" : "x"} 테마선택
+							</li>
+							<li style={{ listStyle: "none" }}>
+								{All_person_money ? "o" : "x"} 인원 및 수강료
+							</li>
+							<li style={{ listStyle: "none" }}>
+								{All_period_place ? "o" : "x"} 기간 및 장소
+							</li>
+							<li style={{ listStyle: "none" }}>
+								{All_day_plan ? "o" : "x"} Day별 상세 계획
+							</li>
+							<li style={{ listStyle: "none" }}>
+								{All_plan_file ? "o" : "x"} 필수 첨부 파일
+							</li>
 						</ul>
 					</div>
 					<div
@@ -1315,7 +1374,17 @@ function CreateClassDetail(props) {
 						</div>
 					</div>
 					<div className="submit_button_wrapper">
-						<button className="submit_button" onClick={handleSubmit}>
+						<button
+							className="submit_button"
+							onClick={handleSubmit}
+							disabled={
+								!All_select_theme ||
+								!All_period_place ||
+								!All_person_money ||
+								!All_day_plan ||
+								!All_plan_file
+							}
+						>
 							등록하기
 						</button>
 					</div>
