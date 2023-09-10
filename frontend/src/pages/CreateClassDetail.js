@@ -10,6 +10,9 @@ import add from "../assets/day_class_add.png";
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
 import Place_search_icon from "../assets/place_search_icon.png";
+import edit from "../assets/edit.png";
+import remove from "../assets/remove.png";
+
 import axios from "axios";
 
 function CreateClassDetail(props) {
@@ -783,10 +786,24 @@ function CreateClassDetail(props) {
 									<div>{number}. </div>
 									{inputImagePreview[`inputImage${number}preview`] !== null ? (
 										<>
-											<div className="editImg">
+											<div
+												style={{
+													position: "relative",
+													width: "100%",
+													// backgroundColor: "red",
+													display: "flex",
+													flexDirection: "row",
+												}}
+											>
 												<img
 													src={inputImagePreview[`inputImage${number}preview`]}
 													className="day_img_true"
+													style={{
+														objectFit: "cover",
+														width: "80%",
+														height: 130,
+														justifyContent: "center",
+													}}
 													alt="preview-img"
 												/>
 
@@ -801,7 +818,7 @@ function CreateClassDetail(props) {
 														}
 													}}
 												>
-													수정하기
+													<img src={edit} width={15} alt="edit" />
 												</button>
 											</div>
 
@@ -891,28 +908,38 @@ function CreateClassDetail(props) {
 										style={{ flexDirection: "column" }}
 									>
 										<div className="day_title_label">{day.id}</div>
-										<div>
+										<div className="flex_center">
 											{day.dayImgpreview || day.dayVideopreview ? (
 												<>
-													<div className="editImg">
+													<div className="background_day_img">
 														{isImage ? (
-															<img
-																src={day.dayImgpreview}
-																className="day_img_true"
-																alt="preview-img"
-															/>
+															<>
+																<img
+																	src={day.dayImgpreview}
+																	style={{
+																		// position: "relative",
+																		objectFit: "cover",
+																		width: "80%",
+																		maxHeight: 500,
+																		justifyContent: "center",
+																		maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
+																		height: "auto", // 높이는 자동으로 조정됩니다.
+																	}}
+																	alt="preview-img"
+																/>
+															</>
 														) : (
 															<video
-																className="day_img_true"
 																src={day.dayVideopreview}
 																style={{
 																	objectFit: "contain",
-																	width: "50%",
+																	width: "100%",
 																	height: "100%",
 																}}
 																controls
 															/>
 														)}
+
 														<button
 															className="editImg_text"
 															onClick={() => {
@@ -924,7 +951,7 @@ function CreateClassDetail(props) {
 																}
 															}}
 														>
-															수정하기
+															<img src={edit} width={22} alt="edit" />
 														</button>
 													</div>
 												</>
@@ -957,10 +984,17 @@ function CreateClassDetail(props) {
 												id={`day_img_input_${day.id}`}
 												style={{ display: "none" }}
 												onChange={(e) => {
-													onChangeImage_day(
-														e.target.files[0],
-														`day_img_${day.id}`
-													);
+													const minSizeInBytes = 200 * 200;
+													if (e.target.files[0].size < minSizeInBytes) {
+														alert(
+															"이미지 크기가 너무 작습니다. 다시 선택해주세요."
+														);
+													} else {
+														onChangeImage_day(
+															e.target.files[0],
+															`day_img_${day.id}`
+														);
+													}
 												}}
 											/>
 										</div>
