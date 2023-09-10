@@ -35,10 +35,6 @@ function CreateClassDetail(props) {
 
 	const { kakao } = window;
 
-	// let [inputCount1, setInputCount1] = useState(0);
-	// let [inputCount2, setInputCount2] = useState(0);
-	// let [inputCount3, setInputCount3] = useState(0);
-
 	const [inputCount, setInputCount] = useState({
 		inputCount1: 0,
 		inputCount2: 0,
@@ -62,18 +58,6 @@ function CreateClassDetail(props) {
 
 	const [file, setFile] = useState(null);
 	const [fileSrc, setFileSrc] = useState("");
-
-	// const [inputInfo1, setInputInfo1] = useState("");
-	// const [inputImage1, setInputImage1] = useState(null);
-	// const [inputImage1preview, setInputImage1preview] = useState(null);
-
-	// const [inputInfo2, setInputInfo2] = useState("");
-	// const [inputImage2, setInputImage2] = useState(null);
-	// const [inputImage2preview, setInputImage2preview] = useState(null);
-
-	// const [inputInfo3, setInputInfo3] = useState("");
-	// const [inputImage3, setInputImage3] = useState(null);
-	// const [inputImage3preview, setInputImage3preview] = useState(null);
 
 	const [inputImage, setInputImage] = useState({
 		inputImage1: null,
@@ -114,17 +98,6 @@ function CreateClassDetail(props) {
 			...prevInputCount,
 			[`inputCount${number}`]: value.length, // 현재 입력된 텍스트의 길이로 업데이트
 		}));
-
-		// if (name === "info1") {
-		// 	setInputInfo1(value);
-		// 	// setInputCount.(e.target.value.length);
-		// } else if (name === "info2") {
-		// 	setInputInfo2(value);
-		// 	// setInputCount2(e.target.value.length);
-		// } else if (name === "info3") {
-		// 	setInputInfo3(value);
-		// 	// setInputCount3(e.target.value.length);
-		// }
 	};
 
 	const handleFree = (e) => {
@@ -490,34 +463,7 @@ function CreateClassDetail(props) {
 			};
 		});
 	};
-	// const onChangeImage2 = (e) => {
-	// 	setInputImage2(e);
-	// 	const reader = new FileReader();
-	// 	reader.readAsDataURL(e);
-	// 	return new Promise((resolve) => {
-	// 		reader.onload = () => {
-	// 			setInputImage2preview(reader.result);
-	// 			resolve();
-	// 		};
-	// 	});
-	// };
-	// const onChangeImage3 = (e) => {
-	// 	setInputImage3(e);
-	// 	const reader = new FileReader();
-	// 	reader.readAsDataURL(e);
-	// 	return new Promise((resolve) => {
-	// 		reader.onload = () => {
-	// 			setInputImage3preview(reader.result);
-	// 			resolve();
-	// 		};
-	// 	});
-	// };
 
-	// const imageChangeFunctions = {
-	// 	1: onChangeImage1,
-	// 	2: onChangeImage2,
-	// 	3: onChangeImage3,
-	// };
 	const onChangefile = (e) => {
 		setFile(e);
 		setFileSrc(e.name);
@@ -858,20 +804,7 @@ function CreateClassDetail(props) {
 													수정하기
 												</button>
 											</div>
-											{/* <div className="word_info">
-												<textarea
-													className="info_box_long"
-													maxLength={500}
-													type="text"
-													name={`info${number}`}
-													value={inputInfo[number]}
-													placeholder="이미지 및 간단한 소개"
-													onChange={(e) => onChangeInput(e, number)}
-												/>
-												<div className="word_how_many">
-													<span>{inputCount[`inputCount${number}`]}</span>
-													<span>/500자</span>
-												</div> */}
+
 											<input
 												type="file"
 												accept="image/*"
@@ -882,7 +815,6 @@ function CreateClassDetail(props) {
 													onChangeImage(e.target.files[0], number);
 												}}
 											/>
-											{/* </div> */}
 										</>
 									) : (
 										<>
@@ -936,217 +868,6 @@ function CreateClassDetail(props) {
 								</div>
 							))}
 						</div>
-
-						{/* <div
-								className="flex_row"
-								style={{
-									alignItems: "center",
-									justifyContent: "center",
-									margin: 10,
-								}}
-							>
-								<div>2. </div>
-								{inputImage2preview ? (
-									<>
-										<div className="editImg">
-											<img
-												src={inputImage2preview}
-												className="day_img_true"
-												alt="preview-img"
-											/>
-											<button
-												className="editImg_text"
-												onClick={() => {
-													const inputElement =
-														document.getElementById("infoimage2");
-													if (inputElement) {
-														inputElement.click();
-													}
-												}}
-											>
-												수정하기
-											</button>
-										</div>
-										<div className="word_info">
-											<textarea
-												className="info_box_long"
-												maxLength={500}
-												type="text"
-												name="info2"
-												value={inputInfo2}
-												placeholder="이미지 및 간단한 소개"
-												onChange={onChangeInput}
-											/>
-											<div className="word_how_many">
-												<span>{inputCount2}</span>
-												<span>/500자</span>
-											</div>
-
-											<input
-												type="file"
-												id="infoimage2"
-												accept="image/*"
-												name="infoimage2"
-												style={{ display: "none" }}
-												onChange={(e) => {
-													onChangeImage2(e.target.files[0]);
-												}}
-											/>
-										</div>
-									</>
-								) : (
-									<>
-										<div>
-											<button
-												className="uploadImg_behind"
-												onClick={() => {
-													const inputElement =
-														document.getElementById("infoimage2");
-													if (inputElement) {
-														inputElement.click();
-													}
-												}}
-											>
-												<img
-													width="50"
-													height="50"
-													src="https://img.icons8.com/ios/50/image--v1.png"
-													alt="--v1"
-												/>
-											</button>
-										</div>
-										<input
-											type="file"
-											accept="image/*"
-											id="infoimage2"
-											style={{ display: "none" }}
-											onChange={(e) => {
-												onChangeImage2(e.target.files[0]);
-											}}
-										/>
-										<div className="word_info">
-											<textarea
-												className="info_box_long"
-												maxLength={500}
-												type="text"
-												name="info2"
-												value={inputInfo2}
-												placeholder="이미지 및 간단한 소개"
-												onChange={onChangeInput}
-											/>
-											<div className="word_how_many">
-												<span>{inputCount2}</span>
-												<span>/500자</span>
-											</div>
-										</div>
-									</>
-								)}
-							</div>
-							<div
-								className="flex_row"
-								style={{
-									alignItems: "center",
-									justifyContent: "center",
-									margin: 10,
-								}}
-							>
-								<div>3. </div>
-								{inputImage3preview ? (
-									<>
-										<div className="editImg">
-											<img
-												src={inputImage3preview}
-												className="day_img_true"
-												alt="preview-img"
-											/>
-											<button
-												className="editImg_text"
-												onClick={() => {
-													const inputElement =
-														document.getElementById("infoimage3");
-													if (inputElement) {
-														inputElement.click();
-													}
-												}}
-											>
-												수정하기
-											</button>
-										</div>
-										<div className="word_info">
-											<textarea
-												className="info_box_long"
-												maxLength={500}
-												type="text"
-												name="info3"
-												value={inputInfo3}
-												placeholder="이미지 및 간단한 소개"
-												onChange={onChangeInput}
-											/>
-											<div className="word_how_many">
-												<span>{inputCount3}</span>
-												<span>/500자</span>
-											</div>
-
-											<input
-												type="file"
-												accept="image/*"
-												id="infoimage3"
-												name="infoimage3"
-												style={{ display: "none" }}
-												onChange={(e) => {
-													onChangeImage3(e.target.files[0]);
-												}}
-											/>
-										</div>
-									</>
-								) : (
-									<>
-										<div>
-											<button
-												className="uploadImg_behind"
-												onClick={() => {
-													const inputElement =
-														document.getElementById("infoimage3");
-													if (inputElement) {
-														inputElement.click();
-													}
-												}}
-											>
-												<img
-													width="50"
-													height="50"
-													src="https://img.icons8.com/ios/50/image--v1.png"
-													alt="--v1"
-												/>
-											</button>
-										</div>
-										<input
-											type="file"
-											accept="image/*"
-											id="infoimage3"
-											style={{ display: "none" }}
-											onChange={(e) => {
-												onChangeImage3(e.target.files[0]);
-											}}
-										/>
-										<div className="word_info">
-											<textarea
-												className="info_box_long"
-												maxLength={500}
-												type="text"
-												name="info3"
-												value={inputInfo3}
-												placeholder="이미지 및 간단한 소개"
-												onChange={onChangeInput}
-											/>
-											<div className="word_how_many">
-												<span>{inputCount3}</span>
-												<span>/500자</span>
-											</div>
-										</div>
-									</>
-								)}
-							</div>*/}
 					</div>
 					<div className="daydetail_all_wrapper">
 						<div
@@ -1205,18 +926,6 @@ function CreateClassDetail(props) {
 														>
 															수정하기
 														</button>
-														{/* <input
-															type="file"
-															accept="image/*,video/*"
-															id={`day_img_input_${day.id}`}
-															style={{ display: "none" }}
-															onChange={(e) => {
-																onChangeImage_day(
-																	e.target.files[0],
-																	`day_img_${day.id}`
-																);
-															}}
-														/> */}
 													</div>
 												</>
 											) : (
