@@ -225,6 +225,7 @@
 .background_day_img {
 	width: 850px;
 	/* background-color: red; */
+	margin: 20px;
 	position: relative;
 }
 
@@ -291,15 +292,16 @@
 	height: 50%;
 	align-items: center;
 	border-radius: 5px;
-	background-color: red;
+	/* background-color: red; */
 }
 .uploadImg_behind {
 	align-items: center;
 	text-align: center;
-	margin: auto;
-	margin-right: 15px;
-	margin-left: 15px;
+	/* margin: auto; */
+	margin: 20px;
 	justify-content: center;
+	width: 150px;
+	height: 100px;
 	/* width: 130px; */
 	/* height: 130px; */
 	background-color: white;
@@ -391,4 +393,12 @@
 	width: 15%;
 	border: none;
 	border-radius: 5px;
+}
+
+.submit_ok {
+	width: 15%;
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(91, 72, 202);
+	color: white;
 }

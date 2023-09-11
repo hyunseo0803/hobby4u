@@ -103,6 +103,19 @@ function CreateClassDetail(props) {
 		}));
 	};
 
+	const handleRemoveImg = (number) => {
+		if (window.confirm("정말 삭제합니까?")) {
+			setInputImagePreview((prevInputImagePreview) => ({
+				...prevInputImagePreview,
+				[`inputImage${number}preview`]: null,
+			}));
+			setInputImage((prevInputImage) => ({
+				...prevInputImage,
+				[`inputImage${number}`]: null,
+			}));
+		}
+	};
+
 	const handleFree = (e) => {
 		setFee(e.target.value);
 		setMoney("0");
@@ -268,6 +281,13 @@ function CreateClassDetail(props) {
 		file,
 	]);
 
+	const All_submit_ok =
+		!All_select_theme ||
+		!All_period_place ||
+		!All_person_money ||
+		!All_day_plan ||
+		!All_plan_file;
+
 	function loadMap(address) {
 		// Kakao Maps API 스크립트를 동적으로 로드
 		const script = document.createElement("script");
@@ -331,6 +351,25 @@ function CreateClassDetail(props) {
 
 	const handleRemoveDay = (id) => {
 		setDays((prevDays) => prevDays.filter((day) => day.id !== id));
+	};
+
+	const handleDayRemoveImg = (id) => {
+		if (window.confirm("정말 삭제합니까?")) {
+			const updatedDays = [...days];
+
+			const dayIndex = updatedDays.findIndex((day) => day.id === id);
+
+			if (dayIndex !== -1) {
+				updatedDays[dayIndex] = {
+					...updatedDays[dayIndex],
+					dayImg: null,
+					dayImgpreview: "",
+					dayVideopreview: "",
+				};
+
+				setDays(updatedDays);
+			}
+		}
 	};
 
 	//Day별 입력창 변경 이벤트 처리 함수 , id, 필드이름, 입력값
@@ -458,8 +497,6 @@ function CreateClassDetail(props) {
 		return new Promise((resolve) => {
 			reader.onload = () => {
 				const newInputImagePreview = { ...inputImagePreview }; // 미리보기 상태 복제
-				const previewurl = reader.result;
-				console.log(previewurl);
 				newInputImagePreview[`inputImage${number}preview`] = reader.result; // 특정 미리보기 업데이트
 				setInputImagePreview(newInputImagePreview); // 새로운 미리보기 상태로 업데이트
 				resolve();
@@ -783,16 +820,17 @@ function CreateClassDetail(props) {
 										margin: 10,
 									}}
 								>
-									<div>{number}. </div>
+									{/* <div>{number}. </div> */}
 									{inputImagePreview[`inputImage${number}preview`] !== null ? (
 										<>
 											<div
 												style={{
 													position: "relative",
-													width: "100%",
+													width: "15%",
 													// backgroundColor: "red",
 													display: "flex",
 													flexDirection: "row",
+													marginRight: 15,
 												}}
 											>
 												<img
@@ -800,7 +838,7 @@ function CreateClassDetail(props) {
 													className="day_img_true"
 													style={{
 														objectFit: "cover",
-														width: "80%",
+														width: "72%",
 														height: 130,
 														justifyContent: "center",
 													}}
@@ -809,6 +847,7 @@ function CreateClassDetail(props) {
 
 												<button
 													className="editImg_text"
+													style={{ right: 0 }}
 													onClick={() => {
 														const inputElement = document.getElementById(
 															`infoimage${number}`
@@ -819,6 +858,13 @@ function CreateClassDetail(props) {
 													}}
 												>
 													<img src={edit} width={15} alt="edit" />
+												</button>
+												<button
+													className="editImg_text"
+													style={{ right: 0, top: 25 }}
+													onClick={() => handleRemoveImg(number)}
+												>
+													<img src={remove} width={15} alt="edit" />
 												</button>
 											</div>
 
@@ -932,9 +978,12 @@ function CreateClassDetail(props) {
 															<video
 																src={day.dayVideopreview}
 																style={{
-																	objectFit: "contain",
-																	width: "100%",
-																	height: "100%",
+																	objectFit: "cover",
+																	width: "80%",
+																	maxHeight: 500,
+																	justifyContent: "center",
+																	maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
+																	height: "auto",
 																}}
 																controls
 															/>
@@ -942,6 +991,7 @@ function CreateClassDetail(props) {
 
 														<button
 															className="editImg_text"
+															// style={{ right: 10 }}
 															onClick={() => {
 																const inputElement = document.getElementById(
 																	`day_img_input_${day.id}`
@@ -952,6 +1002,13 @@ function CreateClassDetail(props) {
 															}}
 														>
 															<img src={edit} width={22} alt="edit" />
+														</button>
+														<button
+															className="editImg_text"
+															style={{ top: 35 }}
+															onClick={() => handleDayRemoveImg(day.id)}
+														>
+															<img src={remove} width={22} alt="edit" />
 														</button>
 													</div>
 												</>
@@ -987,7 +1044,7 @@ function CreateClassDetail(props) {
 													const minSizeInBytes = 200 * 200;
 													if (e.target.files[0].size < minSizeInBytes) {
 														alert(
-															"이미지 크기가 너무 작습니다. 다시 선택해주세요."
+															"이미지/영상의 크기가 너무 작습니다. 다시 선택해주세요."
 														);
 													} else {
 														onChangeImage_day(
@@ -1180,15 +1237,9 @@ function CreateClassDetail(props) {
 					</div>
 					<div className="submit_button_wrapper">
 						<button
-							className="submit_button"
+							className={!All_submit_ok ? "submit_ok" : "submit_button"}
 							onClick={handleSubmit}
-							disabled={
-								!All_select_theme ||
-								!All_period_place ||
-								!All_person_money ||
-								!All_day_plan ||
-								!All_plan_file
-							}
+							disabled={All_submit_ok}
 						>
 							등록하기
 						</button>
