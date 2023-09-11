@@ -820,14 +820,12 @@ function CreateClassDetail(props) {
 										margin: 10,
 									}}
 								>
-									{/* <div>{number}. </div> */}
 									{inputImagePreview[`inputImage${number}preview`] !== null ? (
 										<>
 											<div
 												style={{
 													position: "relative",
 													width: "15%",
-													// backgroundColor: "red",
 													display: "flex",
 													flexDirection: "row",
 													marginRight: 15,
@@ -991,7 +989,6 @@ function CreateClassDetail(props) {
 
 														<button
 															className="editImg_text"
-															// style={{ right: 10 }}
 															onClick={() => {
 																const inputElement = document.getElementById(
 																	`day_img_input_${day.id}`
