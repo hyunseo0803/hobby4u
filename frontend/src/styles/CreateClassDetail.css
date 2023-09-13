@@ -5,16 +5,19 @@
 
 .create_wrap {
 	margin-top: 10vh;
-	margin-left: 4%;
-	margin-right: 4%;
+	margin-left: 10%;
+	margin-right: 10%;
 }
 
 .follow_bar {
 	position: fixed;
+	/* width: 100px; */
 	top: 100px;
 	right: 5px;
 	z-index: 1;
-	background-color: #fff;
+	background-color: white;
+	margin: 0px;
+	padding: 5px;
 }
 
 .large_label {
@@ -23,14 +26,19 @@
 }
 
 .theme_wrapper {
-	width: 80%;
-	height: 100%;
-	background-color: rgb(241, 243, 255);
-	margin-top: 30px;
-	padding-left: 30px;
-	padding-right: 30px;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	position: absolute;
+	width: 10%;
+	top: 80px;
+	left: 10px;
+	position: fixed;
+	z-index: 1;
+	/* height: 100%; */
+	background-color: #3f4a82;
+	/* margin-top: 30px; */
+	/* padding-left: 30px; */
+	/* padding-right: 30px; */
+	/* padding-top: 10px; */
+	/* padding-bottom: 10px; */
 	text-align: center;
 	align-items: center;
 	justify-content: center;
@@ -45,6 +53,7 @@
 	background-color: transparent;
 	text-align: center;
 	margin: 10px;
+	color: white;
 }
 .select_theme_button {
 	width: 110px;
@@ -56,6 +65,8 @@
 	border-radius: 15px;
 	border: none;
 	background-color: white;
+	color: #3b3b3b;
+	font-weight: 550;
 }
 
 .person_money_wrapper {
@@ -80,6 +91,7 @@
 .flex_row {
 	display: flex;
 	flex-direction: row;
+	/* background-color: red; */
 }
 
 .flex_center {
@@ -90,9 +102,10 @@
 	/* background-color: red; */
 }
 .radio_label {
+	width: 50px;
 	align-items: center;
 	display: flex;
-	margin: 15px;
+	/* margin: 15px; */
 }
 .person_money {
 	width: 100%;
@@ -103,14 +116,17 @@
 	flex-direction: row;
 	margin-top: 20px;
 	margin: 20px;
-	background-color: rgb(223, 195, 243);
+	background-color: rgb(247, 244, 255);
 	border-radius: 5px;
 }
 .person_money_label {
-	margin-right: 20px;
+	width: 50px;
+	margin-right: 15px;
+	/* margin-left: 10px; */
 }
 
 .person_money_input {
+	width: 150px;
 	height: 25px;
 	justify-content: center;
 	align-items: center;
@@ -128,20 +144,20 @@
 
 .period_place {
 	justify-content: center;
-	margin: 30px;
-	padding: 10px;
+	margin: 10px;
+	/* padding: 10px; */
 	align-items: center;
 	text-align: center;
 }
 .all_img_wrapper {
 	position: relative;
-	width: 100%;
-	height: 400px;
+	width: 90%;
+	height: 500px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	text-align: center;
-	margin: 15px;
+	margin: auto;
 }
 
 .period_place_label {
@@ -211,7 +227,7 @@
 	align-items: center;
 	padding: 10px;
 	margin: auto;
-	width: 85%;
+	width: 83%;
 	border-radius: 5px;
 	background-color: #f1f3f5;
 }
@@ -242,7 +258,7 @@
 	/* background-color: yellow; */
 }
 .info_box_long {
-	width: 950px;
+	width: 750px;
 	height: 90px;
 	border: none;
 	outline: none;
@@ -268,7 +284,7 @@
 
 .word_info {
 	background-color: #f1f3f5;
-	height: 125px;
+	height: 120px;
 	position: relative;
 	border-radius: 5px;
 	padding: 10px;
@@ -297,7 +313,7 @@
 	align-items: center;
 	text-align: center;
 	/* margin: auto; */
-	margin: 20px;
+	margin: 15px;
 	justify-content: center;
 	width: 150px;
 	height: 100px;
@@ -359,7 +375,7 @@
 	display: flex;
 }
 .add_button {
-	width: 85%;
+	width: 84%;
 	margin-top: 10px;
 	padding: 3px;
 	border: none;
