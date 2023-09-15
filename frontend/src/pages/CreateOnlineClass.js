@@ -7,7 +7,7 @@ import add from "../assets/day_class_add.png";
 import edit from "../assets/edit.png";
 import remove from "../assets/remove.png";
 
-export default function CreateOnlineClass(props) {
+export default function CreateOnlineClass_day_plan(props) {
 	const {
 		days,
 		isImage,
@@ -151,47 +151,7 @@ export default function CreateOnlineClass(props) {
 											}
 										/>
 									</div>
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<input
-											className="day_input_text"
-											style={{ width: 400 }}
-											type="date"
-											dateFormat="yyyy-MM-dd"
-											name={`date_${day.id}`}
-											placeholder="날짜"
-											value={day.date}
-											onChange={(e) =>
-												handleChange(day.id, "date", e.target.value)
-											}
-										/>
 
-										<input
-											className="day_input_text"
-											style={{ width: 200 }}
-											type="time"
-											name={`startTime_${day.id}`}
-											placeholder="시간"
-											value={day.startTime}
-											onChange={(e) =>
-												handleChange(day.id, "startTime", e.target.value)
-											}
-										/>
-										<div>-</div>
-										<input
-											className="day_input_text"
-											style={{ width: 200 }}
-											type="time"
-											name={`endTime_${day.id}`}
-											placeholder="시간"
-											value={day.endTime}
-											onChange={(e) =>
-												handleChange(day.id, "endTime", e.target.value)
-											}
-										/>
-									</div>
 									<div
 										className="flex_row"
 										style={{ justifyContent: "flex-start" }}
@@ -232,6 +192,11 @@ export default function CreateOnlineClass(props) {
 								{days.length > 1 && day.id === days[days.length - 1].id && (
 									<button
 										className="remove_button"
+										style={{
+											border: "none",
+											backgroundColor: "transparent",
+											margin: 5,
+										}}
 										onClick={() => handleRemoveDay(day.id)}
 									>
 										<img src={minus} width={25} alt="minus" />
