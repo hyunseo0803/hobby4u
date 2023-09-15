@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import "../styles/CreateClassDetail.css";
 import { useLocation } from "react-router-dom";
-// import minus from "../assets/day_class_minus.png";
-// import add from "../assets/day_class_add.png";
-
 import "react-datepicker/dist/react-datepicker.css";
 import edit from "../assets/edit.png";
 import remove from "../assets/remove.png";
-import pass from "../assets/pass.png";
-import nonpass from "../assets/nonpass.png";
-import CreateOfflinClass from "../pages/CreateOfflineClass";
-import CreateOnlineClass from "../pages/CreateOnlineClass";
-
+import { DAY_PLAN, PLACE_PERIOD } from "../pages/CreateOfflineClass";
+import ONLINE_DAY_PLAN from "../pages/CreateOnlineClass";
+import { OfflinFollowbar, OnlineFollowbar } from "../component/CCFollowbar";
 import axios from "axios";
 
 function CreateClassDetail(props) {
@@ -85,24 +80,68 @@ function CreateClassDetail(props) {
 	const [All_select_theme, setAllselecttheme] = useState(false);
 	const [All_person_money, setAllpersonmoney] = useState(false);
 	const [All_period_place, setAllperiodplace] = useState(false);
-	const [All_day_plan, setAlldayplan] = useState(false);
+	const [All_day_plan_offline, setAlldayplanoffline] = useState(false);
+	const [All_day_plan_online, setAlldayplanonline] = useState(false);
 	const [All_plan_file, setAllplanfile] = useState(false);
 
-	const checkList = [
+	const checkList_offline = [
 		All_select_theme,
 		All_person_money,
 		All_period_place,
-		All_day_plan,
+		All_day_plan_offline,
 		All_plan_file,
 	];
+	const checkList_online = [
+		All_select_theme,
+		All_person_money,
+		All_day_plan_online,
+	];
 
-	const listContents = [
+	const listContents_offline = [
 		"테마선택",
 		"인원 및 수강료",
 		"기간 및 장소",
 		"Day별 상세 계획",
 		"필수 첨부 파일",
 	];
+	const listContents_online = ["테마선택", "인원 및 수강료", "Day별 상세 계획"];
+
+	const theme = [
+		"# 조용한",
+		"# 스포츠",
+		"# 여행",
+		"# 힐링",
+		"# 액티비티",
+		"# 혼자",
+		"# 간단한",
+		"# 음악",
+		"# 공예",
+		"# 기술",
+		"# 뷰티",
+		"# 문화예술",
+	];
+
+	const location = useLocation();
+
+	const title = location.state.title;
+	const info = location.state.info;
+	const option = location.state.option;
+	const imageSrc = location.state.imageSrc;
+	const imagepreview = location.state.imagepreview;
+	const videopreview = location.state.videopreview;
+
+	const [isFirstImage, setIsFirstImage] = useState("");
+	const [isImage, setIsImage] = useState("");
+
+	const All_submit_Offline =
+		!All_select_theme ||
+		!All_period_place ||
+		!All_person_money ||
+		!All_day_plan_offline ||
+		!All_plan_file;
+
+	const All_submit_Online =
+		!All_select_theme || !All_person_money || !All_day_plan_online;
 
 	const onChangeInput = (e, number) => {
 		const { name, value } = e.target;
@@ -112,11 +151,27 @@ function CreateClassDetail(props) {
 			[name]: value,
 		}));
 
-		// `inputCount` 업데이트
 		setInputCount((prevInputCount) => ({
 			...prevInputCount,
-			[`inputCount${number}`]: value.length, // 현재 입력된 텍스트의 길이로 업데이트
+			[`inputCount${number}`]: value.length,
 		}));
+	};
+
+	const onChangeImage = (e, number) => {
+		const newInputImage = { ...inputImage };
+		newInputImage[`inputImage${number}`] = e;
+		setInputImage(newInputImage);
+
+		const reader = new FileReader();
+		reader.readAsDataURL(e);
+		return new Promise((resolve) => {
+			reader.onload = () => {
+				const newInputImagePreview = { ...inputImagePreview };
+				newInputImagePreview[`inputImage${number}preview`] = reader.result;
+				setInputImagePreview(newInputImagePreview);
+				resolve();
+			};
+		});
 	};
 
 	const handleRemoveImg = (number) => {
@@ -208,34 +263,6 @@ function CreateClassDetail(props) {
 		setIsOpen(true);
 	}
 
-	//CreateClass 첫 단계 부분 : 제목, 소개, 온라인/오프라인, 사진 변수 받는 부분
-	const location = useLocation();
-
-	const title = location.state.title;
-	const info = location.state.info;
-	const option = location.state.option;
-	const imageSrc = location.state.imageSrc;
-	const imagepreview = location.state.imagepreview;
-	const videopreview = location.state.videopreview;
-
-	const [isFirstImage, setIsFirstImage] = useState("");
-	const [isImage, setIsImage] = useState("");
-
-	const theme = [
-		"# 조용한",
-		"# 스포츠",
-		"# 여행",
-		"# 힐링",
-		"# 액티비티",
-		"# 혼자",
-		"# 간단한",
-		"# 음악",
-		"# 공예",
-		"# 기술",
-		"# 뷰티",
-		"# 문화예술",
-	];
-
 	const addTheme = (theme_item) => {
 		if (selectedTheme.includes(theme_item)) {
 			setSelectedTheme(selectedTheme.filter((t) => t !== theme_item));
@@ -244,16 +271,8 @@ function CreateClassDetail(props) {
 		}
 	};
 
-	useEffect(() => {
-		if (imageSrc !== null) {
-			if (imageSrc.type.startsWith("image/")) {
-				setIsFirstImage(true);
-			} else {
-				setIsFirstImage(false);
-			}
-		}
-
-		const isAtLeastOneDayValid = days.some(
+	const blank_check = useCallback(() => {
+		const isAtLeastOneDayValidoff = days.every(
 			(day) =>
 				day.title !== "" &&
 				day.date !== null &&
@@ -262,6 +281,31 @@ function CreateClassDetail(props) {
 				day.content !== "" &&
 				day.prepare !== ""
 		);
+		const isAtLeastOneDayValidon = days.every(
+			(day) => day.title !== "" && day.content !== "" && day.prepare !== ""
+		);
+		if (isAtLeastOneDayValidoff) {
+			setAlldayplanoffline(true);
+		} else {
+			setAlldayplanoffline(false);
+		}
+		if (isAtLeastOneDayValidon) {
+			setAlldayplanonline(true);
+		} else {
+			setAlldayplanonline(false);
+		}
+	}, [days]);
+
+	useEffect(() => {
+		blank_check();
+
+		if (imageSrc !== null) {
+			if (imageSrc.type.startsWith("image/")) {
+				setIsFirstImage(true);
+			} else {
+				setIsFirstImage(false);
+			}
+		}
 		if (selectedTheme.length !== 0) {
 			setAllselecttheme(true);
 		} else {
@@ -283,11 +327,6 @@ function CreateClassDetail(props) {
 		} else {
 			setAllperiodplace(false);
 		}
-		if (isAtLeastOneDayValid) {
-			setAlldayplan(true);
-		} else {
-			setAlldayplan(false);
-		}
 		if (file !== null) {
 			setAllplanfile(true);
 		} else {
@@ -303,16 +342,10 @@ function CreateClassDetail(props) {
 		activityEndDate,
 		activityStartDate,
 		address,
+		blank_check,
 		days,
 		file,
 	]);
-
-	const All_submit_ok =
-		!All_select_theme ||
-		!All_period_place ||
-		!All_person_money ||
-		!All_day_plan ||
-		!All_plan_file;
 
 	function loadMap(address) {
 		// Kakao Maps API 스크립트를 동적으로 로드
@@ -333,8 +366,6 @@ function CreateClassDetail(props) {
 				if (kakao.maps.services) {
 					const geocoder = new kakao.maps.services.Geocoder();
 					geocoder.addressSearch(address, (result, status) => {
-						// console.log(address);
-
 						if (status === kakao.maps.services.Status.OK) {
 							const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
@@ -343,7 +374,6 @@ function CreateClassDetail(props) {
 								map: map,
 							});
 
-							// 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
 							map.setCenter(coords);
 						}
 					});
@@ -373,6 +403,7 @@ function CreateClassDetail(props) {
 		};
 		setDays((prevDays) => [...prevDays, newDay]);
 		console.log(days);
+		blank_check();
 	};
 
 	const handleRemoveDay = (id) => {
@@ -464,6 +495,16 @@ function CreateClassDetail(props) {
 		}
 	};
 
+	const onChangeImage_day = (value, name) => {
+		const dayId = name.replace("day_img_", "");
+		handleChange(dayId, "dayImg", value);
+	};
+
+	const onChangefile = (e) => {
+		setFile(e);
+		setFileSrc(e.name);
+	};
+
 	const handleSubmit = () => {
 		const token = localStorage.getItem("token");
 		console.log(inputInfo["inputInfo1"]);
@@ -502,68 +543,30 @@ function CreateClassDetail(props) {
 		axios
 			.post("http://localhost:8000/api/post/submit_data/", formData, {
 				headers: {
-					"Content-Type": "multipart/form-data", // Content-Type 설정
+					"Content-Type": "multipart/form-data",
 				},
 			})
 			.then((response) => {
-				console.log(response.data); // Django에서 보낸 응답을 확인합니다.
+				console.log(response.data);
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
 			});
 	};
 
-	const onChangeImage = (e, number) => {
-		const newInputImage = { ...inputImage }; // 기존 상태 복제
-		newInputImage[`inputImage${number}`] = e; // 특정 요소 업데이트
-		setInputImage(newInputImage); // 새로운 상태로 업데이트
-
-		const reader = new FileReader();
-		reader.readAsDataURL(e);
-		return new Promise((resolve) => {
-			reader.onload = () => {
-				const newInputImagePreview = { ...inputImagePreview }; // 미리보기 상태 복제
-				newInputImagePreview[`inputImage${number}preview`] = reader.result; // 특정 미리보기 업데이트
-				setInputImagePreview(newInputImagePreview); // 새로운 미리보기 상태로 업데이트
-				resolve();
-			};
-		});
-	};
-
-	const onChangefile = (e) => {
-		setFile(e);
-		setFileSrc(e.name);
-	};
-	const onChangeImage_day = (value, name) => {
-		console.log(value);
-		const dayId = name.replace("day_img_", "");
-		handleChange(dayId, "dayImg", value);
-	};
-
 	return (
 		<div className="create_wrap">
-			<ul className="follow_bar">
-				{checkList.map((checked, index) => (
-					<li key={index} style={{ listStyle: "none", margin: 5 }}>
-						{checked ? (
-							<img
-								src={pass}
-								alt="pass"
-								width={18}
-								style={{ marginRight: 10 }}
-							/>
-						) : (
-							<img
-								src={nonpass}
-								alt="nonpass"
-								width={18}
-								style={{ marginRight: 10 }}
-							/>
-						)}
-						{listContents[index]}
-					</li>
-				))}
-			</ul>
+			{option === "offline" ? (
+				<OfflinFollowbar
+					checkList_offline={checkList_offline}
+					listContents_offline={listContents_offline}
+				/>
+			) : (
+				<OnlineFollowbar
+					checkList_online={checkList_online}
+					listContents_online={listContents_online}
+				/>
+			)}
 			<div className="large_label" style={{ padding: 20, textAlign: "center" }}>
 				TITLE : {title}
 			</div>
@@ -703,7 +706,7 @@ function CreateClassDetail(props) {
 				</div>
 			</div>
 			{option === "offline" ? (
-				<CreateOfflinClass
+				<PLACE_PERIOD
 					applyStartDate={applyStartDate}
 					applyEndDate={applyEndDate}
 					onChangeApply={onChangeApply}
@@ -853,240 +856,8 @@ function CreateClassDetail(props) {
 					))}
 				</div>
 			</div>
-			{/* <div className="daydetail_all_wrapper"> */}
-			{/* <div
-					className="large_label"
-					style={{ marginLeft: "5%", textAlign: "left", marginBottom: 20 }}
-				>
-					DAY별 클래스 상세 소개
-				</div>
-				<div className="dayclasswrapper">
-					<div>
-						{days.map((day) => (
-							<div
-								key={day.id}
-								className="flex_center"
-								style={{ flexDirection: "column" }}
-							>
-								<div className="day_title_label">{day.id}</div>
-								<div className="flex_center">
-									{day.dayImgpreview || day.dayVideopreview ? (
-										<>
-											<div className="background_day_img">
-												{isImage ? (
-													<>
-														<img
-															src={day.dayImgpreview}
-															style={{
-																// position: "relative",
-																objectFit: "cover",
-																width: "80%",
-																maxHeight: 500,
-																justifyContent: "center",
-																maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
-																height: "auto", // 높이는 자동으로 조정됩니다.
-															}}
-															alt="preview-img"
-														/>
-													</>
-												) : (
-													<video
-														src={day.dayVideopreview}
-														style={{
-															objectFit: "cover",
-															width: "80%",
-															maxHeight: 500,
-															justifyContent: "center",
-															maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
-															height: "auto",
-														}}
-														controls
-													/>
-												)}
-
-												<button
-													className="editImg_text"
-													onClick={() => {
-														const inputElement = document.getElementById(
-															`day_img_input_${day.id}`
-														);
-														if (inputElement) {
-															inputElement.click();
-														}
-													}}
-												>
-													<img src={edit} width={22} alt="edit" />
-												</button>
-												<button
-													className="editImg_text"
-													style={{ top: 35 }}
-													onClick={() => handleDayRemoveImg(day.id)}
-												>
-													<img src={remove} width={22} alt="edit" />
-												</button>
-											</div>
-										</>
-									) : (
-										<>
-											<button
-												className="uploadImg_behind"
-												onClick={() => {
-													const inputElement = document.getElementById(
-														`day_img_input_${day.id}`
-													);
-													if (inputElement) {
-														inputElement.click();
-													}
-												}}
-											>
-												<img
-													width="50"
-													height="50"
-													src="https://img.icons8.com/ios/50/image--v1.png"
-													alt="--v1"
-												/>
-											</button>
-										</>
-									)}
-
-									<input
-										type="file"
-										accept="image/*,video/*"
-										id={`day_img_input_${day.id}`}
-										style={{ display: "none" }}
-										onChange={(e) => {
-											const minSizeInBytes = 200 * 200;
-											if (e.target.files[0].size < minSizeInBytes) {
-												alert(
-													"이미지/영상의 크기가 너무 작습니다. 다시 선택해주세요."
-												);
-											} else {
-												onChangeImage_day(
-													e.target.files[0],
-													`day_img_${day.id}`
-												);
-											}
-										}}
-									/>
-								</div>
-								<div>
-									<div className="day_class_input">
-										<div
-											className="flex_row"
-											style={{ justifyContent: "flex-start" }}
-										>
-											<input
-												className="day_input_text"
-												style={{ width: 950 }}
-												type="text"
-												maxLength={50}
-												name={`title_${day.id}`}
-												placeholder="제목"
-												value={day.title}
-												onChange={(e) =>
-													handleChange(day.id, "title", e.target.value)
-												}
-											/>
-										</div>
-										<div
-											className="flex_row"
-											style={{ justifyContent: "flex-start" }}
-										>
-											<input
-												className="day_input_text"
-												style={{ width: 400 }}
-												type="date"
-												dateFormat="yyyy-MM-dd"
-												name={`date_${day.id}`}
-												placeholder="날짜"
-												value={day.date}
-												onChange={(e) =>
-													handleChange(day.id, "date", e.target.value)
-												}
-											/>
-
-											<input
-												className="day_input_text"
-												style={{ width: 200 }}
-												type="time"
-												name={`startTime_${day.id}`}
-												placeholder="시간"
-												value={day.startTime}
-												onChange={(e) =>
-													handleChange(day.id, "startTime", e.target.value)
-												}
-											/>
-											<div>-</div>
-											<input
-												className="day_input_text"
-												style={{ width: 200 }}
-												type="time"
-												name={`endTime_${day.id}`}
-												placeholder="시간"
-												value={day.endTime}
-												onChange={(e) =>
-													handleChange(day.id, "endTime", e.target.value)
-												}
-											/>
-										</div>
-										<div
-											className="flex_row"
-											style={{ justifyContent: "flex-start" }}
-										>
-											<input
-												className="day_input_text"
-												style={{ width: 400 }}
-												type="text"
-												multiple="false"
-												name={`prepare_${day.id}`}
-												placeholder="준비물"
-												value={day.prepare}
-												onChange={(e) =>
-													handleChange(day.id, "prepare", e.target.value)
-												}
-											/>
-										</div>
-										<div
-											className="flex_row"
-											style={{ justifyContent: "flex-start" }}
-										>
-											<textarea
-												className="day_input_text"
-												style={{ width: 950 }}
-												type="text"
-												multiple="true"
-												name={`content_${day.id}`}
-												placeholder="내용"
-												value={day.content}
-												onChange={(e) =>
-													handleChange(day.id, "content", e.target.value)
-												}
-											/>
-										</div>
-									</div>
-								</div>
-								<div style={{ border: "none" }}>
-									{days.length > 1 && day.id === days[days.length - 1].id && (
-										<button
-											className="remove_button"
-											onClick={() => handleRemoveDay(day.id)}
-										>
-											<img src={minus} width={25} alt="minus" />
-										</button>
-									)}
-								</div>
-							</div>
-						))}
-					</div>
-				</div> */}
-			{/* <div className="add_button_wrapper">
-					<button className="add_button" onClick={handleAddDay}>
-						<img src={add} width={25} alt="minus" />
-					</button>
-				</div>
-			</div> */}
 			{option === "offline" ? (
-				<CreateOnlineClass
+				<DAY_PLAN
 					days={days}
 					isImage={isImage}
 					handleDayRemoveImg={handleDayRemoveImg}
@@ -1096,7 +867,7 @@ function CreateClassDetail(props) {
 					handleAddDay={handleAddDay}
 				/>
 			) : (
-				<CreateOnlineClass
+				<ONLINE_DAY_PLAN
 					days={days}
 					isImage={isImage}
 					handleDayRemoveImg={handleDayRemoveImg}
@@ -1170,13 +941,23 @@ function CreateClassDetail(props) {
 				</div>
 			</div>
 			<div className="submit_button_wrapper">
-				<button
-					className={!All_submit_ok ? "submit_ok" : "submit_button"}
-					onClick={handleSubmit}
-					disabled={All_submit_ok}
-				>
-					등록하기
-				</button>
+				{option === "offline" ? (
+					<button
+						className={!All_submit_Offline ? "submit_ok" : "submit_button"}
+						onClick={handleSubmit}
+						disabled={All_submit_Offline}
+					>
+						등록하기
+					</button>
+				) : (
+					<button
+						className={!All_submit_Online ? "submit_ok" : "submit_button"}
+						onClick={handleSubmit}
+						disabled={All_submit_Online}
+					>
+						등록하기
+					</button>
+				)}
 			</div>
 		</div>
 	);
