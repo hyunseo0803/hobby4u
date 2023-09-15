@@ -34,37 +34,37 @@ def submit_data(request):
     if request.method == 'POST':
         json_data = request.POST.get('json')  # JSON 데이터 받기
         data = json.loads(json_data)
-        if data.get('option')=='offline':
-            token=data.get('token')
-            payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
-            user_id=payload['id']
+        # if data.get('option')=='offline':
+        token=data.get('token')
+        payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
+        user_id=payload['id']
+        
+        date= DateFormat(datetime.now()).format('Ymd')
+        title=data.get('title')
+        person = data.get('person')
+        info = data.get('info')
+        option = data.get('option')
+        imageSrc=request.FILES.get("imageSrc")
+        address = data.get('address')
+        money = data.get('money')
+        theme = data.get('theme')
+        applystartdate=data.get('toStringApplyStartDate')
+        applyenddate=data.get('toStringApplyEndDate')
+        activitystartdate=data.get('toStringActivityStartDate')
+        activityenddate=data.get('toStringActivityEndDate')
+        inputinfo1=data.get('inputInfo1')
+        inputinfo2=data.get('inputInfo2')
+        inputinfo3=data.get('inputInfo3')
+        inputimage1=request.FILES.get('inputImage1')
+        inputimage2=request.FILES.get('inputImage2')
+        inputimage3=request.FILES.get('inputImage3')
+        file=request.FILES.get('file')
             
-            date= DateFormat(datetime.now()).format('Ymd')
-            title=data.get('title')
-            person = data.get('person')
-            info = data.get('info')
-            option = data.get('option')
-            imageSrc=request.FILES.get("imageSrc")
-            address = data.get('address')
-            money = data.get('money')
-            theme = data.get('theme')
-            applystartdate=data.get('toStringApplyStartDate')
-            applyenddate=data.get('toStringApplyEndDate')
-            activitystartdate=data.get('toStringActivityStartDate')
-            activityenddate=data.get('toStringActivityEndDate')
-            inputinfo1=data.get('inputInfo1')
-            inputinfo2=data.get('inputInfo2')
-            inputinfo3=data.get('inputInfo3')
-            inputimage1=request.FILES.get('inputImage1')
-            inputimage2=request.FILES.get('inputImage2')
-            inputimage3=request.FILES.get('inputImage3')
-            file=request.FILES.get('file')
             
-            
-            days = data.get('days', [])
+        days = data.get('days', [])
             
 
-            class_obj = Class.objects.create(
+        class_obj = Class.objects.create(
                                             id=Member.objects.get(pk=user_id),
                                             title=title,
                                             info=info,
@@ -86,36 +86,36 @@ def submit_data(request):
                                             activityend=activityenddate,
                                             adress=address,
                                             file=file)
-            class_obj.save()
-            for day_data in days:
-                    print(request.FILES.get('dayImg'))
-                    day_sequence=day_data.get('id','')
-                    day_date=day_data.get('date','')
-                    day_startTime=day_data.get('startTime','')
-                    day_endTime=day_data.get('endTime','')
-                    day_title = day_data.get('title','')
-                    day_info = day_data.get('content','')
-                    day_prepare=day_data.get('prepare','')
-                    # day_file = day_data.get('dayImg') 
-                    # day_file = request.FILES.get('dayImg')
-                    day_file = request.FILES.get(f'dayImg[{day_sequence}]', None)
+        class_obj.save()
+        for day_data in days:
+                print(request.FILES.get('dayImg'))
+                day_sequence=day_data.get('id','')
+                day_date=day_data.get('date','')
+                day_startTime=day_data.get('startTime','')
+                day_endTime=day_data.get('endTime','')
+                day_title = day_data.get('title','')
+                day_info = day_data.get('content','')
+                day_prepare=day_data.get('prepare','')
+                # day_file = day_data.get('dayImg') 
+                # day_file = request.FILES.get('dayImg')
+                day_file = request.FILES.get(f'dayImg[{day_sequence}]', None)
 
-                    
-                    day_class_info=DayClassinfo.objects.create(
-                        class_id=class_obj,
-                        sequence=day_sequence,
-                        date=day_date,
-                        startTime=day_startTime,
-                        endTime=day_endTime, 
-                        title=day_title, 
-                        info=day_info,
-                        prepare=day_prepare,
-                        file=day_file
-                        )
                 
-                    day_class_info.save()
-        if data.get('option')=='online':
-            None
+                day_class_info=DayClassinfo.objects.create(
+                    class_id=class_obj,
+                    sequence=day_sequence,
+                    date=day_date,
+                    startTime=day_startTime,
+                    endTime=day_endTime, 
+                    title=day_title, 
+                    info=day_info,
+                    prepare=day_prepare,
+                    file=day_file
+                    )
+            
+                day_class_info.save()
+    if data.get('option')=='online':
+        None
 
     
 
