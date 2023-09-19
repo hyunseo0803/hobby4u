@@ -7,9 +7,11 @@ import "../src/App.css";
 import Setting from "./pages/Setting";
 import Myclass from "./pages/Myclass";
 import Likeclass from "./pages/Likeclass";
-import Exam from "./pages/Exam";
-import CreateClass from "./pages/CreateClass";
-import CreateClassDetail from "./pages/CreateClassDetail";
+import Judge from "./pages/Judge";
+import CreateClass from "./pages/CreateClass/CreateClass";
+import CreateClassDetail from "./pages/CreateClass/CreateClassDetail";
+import Allclass from "./pages/ReadClass/AllClass";
+import ReadClassDetail from "./pages/ReadClass/ReadClassDetail";
 
 class App extends Component {
 	render() {
@@ -23,9 +25,11 @@ class App extends Component {
 						<Route path="setting" element={<Setting />} />
 						<Route path="myclass" element={<Myclass />} />
 						<Route path="likeclass" element={<Likeclass />} />
-						<Route path="exam" element={<Exam />} />
+						<Route path="judge" element={<Judge />} />
 						<Route path="createclass" element={<CreateClass />} />
 						<Route path="createClass/detail" element={<CreateClassDetail />} />
+						<Route path="readClass/allClass" element={<Allclass />} />
+						<Route path="readClass/classDetail" element={<ReadClassDetail />} />
 					</Routes>
 
 					<Footer />
