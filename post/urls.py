@@ -7,7 +7,10 @@ from . import views
 urlpatterns = [
     path('submit_data/',views.submit_data),
     path('read_all_data/',views.read_all_data),
+    path('read_new_data/',views.read_new_data),
     path('read_some_data/',views.read_some_data),
+  
+
     # path('',views.MemberList.as_view()),
     # path('<int:pk>/',views.MemberDetail.as_view()),
     # path('kakao/callback/',views.KakaoCallbackView),
