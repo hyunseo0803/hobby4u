@@ -1,16 +1,18 @@
 from django.shortcuts import render
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+
 import json
 import jwt
 import os
 from .models import Member
 from django.core.files import File
-# Create your views here.
-# views.py
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Class, DayClassinfo
 from datetime import datetime
+from django.core import serializers
 
 from dotenv import load_dotenv
 
@@ -20,13 +22,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 
 from django.utils.dateformat import DateFormat
-# import random
-
-# number = set()
-# while len(number)<5: 
-#     number.add(random.randint(1,9)) # 추가할 숫자가 중복이면 추가가 되질 않습니다.
-
-
 
 @csrf_exempt
 def submit_data(request):
@@ -114,13 +109,45 @@ def submit_data(request):
                     )
             
                 day_class_info.save()
-    if data.get('option')=='online':
-        None
-
-    
-
-    
-
         return JsonResponse({'message': 'Data received and processed successfully!'})
 
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+
+def read_all_data(request):
+        class_all= Class.objects.values()   #쿼리셋 Django.db.models.query.QuerySet
+        return JsonResponse(list(class_all) ,safe=False)  #리스트
+        
+        
+@csrf_exempt
+def read_some_data(request): 
+    class_id = request.GET.get('class_id')
+    if class_id is not None:
+        try:
+            cls = Class.objects.get(class_id=class_id)
+            class_data = {
+                'class_id': cls.class_id,
+                'title': cls.title,
+                'info': cls.info,
+                'img': cls.img.url,
+            }
+            dls=DayClassinfo.objects.filter(class_id=class_id)
+            day_data_list = []
+            for day_ in dls:
+                day_data = {
+                    'day_title': day_.title,
+                    'day_info': day_.info,
+                    'day_sequence':day_.sequence
+                }
+                day_data_list.append(day_data)
+            return JsonResponse({'class_data':class_data,'day_data':day_data_list})
+        except Class.DoesNotExist:
+            return JsonResponse({'error': 'Class not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'class_id parameter is required'}, status=400)
+
+    
+    
+
+# 
