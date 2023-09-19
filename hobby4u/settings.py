@@ -84,8 +84,8 @@ CORS_ALLOWED_ORIGINS = [
     # ... 등등 필요한 도메인들을 추가해줍니다.
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'hobby4u/post/media/')
-MEDIA_URL = '/hobby4u/post/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend/public/media/')
+MEDIA_URL = 'frontend/public/media/'
 
 
 ROOT_URLCONF = 'hobby4u.urls'
