@@ -8,18 +8,28 @@ function ReadClassDetail() {
 	const ClassDetail = location.state.ClassDetail;
 	const DayDetail = location.state.DayDetail;
 	const firstimg = ClassDetail["img"].replace("/frontend/public/", "/");
+	const theme = ClassDetail["theme"]
+		.replace("['", "")
+		.replace("']", "")
+		.replace("','", " ");
 
+	const type_offline = ClassDetail["type"] === "offline";
+	const money_free = parseInt(ClassDetail["money"]) === 0;
 	useEffect(() => {
 		console.log(ClassDetail);
 		console.log(DayDetail);
-		console.log(ClassDetail["img"]);
-		console.log(firstimg);
+		console.log(parseInt(ClassDetail["money"]));
 	});
 
 	return (
 		<div style={{ margin: 100 }}>
-			<img src={firstimg} alt="Minus Circle" width="100%" />
 			<strong>Title:</strong> {ClassDetail["title"]}
+			<br />
+			<strong>{theme}</strong>
+			<img src={firstimg} alt="Minus Circle" width="100%" />
+			<br />
+			<strong>{type_offline ? "오프라인 |" : "온라인 |"}</strong>
+			<strong>{money_free ? " 무료" : " 유료"}</strong>
 			<br />
 			<strong>데이별 활동</strong>
 			<ul>
