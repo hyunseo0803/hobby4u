@@ -12,6 +12,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Class, DayClassinfo
 from datetime import datetime
+from datetime import timedelta
+
 from django.core import serializers
 
 from dotenv import load_dotenv
@@ -34,7 +36,7 @@ def submit_data(request):
         payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
         
-        date= DateFormat(datetime.now()).format('Ymd')
+        date= datetime.now().date()
         title=data.get('title')
         person = data.get('person')
         info = data.get('info')
@@ -118,8 +120,37 @@ def submit_data(request):
 def read_all_data(request):
         class_all= Class.objects.values()   #쿼리셋 Django.db.models.query.QuerySet
         return JsonResponse(list(class_all) ,safe=False)  #리스트
-        
-        
+    
+    
+def read_new_data(request):
+    
+        # 현재 날짜 가져오기
+    current_date = datetime.now().date()
+
+    # 한 달 전 날짜 계산
+    one_month_ago = current_date - timedelta(days=30)
+    
+    filtered_date = Class.objects.filter(date__range=[one_month_ago, current_date])
+    new_date_list=[]
+    for date in filtered_date:
+        date_data={
+            'class_id': date.class_id,
+                'title': date.title,
+                'info': date.info,
+                'img': date.img.url,
+                'theme':date.theme,
+                'people': date.people,
+                'money': date.money,
+                'type': date.type,
+                'applystart': date.applystart,
+                'applyend': date.applyend,
+                'activitystart': date.activitystart,
+                'activityend': date.activityend,
+        }
+
+        new_date_list.append(date_data)
+    return JsonResponse( {'new_date_list':new_date_list}, safe=False) 
+            
 @csrf_exempt
 def read_some_data(request): 
     class_id = request.GET.get('class_id')
@@ -131,6 +162,16 @@ def read_some_data(request):
                 'title': cls.title,
                 'info': cls.info,
                 'img': cls.img.url,
+                'theme':cls.theme,
+                'people': cls.people,
+                'money': cls.money,
+                'type': cls.type,
+                'applystart': cls.applystart,
+                'applyend': cls.applyend,
+                'activitystart': cls.activitystart,
+                'activityend': cls.activityend,
+                
+                
             }
             dls=DayClassinfo.objects.filter(class_id=class_id)
             day_data_list = []
