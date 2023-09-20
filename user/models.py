@@ -117,25 +117,24 @@ class Class(models.Model):
     title = models.CharField(max_length=100)        
     info = models.CharField(max_length=100, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
-    img = models.ImageField(db_column='Img',upload_to="firstimg", blank=True, null=True)  # Field name made lowercase.
-    file = models.FileField(db_column='file',upload_to="firstfile", blank=True, null=True) 
+    img = models.ImageField(db_column='Img',upload_to="firstimg/", blank=True, null=True)  # Field name made lowercase.
+    file = models.FileField(db_column='file',upload_to="firstfile/", blank=True, null=True) 
     theme = models.CharField(max_length=100, blank=True, null=True)
     people = models.CharField(max_length=100, blank=True, null=True)
     money = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=100, blank=True, null=True)
-    intro1_file = models.ImageField(upload_to="introimg", blank=True, null=True)
+    intro1_file = models.ImageField(upload_to="introimg/", blank=True, null=True)
     intro1_content = models.CharField(max_length=100, blank=True, null=True)
-    intro2_file = models.ImageField( upload_to="introimg",blank=True, null=True)
+    intro2_file = models.ImageField( upload_to="introimg/",blank=True, null=True)
     intro2_content = models.CharField(max_length=100, blank=True, null=True)
-    intro3_file = models.ImageField(upload_to="introimg", blank=True, null=True)
+    intro3_file = models.ImageField(upload_to="introimg/", blank=True, null=True)
     intro3_content = models.CharField(max_length=100, blank=True, null=True)
     applystart = models.CharField(max_length=100, blank=True, null=True)
     applyend = models.CharField(max_length=100, blank=True, null=True)
     activitystart = models.CharField(max_length=100, blank=True, null=True)
     activityend = models.CharField(max_length=100, blank=True, null=True)
     adress = models.CharField(max_length=100, blank=True, null=True)
-    uploadtime = models.CharField(max_length=100, blank=True, null=True)
-    goodcount = models.CharField(max_length=100, blank=True, null=True)
+    goodcount = models.IntegerField(blank=True, null=True, default=0)
 
     class Meta:
         managed = False
@@ -153,7 +152,7 @@ class DayClassinfo(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True)
     info = models.CharField(max_length=100, blank=True, null=True)
     prepare = models.CharField(max_length=100, blank=True, null=True)
-    file = models.ImageField(upload_to="dayimg", blank=True, null=True)
+    file = models.ImageField(upload_to="dayimg/", blank=True, null=True)
 
     class Meta:
         managed = False

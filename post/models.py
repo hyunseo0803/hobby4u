@@ -134,8 +134,7 @@ class Class(models.Model):
     activitystart = models.CharField(max_length=100, blank=True, null=True)
     activityend = models.CharField(max_length=100, blank=True, null=True)
     adress = models.CharField(max_length=100, blank=True, null=True)
-    uploadtime = models.CharField(max_length=100, blank=True, null=True)
-    goodcount = models.CharField(max_length=100, blank=True, null=True)
+    goodcount = models.IntegerField(blank=True, null=True, default=0)
 
     class Meta:
         managed = False
