@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from django.db.models import Q
 
 import json
 import jwt
@@ -45,10 +46,10 @@ def submit_data(request):
         address = data.get('address')
         money = data.get('money')
         theme = data.get('theme')
-        applystartdate=data.get('toStringApplyStartDate')
-        applyenddate=data.get('toStringApplyEndDate')
-        activitystartdate=data.get('toStringActivityStartDate')
-        activityenddate=data.get('toStringActivityEndDate')
+        applystartdate=data.get('applyStartDate')
+        applyenddate=data.get('applyEndDate')
+        activitystartdate=data.get('activityStartDate')
+        activityenddate=data.get('activityEndDate')
         inputinfo1=data.get('inputInfo1')
         inputinfo2=data.get('inputInfo2')
         inputinfo3=data.get('inputInfo3')
@@ -189,6 +190,92 @@ def read_some_data(request):
         return JsonResponse({'error': 'class_id parameter is required'}, status=400)
 
     
+def read_filter_data(request):
+    money = request.GET.get('money')
+    option = request.GET.get('option')
+    apply_ok_str=request.GET.get('apply_ok')
+    today = request.GET.get('today')
+
+    if apply_ok_str == 'true':
+        apply_ok = True
+    else:
+        apply_ok = False
+    # 기본 쿼리셋
+    filter_result = Class.objects.all()
     
+    if money == "fee":
+        filter_result = filter_result.exclude(money=0)
+    if money == "free":
+        filter_result = filter_result.filter(money=0)
+        
+    if option == "online":
+        filter_result = filter_result.filter(type='online')
+    if option == "offline":
+        filter_result = filter_result.filter(type='offline')
+    
+    if apply_ok:
+        filter_result=filter_result.filter(applyend__gt=today)
+    
+    # 유료이면서 온라인
+    if money == "fee" and option == "online":
+        filter_result = filter_result.exclude(money=0).filter(type='online')
+
+    # 무료이면서 온라인
+    if money == "free" and option == "online":
+        filter_result = filter_result.filter(money=0).filter(type='online')
+
+    # 유료이면서 오프라인
+    if money == "fee" and option == "offline":
+        filter_result = filter_result.exclude(money=0).filter(type='offline')
+
+    #무료이면서 신청가능
+    if money=="free" and apply_ok:
+        filter_result = filter_result.filter(money=0).filter(applyend__gt=today)
+    #유료이면서 신청가능
+    if money=="fee" and apply_ok:
+        filter_result = filter_result.exclude(money=0).filter(applyend__gt=today)
+    #오프라인이면서 신청가능
+    if option=="offline" and apply_ok:
+        filter_result = filter_result.filter(type="offline").filter(applyend__gt=today)
+    #온라인이면서 신청가능
+    if option=="online" and apply_ok:
+        filter_result = filter_result.filter(type="online").filter(applyend__gt=today)
+    
+    # 무료이면서 오프라인
+    if money == "free" and option == "offline":
+        filter_result = filter_result.filter(money=0).filter(type='offline')
+        
+    #무료이면서 오프라인 이면서 신청가능
+    if money == "free" and option == "offline" and apply_ok:
+        filter_result = filter_result.filter(money=0).filter(type='offline').filter(applyend__gt=today)
+    #유료이면서 오프라인 이면서 신청가능 
+    if money == "fee" and option == "offline" and apply_ok:
+        filter_result = filter_result.exclude(money=0).filter(type='offline').filter(applyend__gt=today)
+    #무료이면서 온라인 이면서 신청가능
+    if money == "free" and option == "online" and apply_ok:
+        filter_result = filter_result.filter(money=0).filter(type='online').filter(applyend__gt=today)
+    #우료이면서 오프라인 이면서 신청가능
+    if money == "fee" and option == "online" and apply_ok:
+        filter_result = filter_result.exclude(money=0).filter(type='online').filter(applyend__gt=today)
+    
+    filter_data_list = []
+    for item in filter_result:
+        filter_data = {
+            'class_id': item.class_id,
+            'title': item.title,
+            'info': item.info,
+            'img': item.img.url,
+            'theme': item.theme,
+            'people': item.people,
+            'money': item.money,
+            'type': item.type,
+            'applystart': item.applystart,
+            'applyend': item.applyend,
+            'activitystart': item.activitystart,
+            'activityend': item.activityend,
+        }
+        filter_data_list.append(filter_data)
+    
+    return JsonResponse({'filter_data_list': filter_data_list}, safe=False)
 
 # 
