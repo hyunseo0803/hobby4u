@@ -1,4 +1,5 @@
 import "../../styles/CreateClassDetail.css";
+import moment from "moment";
 
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/esm/locale";
@@ -19,13 +20,13 @@ export function PLACE_PERIOD(props) {
 		applyStartDate,
 		onChangeApply,
 		applyEndDate,
-		toStringApplyStartDate,
-		toStringApplyEndDate,
+		// toStringApplyStartDate,
+		// toStringApplyEndDate,
 		activityStartDate,
 		onChangeActivity,
 		activityEndDate,
-		toStringActivityStartDate,
-		toStringActivityEndDate,
+		// toStringActivityStartDate,
+		// toStringActivityEndDate,
 		address,
 		handleModal,
 	} = props;
@@ -60,7 +61,8 @@ export function PLACE_PERIOD(props) {
 						<div className="selected_result">
 							{applyEndDate !== null ? (
 								<div className="calender-box">
-									{toStringApplyStartDate} - {toStringApplyEndDate}
+									{moment(applyStartDate).format("YYYY-MM-DD")} -
+									{moment(applyEndDate).format("YYYY-MM-DD")}
 								</div>
 							) : null}
 						</div>
@@ -93,7 +95,8 @@ export function PLACE_PERIOD(props) {
 				<div className="selected_result">
 					{activityEndDate !== null ? (
 						<div className="calender-box">
-							{toStringActivityStartDate} - {toStringActivityEndDate}
+							{moment(activityStartDate).format("YYYY-MM-DD")} -
+							{moment(activityEndDate).format("YYYY-MM-DD")}
 						</div>
 					) : null}
 				</div>
