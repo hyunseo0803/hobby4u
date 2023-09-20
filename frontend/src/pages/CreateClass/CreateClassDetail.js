@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-
+import moment from "moment";
 // import "../../styles/CreateClassDetail.css";
 import "../../styles/CreateClassDetail.css";
 import { useLocation } from "react-router-dom";
@@ -23,15 +23,15 @@ function CreateClassDetail(props) {
 	const [applyStartDate, setApplyStartDate] = useState(new Date());
 	const [applyEndDate, setApplyEndDate] = useState(null);
 
-	const [toStringApplyStartDate, setToStringApplyStartDate] = useState("");
-	const [toStringApplyEndDate, setToStringApplyEndDate] = useState("");
+	// const [toStringApplyStartDate, setToStringApplyStartDate] = useState("");
+	// const [toStringApplyEndDate, setToStringApplyEndDate] = useState("");
 
 	const [activityStartDate, setActivityStartDate] = useState(new Date());
 	const [activityEndDate, setActivityEndDate] = useState(null);
 
-	const [toStringActivityStartDate, setToStringActivityStartDate] =
-		useState("");
-	const [toStringActivityEndDate, setToStringActivityEndDate] = useState("");
+	// const [toStringActivityStartDate, setToStringActivityStartDate] =
+	// useState("");
+	// const [toStringActivityEndDate, setToStringActivityEndDate] = useState("");
 
 	const { kakao } = window;
 
@@ -198,56 +198,22 @@ function CreateClassDetail(props) {
 		const [start, end] = dates;
 
 		setApplyStartDate(start);
-		const ApplystartDateToString =
-			start.getFullYear().toString() +
-			`년` +
-			(start.getMonth() + 1).toString() +
-			`월` +
-			start.getDate().toString() +
-			`일`;
-		setToStringApplyStartDate(ApplystartDateToString);
 
 		if (end) {
 			setApplyEndDate(end);
-			const ApplyendDateToString =
-				end.getFullYear().toString() +
-				`년` +
-				(end.getMonth() + 1).toString() +
-				`월` +
-				end.getDate().toString() +
-				`일`;
-			setToStringApplyEndDate(ApplyendDateToString);
 		} else {
 			setApplyEndDate(null);
-			setToStringApplyEndDate("");
 		}
 	};
 	const onChangeActivity = (dates) => {
 		const [start, end] = dates;
 
 		setActivityStartDate(start);
-		const ActivitystartDateToString =
-			start.getFullYear().toString() +
-			`년` +
-			(start.getMonth() + 1).toString() +
-			`월` +
-			start.getDate().toString() +
-			`일`;
-		setToStringActivityStartDate(ActivitystartDateToString);
 
 		if (end) {
 			setActivityEndDate(end);
-			const ActivityendDateToString =
-				end.getFullYear().toString() +
-				`년` +
-				(end.getMonth() + 1).toString() +
-				`월` +
-				end.getDate().toString() +
-				`일`;
-			setToStringActivityEndDate(ActivityendDateToString);
 		} else {
 			setActivityEndDate(null);
-			setToStringActivityEndDate("");
 		}
 	};
 	const handleComplete = (data) => {
@@ -519,10 +485,14 @@ function CreateClassDetail(props) {
 			address: address,
 			money: money,
 			theme: selectedTheme,
-			toStringApplyStartDate: toStringApplyStartDate,
-			toStringApplyEndDate: toStringApplyEndDate,
-			toStringActivityEndDate: toStringActivityEndDate,
-			toStringActivityStartDate: toStringActivityStartDate,
+			// toStringApplyStartDate: toStringApplyStartDate,
+			// toStringApplyEndDate: toStringApplyEndDate,
+			// toStringActivityEndDate: toStringActivityEndDate,
+			// toStringActivityStartDate: toStringActivityStartDate,
+			applyStartDate: moment(applyStartDate).format("YYYY-MM-DD"),
+			applyEndDate: moment(applyEndDate).format("YYYY-MM-DD"),
+			activityStartDate: moment(activityStartDate).format("YYYY-MM-DD"),
+			activityEndDate: moment(activityEndDate).format("YYYY-MM-DD"),
 			inputInfo1: inputInfo["inputInfo1"],
 			inputInfo2: inputInfo["inputInfo2"],
 			inputInfo3: inputInfo["inputInfo3"],
@@ -712,13 +682,13 @@ function CreateClassDetail(props) {
 					applyStartDate={applyStartDate}
 					applyEndDate={applyEndDate}
 					onChangeApply={onChangeApply}
-					toStringApplyStartDate={toStringApplyStartDate}
-					toStringApplyEndDate={toStringApplyEndDate}
+					// toStringApplyStartDate={toStringApplyStartDate}
+					// toStringApplyEndDate={toStringApplyEndDate}
 					activityStartDate={activityStartDate}
 					activityEndDate={activityEndDate}
 					onChangeActivity={onChangeActivity}
-					toStringActivityStartDate={toStringActivityStartDate}
-					toStringActivityEndDate={toStringActivityEndDate}
+					// toStringActivityStartDate={toStringActivityStartDate}
+					// toStringActivityEndDate={toStringActivityEndDate}
 					isOpen={isOpen}
 					handleComplete={handleComplete}
 					address={address}
