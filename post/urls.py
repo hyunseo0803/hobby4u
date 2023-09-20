@@ -9,6 +9,7 @@ urlpatterns = [
     path('read_all_data/',views.read_all_data),
     path('read_new_data/',views.read_new_data),
     path('read_some_data/',views.read_some_data),
+    path('read_filter_data/',views.read_filter_data),
   
 
     # path('',views.MemberList.as_view()),
