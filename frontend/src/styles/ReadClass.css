@@ -10,4 +10,25 @@
 .center_label {
 	text-align: center;
 	align-items: center;
+	padding: 10px;
+}
+.new_read_container {
+	background-color: antiquewhite;
+	margin: 30px;
+}
+
+.row_center_wrap {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.class_div_btn {
+	width: 290px;
+	height: 200px;
+	margin: 15px;
+	background-color: white;
+	border: none;
+	border-radius: 8px;
 }
