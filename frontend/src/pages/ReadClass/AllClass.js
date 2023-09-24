@@ -20,13 +20,6 @@ function Allclass() {
 	const [option, setOption] = useState("");
 	const [apply_ok, setApply_ok] = useState(false);
 
-	function calculateDaysLeft(endDate) {
-		const today = moment();
-		const endDateObj = moment(endDate);
-		const timeRemaining = endDateObj.diff(today, "days");
-		return timeRemaining;
-	}
-
 	function handleReadDetail(value) {
 		axios
 			.get(`http://localhost:8000/api/post/read_some_data/?class_id=${value}`)
@@ -71,13 +64,11 @@ function Allclass() {
 	useEffect(() => {
 		const today = moment(new Date()).format("YYYY-MM-DD");
 		console.log(money, option, apply_ok);
-		// console.log(data.applyend);
 		axios
 			.get(
 				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}&apply_ok=${apply_ok}&today=${today}`
 			)
 			.then((response) => {
-				console.log(response.data.filter_data_list);
 				setFliteredata(response.data.filter_data_list);
 			})
 			.catch((error) => {
@@ -93,7 +84,8 @@ function Allclass() {
 				},
 			})
 			.then((response) => {
-				const classItem = response.data;
+				const classItem = response.data.all_data_list;
+				// console.log(typeof classItem);
 				setData(classItem);
 			})
 			.catch((error) => {
@@ -120,11 +112,7 @@ function Allclass() {
 			<div className="new_read_container">
 				<div className="center_label">NEW</div>
 				<div className="row_center_wrap">
-					<NEW_CLASS
-						newdata={newdata}
-						handleReadDetail={handleReadDetail}
-						calculateDaysLeft={calculateDaysLeft}
-					/>
+					<NEW_CLASS newdata={newdata} handleReadDetail={handleReadDetail} />
 				</div>
 			</div>
 			<div className="new_read_container">
@@ -143,7 +131,6 @@ function Allclass() {
 						apply_ok={apply_ok}
 						data={data}
 						handleReadDetail={handleReadDetail}
-						calculateDaysLeft={calculateDaysLeft}
 						fliteredata={fliteredata}
 					/>
 				</div>
