@@ -119,10 +119,36 @@ def submit_data(request):
 
 
 def read_all_data(request):
-        class_all= Class.objects.values()   #쿼리셋 Django.db.models.query.QuerySet
-        return JsonResponse(list(class_all) ,safe=False)  #리스트
-    
-    
+    class_all = Class.objects.all()
+    all_data_list = []
+    for all in class_all:
+        all_data = {
+            'class_id': all.class_id,
+            'id':{
+                'nickname':all.id.nickname,
+                'profile':all.id.profileimg,
+            },
+            'title': all.title,
+            'info': all.info,
+            'img': all.img.url,
+            'theme': all.theme,
+            'people': all.people,
+            'money': all.money,
+            'type': all.type,
+            'applystart': all.applystart,
+            'applyend': all.applyend,
+            'activitystart': all.activitystart,
+            'activityend': all.activityend,
+            'goodCount': all.goodcount
+        }
+        all_data_list.append(all_data)
+        
+        print(type(all.id.nickname))
+        
+      
+    return JsonResponse({'all_data_list':all_data_list}, safe=False)
+
+
 def read_new_data(request):
     
         # 현재 날짜 가져오기
@@ -136,19 +162,27 @@ def read_new_data(request):
     for date in filtered_date:
         date_data={
             'class_id': date.class_id,
-                'title': date.title,
-                'info': date.info,
-                'img': date.img.url,
-                'theme':date.theme,
-                'people': date.people,
-                'money': date.money,
-                'type': date.type,
-                'applystart': date.applystart,
-                'applyend': date.applyend,
-                'activitystart': date.activitystart,
-                'activityend': date.activityend,
+            'title': date.title,
+            'info': date.info,
+            'img': date.img.url,
+            'theme':date.theme,
+            'people': date.people,
+            'money': date.money,
+            'type': date.type,
+            'applystart': date.applystart,
+            'applyend': date.applyend,
+            'activitystart': date.activitystart,
+            'activityend': date.activityend,
+            'goodCount': date.goodcount,
+            'id':{
+                'nickname':date.id.nickname,
+                'profile':date.id.profileimg,
+            }
         }
-
+        print(type(date.id))
+        print(type(date.class_id))
+        
+       
         new_date_list.append(date_data)
     return JsonResponse( {'new_date_list':new_date_list}, safe=False) 
             
@@ -160,6 +194,10 @@ def read_some_data(request):
             cls = Class.objects.get(class_id=class_id)
             class_data = {
                 'class_id': cls.class_id,
+                'id':{
+                    'nickname':cls.id.nickname,
+                    'profile':cls.id.profileimg,
+                },
                 'title': cls.title,
                 'info': cls.info,
                 'img': cls.img.url,
@@ -171,6 +209,7 @@ def read_some_data(request):
                 'applyend': cls.applyend,
                 'activitystart': cls.activitystart,
                 'activityend': cls.activityend,
+                'goodCount': cls.goodcount
                 
                 
             }
@@ -262,6 +301,11 @@ def read_filter_data(request):
     for item in filter_result:
         filter_data = {
             'class_id': item.class_id,
+            'id': {
+                'nickname':item.id.nickname,
+                'profile':item.id.profileimg,
+                
+            },
             'title': item.title,
             'info': item.info,
             'img': item.img.url,
@@ -273,8 +317,11 @@ def read_filter_data(request):
             'applyend': item.applyend,
             'activitystart': item.activitystart,
             'activityend': item.activityend,
+            'goodCount': item.goodcount
         }
         filter_data_list.append(filter_data)
+        
+
     
     return JsonResponse({'filter_data_list': filter_data_list}, safe=False)
 
