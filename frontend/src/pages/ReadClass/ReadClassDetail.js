@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import React from "react";
+import moment from "moment";
 
 function ReadClassDetail() {
 	const location = useLocation();
@@ -21,6 +22,13 @@ function ReadClassDetail() {
 		console.log(parseInt(ClassDetail["money"]));
 	});
 
+	function calculateDaysLeft(endDate) {
+		const today = moment();
+		const endDateObj = moment(endDate);
+		const timeRemaining = endDateObj.diff(today, "days");
+		return timeRemaining;
+	}
+
 	return (
 		<div style={{ margin: 100 }}>
 			<strong>Title:</strong> {ClassDetail["title"]}
@@ -30,6 +38,14 @@ function ReadClassDetail() {
 			<br />
 			<strong>{type_offline ? "오프라인 |" : "온라인 |"}</strong>
 			<strong>{money_free ? " 무료" : " 유료"}</strong>
+			<br />
+			{calculateDaysLeft(ClassDetail["applyend"]) > 0 ? (
+				<strong>
+					D - {calculateDaysLeft(ClassDetail["applyend"])} 일 남음
+				</strong>
+			) : (
+				<strong>신청 기간이 아닙니다</strong>
+			)}
 			<br />
 			<strong>데이별 활동</strong>
 			<ul>
