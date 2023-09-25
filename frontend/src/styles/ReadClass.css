@@ -10,8 +10,11 @@
 .center_label {
 	text-align: center;
 	align-items: center;
-	padding: 10px;
+	padding: 20px;
+	font-size: 20px;
+	font-weight: 300px;
 }
+
 .new_read_container {
 	/* background-color: antiquewhite; */
 	margin: 10px;

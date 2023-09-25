@@ -1,0 +1,15 @@
+.flex_row {
+	display: flex;
+	flex-direction: row;
+}
+
+.btn_normal {
+	border: none;
+}
+.btn_normal:hover {
+	background-color: rgb(205, 33, 33);
+}
+
+.btn_normal_fee {
+	background-color: pink;
+}

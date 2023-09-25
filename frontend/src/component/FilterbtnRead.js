@@ -5,23 +5,22 @@ export default function FILTER_BTN(props) {
 
 	return (
 		<div
+			className="flex_row"
 			style={{
-				display: "flex",
-				flexDirection: "row",
 				justifyContent: "space-between",
 				margin: 10,
 			}}
 		>
 			<div
+				className="flex_row"
 				style={{
-					display: "flex",
-					flexDirection: "row",
-					backgroundColor: "yellow",
+					// backgroundColor: "yellow",
 					padding: 10,
 				}}
 			>
 				<div style={{ marginRight: 20 }}>
 					<button
+						className="btn_normal"
 						name="money"
 						value="fee"
 						onClick={(e) => addFilter(e)}
@@ -34,6 +33,7 @@ export default function FILTER_BTN(props) {
 				</div>
 				<div style={{ marginRight: 20 }}>
 					<button
+						className="btn_normal "
 						name="money"
 						value="free"
 						onClick={(e) => addFilter(e)}
@@ -46,6 +46,7 @@ export default function FILTER_BTN(props) {
 				</div>
 				<div style={{ marginRight: 20 }}>
 					<button
+						className="btn_normal"
 						name="option"
 						value="offline"
 						onClick={(e) => addFilter(e)}
@@ -58,6 +59,7 @@ export default function FILTER_BTN(props) {
 				</div>
 				<div>
 					<button
+						className="btn_normal"
 						name="option"
 						value="online"
 						onClick={(e) => addFilter(e)}
@@ -70,14 +72,14 @@ export default function FILTER_BTN(props) {
 				</div>
 			</div>
 			<div
+				className="flex_row"
 				style={{
-					display: "flex",
-					flexDirection: "row",
-					backgroundColor: "yellow",
+					// backgroundColor: "yellow",
 					padding: 10,
 				}}
 			>
 				<button
+					className="btn_normal"
 					value="apply"
 					onClick={(e) => addFilter(e)}
 					style={{
