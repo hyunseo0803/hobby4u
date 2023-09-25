@@ -3,13 +3,16 @@
 	flex-direction: row;
 }
 
-.btn_normal {
+.btn_normal_click {
 	border: none;
-}
-.btn_normal:hover {
-	background-color: rgb(205, 33, 33);
+	background-color: pink;
 }
 
-.btn_normal_fee {
+.btn_normal {
+	border: none;
+	background-color: white;
+}
+.btn_normal:hover {
+	border: none;
 	background-color: pink;
 }
