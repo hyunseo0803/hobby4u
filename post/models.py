@@ -221,7 +221,8 @@ class Exam(models.Model):
 class LikeClass(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey('Member', models.DO_NOTHING, db_column='id')
-    class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
+    class_id = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
+    status=models.BooleanField(default=1)
 
     class Meta:
         managed = False
