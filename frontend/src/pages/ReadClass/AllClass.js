@@ -112,7 +112,11 @@ function Allclass() {
 			<div className="new_read_container">
 				<div className="center_label">NEW</div>
 				<div className="row_center_wrap">
-					<NEW_CLASS newdata={newdata} handleReadDetail={handleReadDetail} />
+					<NEW_CLASS
+						newdata={newdata}
+						setNewData={setNewData}
+						handleReadDetail={handleReadDetail}
+					/>
 				</div>
 			</div>
 			<div className="new_read_container">

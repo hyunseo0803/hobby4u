@@ -7,7 +7,7 @@ from django.db.models import Q
 import json
 import jwt
 import os
-from .models import Member
+from .models import *
 from django.core.files import File
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -184,6 +184,8 @@ def read_new_data(request):
         
        
         new_date_list.append(date_data)
+        
+
     return JsonResponse( {'new_date_list':new_date_list}, safe=False) 
             
 @csrf_exempt
@@ -325,4 +327,47 @@ def read_filter_data(request):
     
     return JsonResponse({'filter_data_list': filter_data_list}, safe=False)
 
-# 
+
+@csrf_exempt
+def create_goodCount_data(request):
+        if request.method == 'POST':
+            count_data = json.loads(request.body)
+            class_id = count_data.get('classId')
+            count_token=count_data.get('token')
+            payload = jwt.decode(count_token,SECRET_KEY,ALGORITHM)
+            user=payload['id']
+            
+            class_info = Class.objects.get(pk=class_id)
+
+            # 좋아요 상태 확인
+            if LikeClass.objects.filter(id=Member.objects.get(id=user), class_id= Class.objects.get(pk=class_id)).exists():
+                print("존재")
+                # 이미 좋아요를 누른 경우, 좋아요 취소
+                LikeClass.objects.filter(id=Member.objects.get(id=user), class_id= Class.objects.get(pk=class_id)).delete()
+                class_info.goodcount-= 1
+                class_info.save()
+                liked = False
+                
+            else:
+                # 좋아요 추가
+                LikeClass.objects.create(id=Member.objects.get(id=user), class_id= Class.objects.get(pk=class_id))
+                class_info.goodcount+= 1
+                class_info.save()
+                liked = True
+            print(liked)
+            
+            # like_all=LikeClass.objects.all()
+            
+            # like_data_list = []
+            
+            # for like in like_all:
+            #     like_data={
+            #         'class_id':like.class_id
+            #     }
+                
+            # like_data_list.append(like_data)
+        
+      
+            return JsonResponse({'liked':liked} ,safe=False)
+
+        return JsonResponse({'message': 'Data received and processed successfully!'})

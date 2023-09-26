@@ -1,12 +1,16 @@
 import "../../styles/ReadClass.css";
 import React, { useEffect, useState, useCallback } from "react";
+// import { IoHeartOutline } from "react-icons/io5";
+
+import axios from "axios";
 
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
 import left from "../../assets/Left.png";
 import right from "../../assets/Right.png";
 
 export default function NEW_CLASS(props) {
-	const { newdata, handleReadDetail } = props;
+	const { newdata, handleReadDetail, setNewData } = props;
+	const [like_status, setLikeStatus] = useState([]);
 
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsPerPage = 3;
@@ -27,11 +31,61 @@ export default function NEW_CLASS(props) {
 	}, [totalPage]);
 
 	useEffect(() => {
+		// const likestatus = localStorage.getItem("likestatus");
+		// setLikeStatus(likestatus);
+		console.log(like_status);
+
 		const timer = setInterval(nextSlide, 5000);
 		return () => {
 			clearInterval(timer);
 		};
-	}, [nextSlide]);
+	}, [nextSlide, like_status]);
+	const goodClick = async (classId, liked) => {
+		const token = localStorage.getItem("token");
+		try {
+			const classidData = { classId: classId, token: token };
+			const response = await axios.post(
+				"http://localhost:8000/api/post/create_goodCount_data/",
+				classidData,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			// const like_status = {
+			// 	[classId]: response.data.liked,
+			// };
+			// console.log(like_status);
+			// setLikeStatus(like_status);
+			setLikeStatus((prelikestatus) => ({
+				...prelikestatus,
+				[classId]: response.data.liked,
+			}));
+			// const like_data = response.data.liked_data_list;
+			// setLikeStatus(like_data);
+
+			// console.log(like_status);
+
+			// localStorage.setItem("likestatus", like_status);
+
+			const updatedDataResponse = await axios
+				.get("http://localhost:8000/api/post/read_new_data/", {
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then((response) => {
+					const classNewItem = response.data.new_date_list;
+					setNewData(classNewItem);
+				})
+				.catch((error) => {
+					console.error("Error submitting data:", error);
+				});
+		} catch (error) {
+			console.error("좋아요를 처리하는 중 오류 발생:", error);
+		}
+	};
 
 	function isImage(urlString) {
 		const fileEx = urlString.split(".").pop().toLowerCase();
@@ -63,12 +117,7 @@ export default function NEW_CLASS(props) {
 				const isOnline = newItem.type === "online";
 
 				return (
-					<button
-						key={index}
-						className="class_div_btn"
-						value={newItem.class_id}
-						onClick={handleButtonClick}
-					>
+					<div className="class_div_btn">
 						<div className="firstimg_container">
 							{isImage(newItem.img) ? (
 								<img
@@ -95,18 +144,37 @@ export default function NEW_CLASS(props) {
 						>
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
-								<img
-									width="25"
-									height="25"
-									src="https://img.icons8.com/ios/30/f26b6b/like--v1.png"
-									alt="like--v1"
-								/>
-								<div style={{ fontSize: 16, width: 20, color: "#F26B6B" }}>
+								<button
+									// key={newItem.class_id}
+									style={{
+										border: "none",
+										backgroundColor: "transparent",
+										justifyContent: "center",
+										alignItems: "center",
+										height: 30,
+										cursor: "pointer",
+									}}
+									onClick={() => goodClick(newItem.class_id, newItem.liked)}
+								>
+									{like_status[newItem.class_id] ? "❤️" : "🤍"} 좋아요
+								</button>
+								<div
+									style={{
+										fontSize: 17,
+										width: 20,
+										padding: 2,
+										color: "#F26B6B",
+									}}
+								>
 									{newItem.goodCount}
 								</div>
 							</div>
 						</div>
-						<div
+						<button
+							className="slider-control"
+							key={index}
+							value={newItem.class_id}
+							onClick={handleButtonClick}
 							style={{
 								textAlign: "start",
 								justifyContent: "flex-start",
@@ -115,7 +183,7 @@ export default function NEW_CLASS(props) {
 							}}
 						>
 							{newItem.title}
-						</div>
+						</button>
 						<div className="row_center_wrap">
 							<img
 								src={newItem.id.profile}
@@ -136,7 +204,7 @@ export default function NEW_CLASS(props) {
 								{newItem.id.nickname}
 							</div>
 						</div>
-					</button>
+					</div>
 				);
 			})}
 			<div className="test">
