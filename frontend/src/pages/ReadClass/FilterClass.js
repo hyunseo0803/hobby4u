@@ -1,5 +1,6 @@
 import "../../styles/ReadClass.css";
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
+import { IoHeartOutline } from "react-icons/io5";
 
 export default function FILTER_CLASS(props) {
 	const { option, money, apply_ok, data, handleReadDetail, fliteredata } =
@@ -65,12 +66,7 @@ export default function FILTER_CLASS(props) {
 							>
 								<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 								<div className="class_GCount">
-									<img
-										width="25"
-										height="25"
-										src="https://img.icons8.com/ios/30/f26b6b/like--v1.png"
-										alt="like--v1"
-									/>
+									<IoHeartOutline size={26} color="#F26B6B" />
 									<div style={{ fontSize: 16, width: 20, color: "#F26B6B" }}>
 										{classItem.goodCount}
 									</div>
@@ -159,12 +155,7 @@ export default function FILTER_CLASS(props) {
 									>
 										<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 										<div className="class_GCount">
-											<img
-												width="25"
-												height="25"
-												src="https://img.icons8.com/ios/30/f26b6b/like--v1.png"
-												alt="like--v1"
-											/>
+											<IoHeartOutline size={26} color="#F26B6B" />
 											<div
 												style={{ fontSize: 16, width: 20, color: "#F26B6B" }}
 											>
