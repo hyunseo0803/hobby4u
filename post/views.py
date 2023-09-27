@@ -143,7 +143,7 @@ def read_all_data(request):
         }
         all_data_list.append(all_data)
         
-        print(type(all.id.nickname))
+        # print(type(all.id.nickname))
         
       
     return JsonResponse({'all_data_list':all_data_list}, safe=False)
@@ -179,8 +179,8 @@ def read_new_data(request):
                 'profile':date.id.profileimg,
             }
         }
-        print(type(date.id))
-        print(type(date.class_id))
+        # print(type(date.id))
+        # print(type(date.class_id))
         
        
         new_date_list.append(date_data)
@@ -371,3 +371,18 @@ def create_goodCount_data(request):
             return JsonResponse({'liked':liked} ,safe=False)
 
         return JsonResponse({'message': 'Data received and processed successfully!'})
+
+@csrf_exempt
+def read_goodCount_data(request):
+    if request.method == 'POST':
+        count_data = json.loads(request.body)
+        count_token = count_data.get('token')
+        payload = jwt.decode(count_token, SECRET_KEY, ALGORITHM)
+        user = payload['id']
+
+        like_data = LikeClass.objects.filter(id=Member.objects.get(id=user)).values('class_id')
+        like_data_list = list(like_data)
+
+        return JsonResponse({'like_data_list': like_data_list}, safe=False)
+
+    return JsonResponse({'message': 'Data received and processed successfully!'})
