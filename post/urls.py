@@ -11,6 +11,8 @@ urlpatterns = [
     path('read_some_data/',views.read_some_data),
     path('read_filter_data/',views.read_filter_data),
     path('create_goodCount_data/',views.create_goodCount_data),
+    path('read_goodCount_data/',views.read_goodCount_data),
+
   
 
     # path('',views.MemberList.as_view()),
