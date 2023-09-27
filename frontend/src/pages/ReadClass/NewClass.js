@@ -1,6 +1,5 @@
 import "../../styles/ReadClass.css";
 import React, { useEffect, useState, useCallback } from "react";
-// import { IoHeartOutline } from "react-icons/io5";
 
 import axios from "axios";
 
@@ -30,16 +29,32 @@ export default function NEW_CLASS(props) {
 		setCurrentPage((prevPage) => (prevPage - 1 + totalPage) % totalPage);
 	}, [totalPage]);
 
-	useEffect(() => {
-		// const likestatus = localStorage.getItem("likestatus");
-		// setLikeStatus(likestatus);
-		console.log(like_status);
+	function ReadGoodCount() {
+		const token = localStorage.getItem("token");
+		const userData = { token: token };
+		axios
+			.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
+			.then((response) => {
+				const likeData = response.data.like_data_list;
+				setLikeStatus(likeData);
+			})
+			.catch((error) => {
+				console.error("Error submitting data:", error);
+			});
+	}
 
+	useEffect(() => {
+		ReadGoodCount();
 		const timer = setInterval(nextSlide, 5000);
 		return () => {
 			clearInterval(timer);
 		};
-	}, [nextSlide, like_status]);
+	}, [nextSlide]);
+
 	const goodClick = async (classId, liked) => {
 		const token = localStorage.getItem("token");
 		try {
@@ -53,21 +68,7 @@ export default function NEW_CLASS(props) {
 					},
 				}
 			);
-			// const like_status = {
-			// 	[classId]: response.data.liked,
-			// };
-			// console.log(like_status);
-			// setLikeStatus(like_status);
-			setLikeStatus((prelikestatus) => ({
-				...prelikestatus,
-				[classId]: response.data.liked,
-			}));
-			// const like_data = response.data.liked_data_list;
-			// setLikeStatus(like_data);
-
-			// console.log(like_status);
-
-			// localStorage.setItem("likestatus", like_status);
+			ReadGoodCount();
 
 			const updatedDataResponse = await axios
 				.get("http://localhost:8000/api/post/read_new_data/", {
@@ -115,6 +116,9 @@ export default function NEW_CLASS(props) {
 				};
 				const isFree = newItem.money === "0";
 				const isOnline = newItem.type === "online";
+				const likeStatusItem = like_status.find(
+					(item) => item.class_id === newItem.class_id
+				);
 
 				return (
 					<div className="class_div_btn">
@@ -145,7 +149,6 @@ export default function NEW_CLASS(props) {
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
 								<button
-									// key={newItem.class_id}
 									style={{
 										border: "none",
 										backgroundColor: "transparent",
@@ -156,7 +159,7 @@ export default function NEW_CLASS(props) {
 									}}
 									onClick={() => goodClick(newItem.class_id, newItem.liked)}
 								>
-									{like_status[newItem.class_id] ? "❤️" : "🤍"} 좋아요
+									{likeStatusItem ? "❤️" : "🤍"} 좋아요
 								</button>
 								<div
 									style={{
