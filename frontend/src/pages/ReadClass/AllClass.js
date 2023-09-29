@@ -15,6 +15,7 @@ function Allclass() {
 	const [data, setData] = useState([]);
 	const [newdata, setNewData] = useState([]);
 	const [fliteredata, setFliteredata] = useState([]);
+	const [like_status, setLikeStatus] = useState([]);
 
 	const [money, setMoney] = useState(""); // 초기값: 무료
 	const [option, setOption] = useState("");
@@ -59,11 +60,12 @@ function Allclass() {
 		if (value === "apply") {
 			setApply_ok(!apply_ok);
 		}
+		readFilter();
 	};
 
-	useEffect(() => {
+	function readFilter() {
 		const today = moment(new Date()).format("YYYY-MM-DD");
-		console.log(money, option, apply_ok);
+
 		axios
 			.get(
 				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}&apply_ok=${apply_ok}&today=${today}`
@@ -74,9 +76,9 @@ function Allclass() {
 			.catch((error) => {
 				console.error("Error submitting data:", error);
 			});
-	}, [money, option, apply_ok, data.applyend]);
+	}
 
-	useEffect(() => {
+	function readAll() {
 		axios
 			.get("http://localhost:8000/api/post/read_all_data/", {
 				headers: {
@@ -87,11 +89,14 @@ function Allclass() {
 				const classItem = response.data.all_data_list;
 				// console.log(typeof classItem);
 				setData(classItem);
+				ReadGoodCount();
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
 			});
+	}
 
+	function readNew() {
 		axios
 			.get("http://localhost:8000/api/post/read_new_data/", {
 				headers: {
@@ -101,10 +106,70 @@ function Allclass() {
 			.then((response) => {
 				const classNewItem = response.data.new_date_list;
 				setNewData(classNewItem);
+				ReadGoodCount();
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
 			});
+	}
+
+	function ReadGoodCount() {
+		const token = localStorage.getItem("token");
+		const userData = { token: token };
+		axios
+			.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
+			.then((response) => {
+				const likeData = response.data.like_data_list;
+				setLikeStatus(likeData);
+			})
+			.catch((error) => {
+				console.error("Error submitting data:", error);
+			});
+	}
+
+	async function goodClick(classId) {
+		const token = localStorage.getItem("token");
+		const classidData = { classId: classId, token: token };
+
+		try {
+			// 좋아요 클릭 후, 좋아요 상태 및 데이터를 다시 불러오기
+			await axios.post(
+				"http://localhost:8000/api/post/create_goodCount_data/",
+				classidData,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			ReadGoodCount();
+
+			readNew();
+			if (option === "" && money === "" && apply_ok === false) {
+				readAll();
+			} else {
+				readFilter();
+			}
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
+	}
+
+	useEffect(() => {
+		if (option === "" && money === "" && apply_ok === false) {
+			readAll();
+		} else {
+			readFilter();
+		}
+	}, [money, option, apply_ok]);
+
+	useEffect(() => {
+		readAll();
 	}, []);
 
 	return (
@@ -114,8 +179,11 @@ function Allclass() {
 				<div className="row_center_wrap">
 					<NEW_CLASS
 						newdata={newdata}
-						setNewData={setNewData}
+						readNew={readNew}
 						handleReadDetail={handleReadDetail}
+						like_status={like_status}
+						ReadGoodCount={ReadGoodCount}
+						goodClick={goodClick}
 					/>
 				</div>
 			</div>
@@ -134,8 +202,13 @@ function Allclass() {
 						money={money}
 						apply_ok={apply_ok}
 						data={data}
+						readAll={readAll}
+						goodClick={goodClick}
+						like_status={like_status}
 						handleReadDetail={handleReadDetail}
 						fliteredata={fliteredata}
+						ReadGoodCount={ReadGoodCount}
+						readFilter={readFilter}
 					/>
 				</div>
 			</div>

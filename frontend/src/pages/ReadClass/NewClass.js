@@ -1,15 +1,12 @@
 import "../../styles/ReadClass.css";
 import React, { useEffect, useState, useCallback } from "react";
 
-import axios from "axios";
-
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
 import left from "../../assets/Left.png";
 import right from "../../assets/Right.png";
 
 export default function NEW_CLASS(props) {
-	const { newdata, handleReadDetail, setNewData } = props;
-	const [like_status, setLikeStatus] = useState([]);
+	const { newdata, handleReadDetail, like_status, goodClick, readNew } = props;
 
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsPerPage = 3;
@@ -29,64 +26,16 @@ export default function NEW_CLASS(props) {
 		setCurrentPage((prevPage) => (prevPage - 1 + totalPage) % totalPage);
 	}, [totalPage]);
 
-	function ReadGoodCount() {
-		const token = localStorage.getItem("token");
-		const userData = { token: token };
-		axios
-			.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
-			.then((response) => {
-				const likeData = response.data.like_data_list;
-				setLikeStatus(likeData);
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
-	}
-
 	useEffect(() => {
-		ReadGoodCount();
 		const timer = setInterval(nextSlide, 5000);
 		return () => {
 			clearInterval(timer);
 		};
 	}, [nextSlide]);
 
-	const goodClick = async (classId, liked) => {
-		const token = localStorage.getItem("token");
-		try {
-			const classidData = { classId: classId, token: token };
-			const response = await axios.post(
-				"http://localhost:8000/api/post/create_goodCount_data/",
-				classidData,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
-			ReadGoodCount();
-
-			const updatedDataResponse = await axios
-				.get("http://localhost:8000/api/post/read_new_data/", {
-					headers: {
-						"Content-Type": "application/json",
-					},
-				})
-				.then((response) => {
-					const classNewItem = response.data.new_date_list;
-					setNewData(classNewItem);
-				})
-				.catch((error) => {
-					console.error("Error submitting data:", error);
-				});
-		} catch (error) {
-			console.error("좋아요를 처리하는 중 오류 발생:", error);
-		}
-	};
+	useEffect(() => {
+		readNew();
+	}, []);
 
 	function isImage(urlString) {
 		const fileEx = urlString.split(".").pop().toLowerCase();
@@ -116,9 +65,9 @@ export default function NEW_CLASS(props) {
 				};
 				const isFree = newItem.money === "0";
 				const isOnline = newItem.type === "online";
-				const likeStatusItem = like_status.find(
-					(item) => item.class_id === newItem.class_id
-				);
+				const likeStatusItem = like_status
+					? like_status.find((item) => item.class_id === newItem.class_id)
+					: null;
 
 				return (
 					<div className="class_div_btn">
@@ -157,7 +106,7 @@ export default function NEW_CLASS(props) {
 										height: 30,
 										cursor: "pointer",
 									}}
-									onClick={() => goodClick(newItem.class_id, newItem.liked)}
+									onClick={() => goodClick(newItem.class_id)}
 								>
 									{likeStatusItem ? "❤️" : "🤍"} 좋아요
 								</button>
