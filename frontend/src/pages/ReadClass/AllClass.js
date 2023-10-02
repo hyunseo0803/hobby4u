@@ -25,7 +25,6 @@ function Allclass() {
 		axios
 			.get(`http://localhost:8000/api/post/read_some_data/?class_id=${value}`)
 			.then((response) => {
-				// console.log({ classData: response.data.day_data });
 				navigate("/readClass/classDetail", {
 					state: {
 						ClassDetail: response.data.class_data,
@@ -87,7 +86,6 @@ function Allclass() {
 			})
 			.then((response) => {
 				const classItem = response.data.all_data_list;
-				// console.log(typeof classItem);
 				setData(classItem);
 				ReadGoodCount();
 			})
@@ -136,7 +134,6 @@ function Allclass() {
 		const classidData = { classId: classId, token: token };
 
 		try {
-			// 좋아요 클릭 후, 좋아요 상태 및 데이터를 다시 불러오기
 			await axios.post(
 				"http://localhost:8000/api/post/create_goodCount_data/",
 				classidData,

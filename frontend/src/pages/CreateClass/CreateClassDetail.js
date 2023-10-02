@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import moment from "moment";
-// import "../../styles/CreateClassDetail.css";
 import "../../styles/CreateClassDetail.css";
 import { useLocation } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
@@ -23,15 +22,8 @@ function CreateClassDetail(props) {
 	const [applyStartDate, setApplyStartDate] = useState(new Date());
 	const [applyEndDate, setApplyEndDate] = useState(null);
 
-	// const [toStringApplyStartDate, setToStringApplyStartDate] = useState("");
-	// const [toStringApplyEndDate, setToStringApplyEndDate] = useState("");
-
 	const [activityStartDate, setActivityStartDate] = useState(new Date());
 	const [activityEndDate, setActivityEndDate] = useState(null);
-
-	// const [toStringActivityStartDate, setToStringActivityStartDate] =
-	// useState("");
-	// const [toStringActivityEndDate, setToStringActivityEndDate] = useState("");
 
 	const { kakao } = window;
 
@@ -678,13 +670,9 @@ function CreateClassDetail(props) {
 					applyStartDate={applyStartDate}
 					applyEndDate={applyEndDate}
 					onChangeApply={onChangeApply}
-					// toStringApplyStartDate={toStringApplyStartDate}
-					// toStringApplyEndDate={toStringApplyEndDate}
 					activityStartDate={activityStartDate}
 					activityEndDate={activityEndDate}
 					onChangeActivity={onChangeActivity}
-					// toStringActivityStartDate={toStringActivityStartDate}
-					// toStringActivityEndDate={toStringActivityEndDate}
 					isOpen={isOpen}
 					handleComplete={handleComplete}
 					address={address}
@@ -876,9 +864,8 @@ function CreateClassDetail(props) {
 				<label for="file">파일찾기</label>
 				<input
 					type="file"
-					accept=".docx,.pdf,.ppt,.pptx,.hwp"
+					accept=".pdf"
 					id="file"
-					// name="file"
 					onChange={(e) => {
 						onChangefile(e.target.files[0]);
 					}}
@@ -894,7 +881,7 @@ function CreateClassDetail(props) {
 				<div className="flex_center" style={{ flexDirection: "row" }}>
 					<div className="_text">위 파일은</div>
 					<div className="important_text">
-						(클래스 이름)(작성자)_활동계획서 및 상세일.확장자
+						(클래스 이름)(작성자)_활동계획서 및 상세일.pdf
 					</div>
 					<div className="_text">이름으로 업로드 해주세요.</div>
 				</div>
