@@ -117,7 +117,7 @@ class Class(models.Model):
     title = models.CharField(max_length=100)        
     info = models.CharField(max_length=1000, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
-    img = models.ImageField(db_column='Img',upload_to="firstimg/", blank=True, null=True)  # Field name made lowercase.
+    img = models.ImageField(db_column='Img',upload_to="firstimg/")  # Field name made lowercase.
     file = models.FileField(db_column='file',upload_to="firstfile/", blank=True, null=True) 
     theme = models.CharField(max_length=100, blank=True, null=True)
     people = models.CharField(max_length=100, blank=True, null=True)
