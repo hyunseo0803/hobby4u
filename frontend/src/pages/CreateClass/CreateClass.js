@@ -9,6 +9,12 @@ function CreateClass(props) {
 	const [token, SetToken] = useState();
 	const [isNext, setIsNext] = useState(false);
 
+	const [imageSrc, setImageSrc] = useState(null);
+	const [imagepreview, setImagepreview] = useState("");
+	const [videopreview, setVideopreview] = useState("");
+
+	const [isImage, setIsImage] = useState("");
+
 	// 제목, 소개, 옵션 값 저장
 	const [inputValues, setInputValues] = useState({
 		title: "",
@@ -20,7 +26,6 @@ function CreateClass(props) {
 		const token = localStorage.getItem("token");
 		if (token) {
 			SetToken(true);
-			// getUserData();
 		} else {
 			SetToken(false);
 		}
@@ -74,22 +79,22 @@ function CreateClass(props) {
 	}
 
 	useEffect(() => {
-		if (inputValues.title && inputValues.info && inputValues.option !== null) {
+		if (
+			inputValues.title &&
+			inputValues.info &&
+			inputValues.option &&
+			imageSrc !== null
+		) {
 			setIsNext(true);
 		} else if (
 			inputValues.title ||
 			inputValues.info ||
-			inputValues.option !== null
+			inputValues.option ||
+			imageSrc !== null
 		) {
 			setIsNext(false);
 		}
-	}, [inputValues.title, inputValues.info, inputValues.option]);
-
-	const [imageSrc, setImageSrc] = useState(null);
-	const [imagepreview, setImagepreview] = useState("");
-	const [videopreview, setVideopreview] = useState("");
-
-	const [isImage, setIsImage] = useState("");
+	}, [imageSrc, inputValues.title, inputValues.info, inputValues.option]);
 
 	const uploadfile = (e) => {
 		const file = e;
