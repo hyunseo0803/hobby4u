@@ -48,7 +48,7 @@ export default function NEW_CLASS(props) {
 	return (
 		<div className="row_center_wrap">
 			<div className="test">
-				<button className="slider-control" onClick={prevSlide}>
+				<button className="border_transcolor" onClick={prevSlide}>
 					<img src={left} alt="left" />
 				</button>
 			</div>
@@ -98,41 +98,19 @@ export default function NEW_CLASS(props) {
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
 								<button
-									style={{
-										border: "none",
-										backgroundColor: "transparent",
-										justifyContent: "center",
-										alignItems: "center",
-										height: 30,
-										cursor: "pointer",
-									}}
+									className="like_btn"
 									onClick={() => goodClick(newItem.class_id)}
 								>
 									{likeStatusItem ? "❤️" : "🤍"} 좋아요
 								</button>
-								<div
-									style={{
-										fontSize: 17,
-										width: 20,
-										padding: 2,
-										color: "#F26B6B",
-									}}
-								>
-									{newItem.goodCount}
-								</div>
+								<div className="like_text">{newItem.goodCount}</div>
 							</div>
 						</div>
 						<button
-							className="slider-control"
+							className="class_title_btn"
 							key={index}
 							value={newItem.class_id}
 							onClick={handleButtonClick}
-							style={{
-								textAlign: "start",
-								justifyContent: "flex-start",
-								left: 0,
-								marginTop: 5,
-							}}
 						>
 							{newItem.title}
 						</button>
@@ -144,23 +122,13 @@ export default function NEW_CLASS(props) {
 								height={30}
 								style={{ borderRadius: "50%" }}
 							/>
-							<div
-								style={{
-									alignItems: "center",
-									justifyContent: "center",
-									width: "90%",
-									textAlign: "left",
-									padding: 4,
-								}}
-							>
-								{newItem.id.nickname}
-							</div>
+							<div className="class_nickname_btn">{newItem.id.nickname}</div>
 						</div>
 					</div>
 				);
 			})}
 			<div className="test">
-				<button className="slider-control" onClick={nextSlide}>
+				<button className="border_transcolor" onClick={nextSlide}>
 					<img src={right} alt="right" />
 				</button>
 			</div>
