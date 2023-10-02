@@ -26,10 +26,7 @@
 	flex-wrap: wrap;
 	justify-content: center;
 }
-.slider-control {
-	border: none;
-	background-color: transparent;
-}
+
 .test {
 	align-items: center;
 	justify-content: center;
@@ -44,6 +41,10 @@
 	background-color: white;
 	border: none;
 	border-radius: 8px;
+}
+.border_transcolor {
+	border: none;
+	background-color: transparent;
 }
 .firstimg_container {
 	width: 100%;
@@ -70,6 +71,40 @@
 	padding: 3px;
 	margin-top: 8px;
 	margin-right: 5px;
+	text-align: center;
+}
+
+.like_btn {
+	border: none;
+	background-color: transparent;
+	justify-content: center;
+	align-items: center;
+	width: 90px;
+	cursor: pointer;
+}
+.like_text {
+	font-size: 17px;
+	width: 20px;
+	padding: 2px;
+	color: #f26b6b;
+}
+.class_title_btn {
+	text-align: start;
+	justify-content: flex-start;
+	background-color: transparent;
+	left: 0;
+	margin-top: 5px;
+	border: none;
+}
+.class_nickname_btn {
+	align-items: center;
+	justify-content: center;
+	width: 90%;
+	text-align: left;
+	padding: 4;
+	margin-top: 5px;
+	border: none;
+	background-color: transparent;
 }
 .class_GCount {
 	display: flex;
