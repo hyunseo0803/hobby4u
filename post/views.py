@@ -202,23 +202,34 @@ def read_some_data(request):
                 },
                 'title': cls.title,
                 'info': cls.info,
-                'img': cls.img.url,
+                'img': cls.img.url if cls.img else None,
+                'file': cls.file.url if cls.file else None,
                 'theme':cls.theme,
                 'people': cls.people,
                 'money': cls.money,
                 'type': cls.type,
+                'address': cls.adress,
                 'applystart': cls.applystart,
                 'applyend': cls.applyend,
                 'activitystart': cls.activitystart,
                 'activityend': cls.activityend,
-                'goodCount': cls.goodcount
+                'goodCount': cls.goodcount,
+                'infoimg1':cls.intro1_file.url if cls.intro1_file else None,
+                'infoimg2': cls.intro2_file.url if cls.intro2_file else None,
+                'infoimg3': cls.intro3_file.url if cls.intro3_file else None, 
+                'info1':cls.intro1_content,
+                'info2':cls.intro2_content,
+                'info3':cls.intro3_content
                 
                 
             }
+            print(cls.file)
+            
             dls=DayClassinfo.objects.filter(class_id=class_id)
             day_data_list = []
             for day_ in dls:
                 day_data = {
+                    'day_file':day_.file.url,
                     'day_title': day_.title,
                     'day_info': day_.info,
                     'day_sequence':day_.sequence
