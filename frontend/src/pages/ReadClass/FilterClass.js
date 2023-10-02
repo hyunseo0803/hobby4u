@@ -54,7 +54,6 @@ export default function FILTER_CLASS(props) {
 						: null;
 
 					return (
-						// <div key={index} className="class_div_btn">
 						<div key={index} className="class_div_btn">
 							<div className="firstimg_container">
 								{isImage(classItem.img) ? (
@@ -84,32 +83,18 @@ export default function FILTER_CLASS(props) {
 								<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 								<div className="class_GCount">
 									<button
-										style={{
-											border: "none",
-											backgroundColor: "transparent",
-											justifyContent: "center",
-											alignItems: "center",
-											height: 30,
-											cursor: "pointer",
-										}}
+										className="like_btn"
 										onClick={() => goodClick(classItem.class_id)}
 									>
 										{likeStatusItem ? "❤️" : "🤍"} 좋아요
 									</button>
-									<div style={{ fontSize: 16, width: 20, color: "#F26B6B" }}>
-										{classItem.goodCount}
-									</div>
+									<div className="like_text">{classItem.goodCount}</div>
 								</div>
 							</div>
 							<button
 								value={classItem.class_id}
 								onClick={handleButtonClick}
-								style={{
-									textAlign: "start",
-									justifyContent: "flex-start",
-									left: 0,
-									marginTop: 5,
-								}}
+								className="class_title_btn"
 							>
 								{classItem.title}
 							</button>
@@ -121,15 +106,7 @@ export default function FILTER_CLASS(props) {
 									height={30}
 									style={{ borderRadius: "50%" }}
 								/>
-								<div
-									style={{
-										alignItems: "center",
-										justifyContent: "center",
-										width: "90%",
-										textAlign: "left",
-										padding: 4,
-									}}
-								>
+								<div className="class_nickname_btn">
 									{classItem.id.nickname}
 								</div>
 							</div>
@@ -186,34 +163,18 @@ export default function FILTER_CLASS(props) {
 										<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 										<div className="class_GCount">
 											<button
-												style={{
-													border: "none",
-													backgroundColor: "transparent",
-													justifyContent: "center",
-													alignItems: "center",
-													height: 30,
-													cursor: "pointer",
-												}}
+												className="like_btn"
 												onClick={() => goodClick(filter.class_id)}
 											>
 												{likeStatusItem ? "❤️" : "🤍"} 좋아요
 											</button>
-											<div
-												style={{ fontSize: 16, width: 20, color: "#F26B6B" }}
-											>
-												{filter.goodCount}
-											</div>
+											<div className="like_text">{filter.goodCount}</div>
 										</div>
 									</div>
 									<button
 										value={filter.class_id}
 										onClick={handleButtonClick}
-										style={{
-											textAlign: "start",
-											justifyContent: "flex-start",
-											left: 0,
-											marginTop: 5,
-										}}
+										className="class_title_btn"
 									>
 										{filter.title}
 									</button>
@@ -225,15 +186,7 @@ export default function FILTER_CLASS(props) {
 											height={30}
 											style={{ borderRadius: "50%" }}
 										/>
-										<div
-											style={{
-												alignItems: "center",
-												justifyContent: "center",
-												width: "90%",
-												textAlign: "left",
-												padding: 4,
-											}}
-										>
+										<div className="class_nickname_btn">
 											{filter.id.nickname}
 										</div>
 									</div>
