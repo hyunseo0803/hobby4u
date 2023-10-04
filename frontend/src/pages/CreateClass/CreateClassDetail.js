@@ -40,11 +40,11 @@ function CreateClassDetail(props) {
 			dayImgpreview: "",
 			dayVideopreview: "",
 			title: "",
-			date: new Date(),
-			startTime: "",
-			endTime: "",
+			date: "",
+			// startTime: "",
+			// endTime: "",
 			content: "",
-			prepare: "",
+			// prepare: "",
 		},
 	]);
 
@@ -235,14 +235,18 @@ function CreateClassDetail(props) {
 		const isAtLeastOneDayValidoff = days.every(
 			(day) =>
 				day.title !== "" &&
-				day.date !== null &&
-				day.startTime !== "" &&
-				day.endTime !== "" &&
-				day.content !== "" &&
-				day.prepare !== ""
+				day.date !== "" &&
+				// day.startTime !== "" &&
+				// day.endTime !== "" &&
+				day.content !== ""
+			// day.prepare !== ""
 		);
 		const isAtLeastOneDayValidon = days.every(
-			(day) => day.title !== "" && day.content !== "" && day.prepare !== ""
+			(day) =>
+				day.dayImg !== null &&
+				day.title !== "" &&
+				day.content !== "" &&
+				day.prepare !== ""
 		);
 		if (isAtLeastOneDayValidoff) {
 			setAlldayplanoffline(true);
@@ -356,10 +360,10 @@ function CreateClassDetail(props) {
 			dayImgpreview: "",
 			dayVideopreview: "",
 			date: "",
-			startTime: "",
-			endTime: "",
+			// startTime: "",
+			// endTime: "",
 			content: "",
-			prepare: "",
+			// prepare: "",
 		};
 		setDays((prevDays) => [...prevDays, newDay]);
 		console.log(days);
@@ -833,68 +837,72 @@ function CreateClassDetail(props) {
 					handleAddDay={handleAddDay}
 				/>
 			)}
-			<div
-				style={{
-					width: "100%",
-					textAlign: "center",
-					borderBottom: "2px solid #f1f3f5 ",
-					lineHeight: "0.5em",
-					margin: "30px 0 20px",
-				}}
-			></div>
-			<div
-				className="flex_center"
-				style={{ padding: 10, flexDirection: "row" }}
-			>
-				<img
-					width="35"
-					height="35"
-					src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
-					alt="round-pushpin-emoji"
-				/>
-				활동 계획서 및 상세 일정 파일 첨부
-				<img
-					width="35"
-					height="35"
-					src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
-					alt="round-pushpin-emoji"
-				/>
-			</div>
-			<div class="flex_center" style={{ marginTop: 20 }}>
-				<label for="file">파일찾기</label>
-				<input
-					type="file"
-					accept=".pdf"
-					id="file"
-					onChange={(e) => {
-						onChangefile(e.target.files[0]);
-					}}
-				/>
-				<input
-					class="upload-name"
-					value={fileSrc}
-					placeholder="첨부파일"
-					readOnly
-				/>
-			</div>
-			<div className="long_text_zip">
-				<div className="flex_center" style={{ flexDirection: "row" }}>
-					<div className="_text">위 파일은</div>
-					<div className="important_text">
-						(클래스 이름)(작성자)_활동계획서 및 상세일.pdf
+			{option === "offline" && (
+				<>
+					<div
+						style={{
+							width: "100%",
+							textAlign: "center",
+							borderBottom: "2px solid #f1f3f5 ",
+							lineHeight: "0.5em",
+							margin: "30px 0 20px",
+						}}
+					></div>
+					<div
+						className="flex_center"
+						style={{ padding: 10, flexDirection: "row" }}
+					>
+						<img
+							width="35"
+							height="35"
+							src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
+							alt="round-pushpin-emoji"
+						/>
+						활동 계획서 및 상세 일정 파일 첨부
+						<img
+							width="35"
+							height="35"
+							src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
+							alt="round-pushpin-emoji"
+						/>
 					</div>
-					<div className="_text">이름으로 업로드 해주세요.</div>
-				</div>
-				<div className="last_text_row">
-					<div className="_text">파일 안에 꼭 있어야하는 내용</div>
-					<div className="important_text">
-						클래스 소개 및 일별 상세 활동 소개, 준비물, 연락 가능한 연락망{" "}
+					<div class="flex_center" style={{ marginTop: 20 }}>
+						<label for="file">파일찾기</label>
+						<input
+							type="file"
+							accept=".pdf"
+							id="file"
+							onChange={(e) => {
+								onChangefile(e.target.files[0]);
+							}}
+						/>
+						<input
+							class="upload-name"
+							value={fileSrc}
+							placeholder="첨부파일"
+							readOnly
+						/>
 					</div>
-					<div className="_text">
-						이 포함되지 않았을 시 클래스 업로드에 제약이 있을 수 있습니다.
+					<div className="long_text_zip">
+						<div className="flex_center" style={{ flexDirection: "row" }}>
+							<div className="_text">위 파일은</div>
+							<div className="important_text">
+								(클래스 이름)(작성자)_활동계획서 및 상세일.pdf
+							</div>
+							<div className="_text">이름으로 업로드 해주세요.</div>
+						</div>
+						<div className="last_text_row">
+							<div className="_text">파일 안에 꼭 있어야하는 내용</div>
+							<div className="important_text">
+								클래스 소개 및 일별 상세 활동 소개, 준비물, 연락 가능한 연락망{" "}
+							</div>
+							<div className="_text">
+								이 포함되지 않았을 시 클래스 업로드에 제약이 있을 수 있습니다.
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
+				</>
+			)}
 			<div className="submit_button_wrapper">
 				{option === "offline" ? (
 					<button

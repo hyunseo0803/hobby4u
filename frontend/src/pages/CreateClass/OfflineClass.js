@@ -313,7 +313,7 @@ export function DAY_PLAN(props) {
 											}
 										/>
 
-										<input
+										{/* <input
 											className="day_input_text"
 											style={{ width: 200 }}
 											type="time"
@@ -335,9 +335,9 @@ export function DAY_PLAN(props) {
 											onChange={(e) =>
 												handleChange(day.id, "endTime", e.target.value)
 											}
-										/>
+										/> */}
 									</div>
-									<div
+									{/* <div
 										className="flex_row"
 										style={{ justifyContent: "flex-start" }}
 									>
@@ -353,7 +353,7 @@ export function DAY_PLAN(props) {
 												handleChange(day.id, "prepare", e.target.value)
 											}
 										/>
-									</div>
+									</div> */}
 									<div
 										className="flex_row"
 										style={{ justifyContent: "flex-start" }}
