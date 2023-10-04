@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../styles/CreateClass.css";
 import { useNavigate } from "react-router-dom";
 import { XCircleFillIcon } from "@primer/octicons-react";
+import { IoMdDownload } from "react-icons/io";
 
 function CreateClass(props) {
 	const navigate = useNavigate();
@@ -118,6 +119,18 @@ function CreateClass(props) {
 
 			reader.readAsDataURL(file);
 		}
+	};
+
+	const handleDownload = () => {
+		const filename = "HOBBY 4 유앤미 활동 계획서.docx";
+		const fileUrl = `${process.env.PUBLIC_URL}/media/${filename}`;
+
+		const a = document.createElement("a");
+		a.href = fileUrl;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
 	};
 
 	return (
@@ -243,6 +256,34 @@ function CreateClass(props) {
 						</div>
 					</div>
 					<div>
+						{inputValues.option === "offline" && (
+							<div
+								style={{
+									width: "100%",
+									// height: 100,
+									// backgroundColor: "yellow",
+									display: "flex",
+									flexDirection: "column",
+									justifyContent: "center",
+									alignItems: "center",
+									textAlign: "center",
+									margin: 20,
+								}}
+							>
+								<div>
+									오프라인 활동일 경우, 아래를 클릭하여 활동 계획서 양식을
+									다운받아 주세요
+								</div>
+								<div>
+									<button onClick={handleDownload} className="download_btn">
+										<div style={{ marginRight: 10 }}>
+											<IoMdDownload size={25} />
+										</div>
+										<div>오프라인용 Download</div>
+									</button>
+								</div>
+							</div>
+						)}
 						<button
 							className="next"
 							style={
