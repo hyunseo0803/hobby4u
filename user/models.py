@@ -117,7 +117,7 @@ class Class(models.Model):
     title = models.CharField(max_length=100)        
     info = models.CharField(max_length=1000, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
-    img = models.ImageField(db_column='Img',upload_to="firstimg/", blank=True, null=True)  # Field name made lowercase.
+    img = models.ImageField(db_column='Img',upload_to="firstimg/")  # Field name made lowercase.
     file = models.FileField(db_column='file',upload_to="firstfile/", blank=True, null=True) 
     theme = models.CharField(max_length=100, blank=True, null=True)
     people = models.CharField(max_length=100, blank=True, null=True)
@@ -147,11 +147,8 @@ class DayClassinfo(models.Model):
     class_id = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
     sequence = models.CharField(max_length=100, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
-    startTime = models.CharField(max_length=100, blank=True, null=True)
-    endTime = models.CharField(max_length=100, blank=True,null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
     info = models.CharField(max_length=1000, blank=True, null=True)
-    prepare = models.CharField(max_length=100, blank=True, null=True)
     file = models.ImageField(upload_to="dayimg/", blank=True, null=True)
 
     class Meta:
@@ -221,7 +218,8 @@ class Exam(models.Model):
 class LikeClass(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey('Member', models.DO_NOTHING, db_column='id')
-    class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
+    class_id = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
+    status=models.BooleanField(default=1)
 
     class Meta:
         managed = False
