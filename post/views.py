@@ -89,13 +89,8 @@ def submit_data(request):
                 print(request.FILES.get('dayImg'))
                 day_sequence=day_data.get('id','')
                 day_date=day_data.get('date','')
-                day_startTime=day_data.get('startTime','')
-                day_endTime=day_data.get('endTime','')
                 day_title = day_data.get('title','')
                 day_info = day_data.get('content','')
-                day_prepare=day_data.get('prepare','')
-                # day_file = day_data.get('dayImg') 
-                # day_file = request.FILES.get('dayImg')
                 day_file = request.FILES.get(f'dayImg[{day_sequence}]', None)
 
                 
@@ -103,11 +98,8 @@ def submit_data(request):
                     class_id=class_obj,
                     sequence=day_sequence,
                     date=day_date,
-                    startTime=day_startTime,
-                    endTime=day_endTime, 
                     title=day_title, 
                     info=day_info,
-                    prepare=day_prepare,
                     file=day_file
                     )
             
