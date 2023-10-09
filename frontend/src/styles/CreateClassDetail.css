@@ -71,6 +71,10 @@
 .person_money_wrapper {
 	width: 70%;
 	margin: 20px;
+	/* display: flex; */
+	justify-content: center;
+	align-items: center;
+	text-align: center;
 }
 
 .middle_text {
@@ -95,9 +99,9 @@
 
 .flex_center {
 	text-align: center;
-	display: flex;
+	/* display: flex; */
 	justify-content: center;
-	align-items: center;
+	/* align-items: center; */
 	/* background-color: red; */
 }
 .radio_label {
@@ -324,6 +328,8 @@
 }
 
 .day_input_text {
+	text-align: left;
+	left: 0;
 	border: none;
 	outline: none;
 	resize: none;
