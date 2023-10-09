@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from django.db.models import Q
+from urllib.parse import unquote
 
 import json
 import jwt
@@ -239,6 +240,9 @@ def read_filter_data(request):
     option = request.GET.get('option')
     apply_ok_str=request.GET.get('apply_ok')
     today = request.GET.get('today')
+    themeEng=request.GET.get('theme')
+    incoding_word=request.GET.get('word')
+    incoding_field=request.GET.get('searchfield')
 
     if apply_ok_str == 'true':
         apply_ok = True
@@ -246,7 +250,61 @@ def read_filter_data(request):
         apply_ok = False
     # 기본 쿼리셋
     filter_result = Class.objects.all()
+   
+        
+    if incoding_word is not None and unquote(incoding_field)=="제목":
+        filter_result = filter_result.filter(title__contains=unquote(incoding_word))
+    if incoding_word is not None and unquote(incoding_field)=="멘토":
+        filter_result = Class.objects.filter(Q(id__nickname=unquote(incoding_word)))
     
+    if themeEng =='quiet':
+        theme='# 조용한'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='sports':
+        theme='# 스포츠'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='trip':
+        theme='# 여행'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='healing':
+        theme='# 힐링'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='activity':
+        theme='# 액티비티'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='alon':
+        theme='# 혼자'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='simple':
+        theme='# 간단한'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='music':
+        theme='# 음악'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='craft':
+        theme='# 공예'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='skill':
+        theme='# 기술'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='beauty':
+        theme='# 뷰티'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
+    if themeEng =='cultureArt':
+        theme='# 문화예술'
+        filter_result = filter_result.filter(theme__contains=theme)
+        
     if money == "fee":
         filter_result = filter_result.exclude(money=0)
     if money == "free":
