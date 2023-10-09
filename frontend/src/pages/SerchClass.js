@@ -16,15 +16,19 @@ import beauty from "../assets/Beauty.png";
 import cultureArt from "../assets/Culture_arts.png";
 import FILTER_CLASS from "./ReadClass/FilterClass";
 import { useNavigate } from "react-router-dom";
+import { IoIosSearch } from "react-icons/io";
 
 function SearchClass() {
 	// console.log("----------------------SearchClass rendered");
 
 	const [searchfilterField, setSearchFilterField] = useState("제목");
+	const [inputValue, setInputValue] = useState("");
+
 	const [word, setWord] = useState("");
 	const [searchClick, setSearchClick] = useState(false);
 
 	// const [themeFilter, setThemeFilter] = useState("");
+	const [themefKO, setThemefKO] = useState("");
 	const [themef, setThemef] = useState("");
 	const [loading, setLoading] = useState(true);
 	// const prevThemeFilter = useRef(themeFilter);
@@ -55,13 +59,13 @@ function SearchClass() {
 		} else {
 			setSearchFilterField("제목");
 		}
-		// console.log(eventKey);
 	}
 	const onchangeWord = (e) => {
-		setWord(e.target.value);
+		setInputValue(e.target.value);
 	};
 
 	const handleWordSearch = () => {
+		setWord(inputValue);
 		setSearchClick(true);
 		axios
 			.get(
@@ -79,6 +83,7 @@ function SearchClass() {
 	};
 
 	function handleSelectTheme(themeFilter) {
+		setThemefKO(themeFilter);
 		let newTheme = "";
 		if (themeFilter === "# 조용한") {
 			newTheme = "quiet"; //
@@ -205,13 +210,20 @@ function SearchClass() {
 		setLoading(false);
 	}
 
+	const handleKeyPress = (e) => {
+		// 엔터 키를 눌렀을 때 검색 수행
+		if (e.key === "Enter" && inputValue.trim() !== "") {
+			handleWordSearch();
+		}
+	};
+
 	useEffect(() => {
 		if (themef) {
 			axios
 				.get(`http://localhost:8000/api/post/read_filter_data/?theme=${themef}`)
 				.then((response) => {
 					setFliteredata(response.data.filter_data_list);
-					console.log(response.data.filter_data_list);
+					console.log(response.data.filter_data_list.length);
 					setLoading(false);
 				})
 				.catch((error) => {
@@ -223,74 +235,105 @@ function SearchClass() {
 
 	return (
 		<div className="search_wrapper">
+			{((!themef && searchClick) || (!themef && !searchClick)) && (
+				<div className="search_flex_row" style={{ height: 40, marginTop: 100 }}>
+					<DropdownButton
+						variant="secondary"
+						id="dropdown-basic-button"
+						title={searchfilterField}
+						onSelect={handleSelectKeyword}
+					>
+						<Dropdown.Item eventKey="title">제목</Dropdown.Item>
+						<Dropdown.Item eventKey="mentor">멘토</Dropdown.Item>
+					</DropdownButton>
+					<input
+						type="text"
+						style={{
+							width: 400,
+							border: "1px solid gray",
+							outline: "none",
+							marginLeft: 5,
+							height: 36,
+							letterSpacing: 3,
+							padding: 8,
+							borderRadius: 3,
+						}}
+						spellcheck="false"
+						onChange={onchangeWord}
+						onKeyPress={handleKeyPress}
+						value={inputValue}
+					/>
+					<button
+						onClick={handleWordSearch}
+						style={{ border: "none", backgroundColor: "transparent" }}
+					>
+						<IoIosSearch size={20} />
+					</button>
+				</div>
+			)}
 			{themef || searchClick ? (
 				loading ? (
 					<div style={{ marginTop: 100 }}>로딩중</div>
 				) : fliteredata.length !== 0 ? (
-					<FILTER_CLASS
-						theme={themef}
-						word={word}
-						goodClick={goodClick}
-						like_status={like_status}
-						handleReadDetail={handleReadDetail}
-						fliteredata={fliteredata}
-						ReadGoodCount={ReadGoodCount}
-						readFilter={readThemeFilter}
-						readWordFilter={readWordFilter}
-					/>
+					<>
+						{searchClick ? (
+							<div className="result_cnt">
+								검색결과 총 {fliteredata.length}건{" "}
+							</div>
+						) : (
+							<div
+								className="search_flex_row"
+								style={{
+									padding: 40,
+									fontSize: 40,
+								}}
+							>
+								{themefKO}
+							</div>
+						)}
+						<FILTER_CLASS
+							theme={themef}
+							word={word}
+							goodClick={goodClick}
+							like_status={like_status}
+							handleReadDetail={handleReadDetail}
+							fliteredata={fliteredata}
+							ReadGoodCount={ReadGoodCount}
+							readFilter={readThemeFilter}
+							readWordFilter={readWordFilter}
+						/>
+					</>
 				) : (
 					<div style={{ marginTop: 100 }}>검색결과가 없습니다. </div>
 				)
 			) : (
-				<>
-					<div
-						className="search_flex_row"
-						style={{ height: 37, marginTop: 100 }}
-					>
-						<DropdownButton
-							variant="secondary"
-							id="dropdown-basic-button"
-							title={searchfilterField}
-							onSelect={handleSelectKeyword}
+				<div
+					className="search_flex_row"
+					style={{ flexWrap: "wrap", marginTop: 80 }}
+				>
+					{themeArray.map(([key, value]) => (
+						<button
+							key={key}
+							style={{
+								width: 250,
+								height: 200,
+								margin: 20,
+								justifyContent: "center",
+								backgroundImage: `url(${value})`,
+								backgroundSize: "cover",
+								backgroundPosition: "center",
+								border: "none",
+								borderRadius: 5,
+							}}
+							name={key}
+							onClick={(e) => handleSelectTheme(e.target.name)}
 						>
-							<Dropdown.Item eventKey="title">제목</Dropdown.Item>
-							<Dropdown.Item eventKey="mentor">멘토</Dropdown.Item>
-						</DropdownButton>
-						<input
-							type="text"
-							style={{ width: 400 }}
-							onChange={onchangeWord}
-							value={word}
-						/>
-						<button onClick={handleWordSearch}>검색</button>
-					</div>
-					<div
-						className="search_flex_row"
-						style={{ flexWrap: "wrap", marginTop: 80 }}
-					>
-						{themeArray.map(([key, value]) => (
-							<button
-								key={key}
-								style={{
-									width: 250,
-									height: 200,
-									margin: 20,
-									justifyContent: "center",
-									backgroundImage: `url(${value})`,
-									backgroundSize: "cover",
-									backgroundPosition: "center",
-									border: "none",
-									borderRadius: 5,
-								}}
-								name={key}
-								onClick={(e) => handleSelectTheme(e.target.name)}
-							>
-								{key}
-							</button>
-						))}
-					</div>
-				</>
+							{key}
+						</button>
+					))}
+				</div>
 			)}
+
 			{/* )} */}
 		</div>
 	);
