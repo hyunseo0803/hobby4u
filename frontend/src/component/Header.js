@@ -125,13 +125,13 @@ function Header(props) {
 				</div>
 				<div className="menu_item">
 					{/* 모든 클래스 보기_ Top 5 멘토, New 클래스, All 및 Best 클래스   */}
-					<Link to="readClass/allClass" className="link">
+					<Link to="readClass/readClass" className="link">
 						모든 클래스
 					</Link>
 				</div>
 				<div className="menu_item">
 					{/* 제목 및 소개로 검색, 태그별 검색  */}
-					<Link to="test" className="link">
+					<Link to="readClass/searchClass" className="link">
 						클래스 찾기
 					</Link>
 				</div>
