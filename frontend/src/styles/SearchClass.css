@@ -1,0 +1,23 @@
+.search_wrapper {
+	/* background-color: yellow; */
+	/* min-height: 1000px; */
+	margin-top: 70px;
+	margin-left: 6%;
+	margin-right: 6%;
+	/* justify-content: center; */
+	/* display: flex; */
+	/* flex-direction: column; */
+}
+.search_flex_row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+.theme_div {
+	/* height: 400px; */
+	/* background-color: red; */
+	/* flex-direction: row; */
+	/* display: flex; */
+	/* justify-content: center; */
+	width: 300px;
+}
