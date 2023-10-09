@@ -19,10 +19,10 @@ function CreateClassDetail(props) {
 
 	const [isOpen, setIsOpen] = useState(false);
 
-	const [applyStartDate, setApplyStartDate] = useState(new Date());
+	const [applyStartDate, setApplyStartDate] = useState(null);
 	const [applyEndDate, setApplyEndDate] = useState(null);
 
-	const [activityStartDate, setActivityStartDate] = useState(new Date());
+	const [activityStartDate, setActivityStartDate] = useState(null);
 	const [activityEndDate, setActivityEndDate] = useState(null);
 
 	const { kakao } = window;
@@ -40,7 +40,7 @@ function CreateClassDetail(props) {
 			dayImgpreview: "",
 			dayVideopreview: "",
 			title: "",
-			date: "",
+			date: new Date(),
 			// startTime: "",
 			// endTime: "",
 			content: "",
@@ -200,12 +200,18 @@ function CreateClassDetail(props) {
 	const onChangeActivity = (dates) => {
 		const [start, end] = dates;
 
-		setActivityStartDate(start);
-
-		if (end) {
-			setActivityEndDate(end);
-		} else {
+		if (applyStartDate === null || applyEndDate === null) {
+			alert("신청 기간을 먼저 선택해주세요");
+			setActivityStartDate(null);
 			setActivityEndDate(null);
+		} else {
+			setActivityStartDate(start);
+
+			if (end) {
+				setActivityEndDate(end);
+			} else {
+				setActivityEndDate(null);
+			}
 		}
 	};
 	const handleComplete = (data) => {
@@ -395,6 +401,26 @@ function CreateClassDetail(props) {
 
 	//Day별 입력창 변경 이벤트 처리 함수 , id, 필드이름, 입력값
 	const handleChange = async (id, field, value) => {
+		if (field === "date") {
+			// 신청 기간과 활동 기간을 먼저 체크
+			if (activityStartDate == null || activityEndDate == null) {
+				alert("신청 기간과 활동 기간을 먼저 선택해주세요");
+				return;
+			}
+
+			// 선택한 날짜를 Date 객체로 변환
+			const selectedDate = new Date(value);
+
+			// 활동 기간의 시작일과 종료일을 Date 객체로 변환
+			const startDate = new Date(activityStartDate);
+			const endDate = new Date(activityEndDate);
+
+			// 선택한 날짜가 활동 기간에 속하지 않으면 경고 메시지 표시
+			if (selectedDate < startDate || selectedDate > endDate) {
+				alert("활동 기간 중 날짜를 선택해주세요");
+				return;
+			}
+		}
 		//파일 읽기
 		const reader = new FileReader();
 
@@ -592,7 +618,12 @@ function CreateClassDetail(props) {
 						</button>
 					))}
 				</div>
-				<div className="person_money_wrapper">
+				<div
+					className="flex_center"
+					style={{
+						alignItems: "center",
+					}}
+				>
 					<div className="middle_text">
 						<div className="_text">
 							수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
@@ -602,7 +633,10 @@ function CreateClassDetail(props) {
 							수강료는 개인 당 수강료가 아닌 전체 수강인원에 대한 수강료입니다.
 						</div>
 					</div>
-					<div className="flex_center" style={{ margin: 20 }}>
+					<div
+						className="flex_center"
+						style={{ margin: 20, display: "flex", flexDirection: "row" }}
+					>
 						<div className="person_money">
 							<img
 								className="flex_center"
@@ -821,6 +855,8 @@ function CreateClassDetail(props) {
 					days={days}
 					isImage={isImage}
 					handleDayRemoveImg={handleDayRemoveImg}
+					activityEndDate={activityEndDate}
+					activityStartDate={activityStartDate}
 					onChangeImage_day={onChangeImage_day}
 					handleChange={handleChange}
 					handleRemoveDay={handleRemoveDay}
@@ -831,6 +867,8 @@ function CreateClassDetail(props) {
 					days={days}
 					isImage={isImage}
 					handleDayRemoveImg={handleDayRemoveImg}
+					activityEndDate={activityEndDate}
+					activityStartDate={activityStartDate}
 					onChangeImage_day={onChangeImage_day}
 					handleChange={handleChange}
 					handleRemoveDay={handleRemoveDay}

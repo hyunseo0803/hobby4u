@@ -1,11 +1,12 @@
 import "../../styles/CreateClassDetail.css";
 import moment from "moment";
-
+import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
 import Place_search_icon from "../../assets/place_search_icon.png";
+import { IoIosSearch } from "react-icons/io";
 
 import minus from "../../assets/day_class_minus.png";
 import add from "../../assets/day_class_add.png";
@@ -20,16 +21,14 @@ export function PLACE_PERIOD(props) {
 		applyStartDate,
 		onChangeApply,
 		applyEndDate,
-		// toStringApplyStartDate,
-		// toStringApplyEndDate,
 		activityStartDate,
 		onChangeActivity,
 		activityEndDate,
-		// toStringActivityStartDate,
-		// toStringActivityEndDate,
 		address,
 		handleModal,
 	} = props;
+
+	const todaymin = new Date();
 
 	return (
 		<div className="flex_row" style={{ justifyContent: "center" }}>
@@ -45,7 +44,10 @@ export function PLACE_PERIOD(props) {
 						<div className="calender-box">
 							<div
 								className="flex_center"
-								style={{ marginTop: 10, height: 245 }}
+								style={{
+									marginTop: 10,
+									height: 300,
+								}}
 							>
 								<DatePicker
 									locale={ko}
@@ -53,6 +55,7 @@ export function PLACE_PERIOD(props) {
 									onChange={onChangeApply}
 									startDate={applyStartDate}
 									endDate={applyEndDate}
+									minDate={todaymin}
 									selectsRange
 									inline
 								/>
@@ -77,15 +80,23 @@ export function PLACE_PERIOD(props) {
 					</div>
 				</div>
 
-				<div className="period_place_choice">
-					<div className="datepicker">
-						<div className="flex_center" style={{ marginTop: 10, height: 245 }}>
+				<div className="calender-container">
+					<div className="calender-box">
+						<div
+							className="flex_center"
+							style={{
+								marginTop: 10,
+								height: 300,
+								margin: "auto",
+							}}
+						>
 							<DatePicker
 								locale={ko}
 								selected={activityStartDate}
 								onChange={onChangeActivity}
 								startDate={activityStartDate}
 								endDate={activityEndDate}
+								minDate={applyEndDate || todaymin}
 								selectsRange
 								inline
 							/>
@@ -140,9 +151,19 @@ export function PLACE_PERIOD(props) {
 							</div>
 						</>
 					) : (
-						<div className="flex_center" style={{ width: "100%", height: 245 }}>
-							<img src={Place_search_icon} onClick={handleModal} alt="" />
-						</div>
+						<button
+							className="flex_center"
+							style={{
+								width: "70%",
+								height: 200,
+								backgroundColor: "transparent",
+								border: "1px solid gray",
+								borderRadius: 10,
+							}}
+							onClick={handleModal}
+						>
+							<IoIosSearch size={100} />
+						</button>
 					)}
 				</div>
 			</div>
@@ -157,6 +178,8 @@ export function DAY_PLAN(props) {
 		days,
 		isImage,
 		handleDayRemoveImg,
+		activityStartDate,
+		activityEndDate,
 		onChangeImage_day,
 		handleChange,
 		handleRemoveDay,
@@ -277,102 +300,64 @@ export function DAY_PLAN(props) {
 									}}
 								/>
 							</div>
-							<div>
-								<div className="day_class_input">
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<input
-											className="day_input_text"
-											style={{ width: 950 }}
-											type="text"
-											maxLength={50}
-											name={`title_${day.id}`}
-											placeholder="제목"
-											value={day.title}
-											onChange={(e) =>
-												handleChange(day.id, "title", e.target.value)
-											}
-										/>
-									</div>
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<input
-											className="day_input_text"
-											style={{ width: 400 }}
-											type="date"
-											dateFormat="yyyy-MM-dd"
-											name={`date_${day.id}`}
-											placeholder="날짜"
-											value={day.date}
-											onChange={(e) =>
-												handleChange(day.id, "date", e.target.value)
-											}
-										/>
-
-										{/* <input
-											className="day_input_text"
-											style={{ width: 200 }}
-											type="time"
-											name={`startTime_${day.id}`}
-											placeholder="시간"
-											value={day.startTime}
-											onChange={(e) =>
-												handleChange(day.id, "startTime", e.target.value)
-											}
-										/>
-										<div>-</div>
-										<input
-											className="day_input_text"
-											style={{ width: 200 }}
-											type="time"
-											name={`endTime_${day.id}`}
-											placeholder="시간"
-											value={day.endTime}
-											onChange={(e) =>
-												handleChange(day.id, "endTime", e.target.value)
-											}
-										/> */}
-									</div>
-									{/* <div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<input
-											className="day_input_text"
-											style={{ width: 400 }}
-											type="text"
-											multiple="false"
-											name={`prepare_${day.id}`}
-											placeholder="준비물"
-											value={day.prepare}
-											onChange={(e) =>
-												handleChange(day.id, "prepare", e.target.value)
-											}
-										/>
-									</div> */}
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<textarea
-											className="day_input_text"
-											style={{ width: 950 }}
-											type="text"
-											multiple="true"
-											name={`content_${day.id}`}
-											placeholder="내용"
-											value={day.content}
-											onChange={(e) =>
-												handleChange(day.id, "content", e.target.value)
-											}
-										/>
-									</div>
-								</div>
+							<div
+								// className="flex_row"
+								style={{ justifyContent: "flex-start" }}
+							>
+								<input
+									className="day_input_text"
+									style={{ width: 950 }}
+									type="text"
+									maxLength={50}
+									name={`title_${day.id}`}
+									placeholder="제목"
+									value={day.title}
+									onChange={(e) =>
+										handleChange(day.id, "title", e.target.value)
+									}
+								/>
 							</div>
+							<div
+								// className="flex_row"
+								style={{
+									justifyContent: "flex-start",
+									display: "flex",
+									textAlign: "left",
+									alignItems: "flex-start",
+									left: 0,
+								}}
+							>
+								<input
+									className="day_input_text"
+									style={{ width: 400 }}
+									type="date"
+									dateFormat="yyyy-MM-dd"
+									name={`date_${day.id}`}
+									placeholder="날짜"
+									value={day.date}
+									minDate={activityStartDate}
+									maxDate={activityEndDate}
+									onChange={(e) => handleChange(day.id, "date", e.target.value)}
+								/>
+							</div>
+							<div
+								// className="flex_row"
+								style={{ justifyContent: "flex-start" }}
+							>
+								<textarea
+									className="day_input_text"
+									style={{ width: 950 }}
+									type="text"
+									multiple="true"
+									name={`content_${day.id}`}
+									placeholder="내용"
+									value={day.content}
+									onChange={(e) =>
+										handleChange(day.id, "content", e.target.value)
+									}
+								/>
+							</div>
+							{/* </div> */}
 							<div style={{ border: "none" }}>
 								{days.length > 1 && day.id === days[days.length - 1].id && (
 									<button
