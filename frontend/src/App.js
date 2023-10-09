@@ -10,8 +10,9 @@ import Likeclass from "./pages/Likeclass";
 import Judge from "./pages/Judge";
 import CreateClass from "./pages/CreateClass/CreateClass";
 import CreateClassDetail from "./pages/CreateClass/CreateClassDetail";
-import Allclass from "./pages/ReadClass/AllClass";
+import ReadClass from "./pages/ReadClass/ReadClass";
 import ReadClassDetail from "./pages/ReadClass/ReadClassDetail";
+import SearchClass from "./pages/SerchClass";
 
 class App extends Component {
 	render() {
@@ -28,8 +29,9 @@ class App extends Component {
 						<Route path="judge" element={<Judge />} />
 						<Route path="createclass" element={<CreateClass />} />
 						<Route path="createClass/detail" element={<CreateClassDetail />} />
-						<Route path="readClass/allClass" element={<Allclass />} />
+						<Route path="readClass/readClass" element={<ReadClass />} />
 						<Route path="readClass/classDetail" element={<ReadClassDetail />} />
+						<Route path="readClass/searchClass" element={<SearchClass />} />
 					</Routes>
 
 					<Footer />
