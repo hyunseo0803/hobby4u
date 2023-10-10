@@ -703,7 +703,7 @@ function CreateClassDetail(props) {
 					</div>
 				</div>
 			</div>
-			{option === "offline" ? (
+			{option === "offline" && (
 				<PLACE_PERIOD
 					applyStartDate={applyStartDate}
 					applyEndDate={applyEndDate}
@@ -716,7 +716,7 @@ function CreateClassDetail(props) {
 					address={address}
 					handleModal={handleModal}
 				/>
-			) : null}
+			)}
 
 			<div className="period_place">
 				<div className="flex_row" style={{ marginBottom: 10 }}>
