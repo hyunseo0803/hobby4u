@@ -35,39 +35,21 @@ export default function CreateOnlineClass_day_plan(props) {
 						>
 							<div className="day_title_label">{day.id}</div>
 							<div className="flex_center">
-								{day.dayImgpreview || day.dayVideopreview ? (
+								{day.dayVideopreview ? (
 									<>
 										<div className="background_day_img">
-											{isImage ? (
-												<>
-													<img
-														src={day.dayImgpreview}
-														style={{
-															// position: "relative",
-															objectFit: "cover",
-															width: "80%",
-															maxHeight: 500,
-															justifyContent: "center",
-															maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
-															height: "auto", // 높이는 자동으로 조정됩니다.
-														}}
-														alt="preview-img"
-													/>
-												</>
-											) : (
-												<video
-													src={day.dayVideopreview}
-													style={{
-														objectFit: "cover",
-														width: "80%",
-														maxHeight: 500,
-														justifyContent: "center",
-														maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
-														height: "auto",
-													}}
-													controls
-												/>
-											)}
+											<video
+												src={day.dayVideopreview}
+												style={{
+													objectFit: "cover",
+													width: "80%",
+													maxHeight: 500,
+													justifyContent: "center",
+													maxWidth: "100%",
+													height: "auto",
+												}}
+												controls
+											/>
 
 											<button
 												className="editImg_text"
@@ -116,7 +98,7 @@ export default function CreateOnlineClass_day_plan(props) {
 
 								<input
 									type="file"
-									accept="image/*,video/*"
+									accept="video/*"
 									id={`day_img_input_${day.id}`}
 									style={{ display: "none" }}
 									onChange={(e) => {
