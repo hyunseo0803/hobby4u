@@ -5,8 +5,12 @@ import good_review from "../assets/good_review.png";
 
 function Myclass(props) {
 	const [userNickname, setUserNickname] = useState("");
+
 	const [userImg, setUserImg] = useState("");
+	const [updatedImg, setUpdatedImg] = useState("");
+
 	const [userEmail, setUserEmail] = useState("");
+	const [userInfo, setUserInfo] = useState("");
 
 	const [good, setGoodReview] = useState(false);
 	const [bad, setBadReview] = useState(false);
@@ -53,10 +57,18 @@ function Myclass(props) {
 				const user = await response.json();
 				const nickname = user.nickname;
 				const userImg = user.profileImg;
+				const userImgUpdate = user.updateprofile;
 				const userEmail = user.email;
+				const userInfo = user.info;
 				setUserNickname(nickname);
 				setUserImg(userImg);
+				setUserInfo(userInfo);
 				setUserEmail(userEmail);
+				if (userImgUpdate) {
+					setUpdatedImg(userImgUpdate.replace("/frontend/public/", "/"));
+				} else {
+					setUserImg(userImg);
+				}
 			} else {
 				// 예외처리
 				throw new Error("Failed to fetch user data");
@@ -67,18 +79,31 @@ function Myclass(props) {
 		}
 	};
 
-	const info =
-		"aseifjosisjelifjliefjisfishfidfslkejfjslekjflsjelfjlskjeflkjelfskjelfklefjlkehfsilhefliselfihsliehflisheflishelifhsleihflsiehf";
-
 	return (
 		<div className="wrap">
 			<div className="user_info_box">
 				<div className="user_img">
-					<img src={userImg} alt=""></img>
+					{updatedImg ? (
+						<img
+							style={{ borderRadius: 40 }}
+							width="40"
+							height="40"
+							src={updatedImg}
+							alt="user-male-circle--v1"
+						/>
+					) : (
+						<img
+							style={{ borderRadius: 40 }}
+							width="40"
+							height="40"
+							src={userImg}
+							alt="user-male-circle--v1"
+						/>
+					)}
 				</div>
 				<div className="user_info">
 					<div className="user_nickname">{userNickname}</div>
-					<div className="user_info_text">{info}</div>
+					<div className="user_info_text">{userInfo}</div>
 					<div className="user_email">{userEmail}</div>
 				</div>
 			</div>
