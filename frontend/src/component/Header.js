@@ -11,8 +11,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function Header(props) {
 	// 사용자 닉네임 상태 변수
 	const [userNickname, setUserNickname] = useState("");
-	const [userImg, setUserImg] = useState("");
-
 	// 카카오 로그인 코드로 백엔드에 JWT 요청
 	const getCode = async (code) => {
 		try {
@@ -97,9 +95,7 @@ function Header(props) {
 			if (response.ok) {
 				const user = await response.json();
 				const nickname = user.nickname;
-				const userImg = user.profileImg;
 				setUserNickname(nickname);
-				setUserImg(userImg);
 			} else {
 				// 예외처리
 				throw new Error("Failed to fetch user data");
@@ -151,25 +147,6 @@ function Header(props) {
 								<Dropdown.Toggle variant="white" id="dropdown-basic">
 									반가워요! {userNickname} 님
 								</Dropdown.Toggle>
-								{/* 카카오 사용자 프로필 동의 한 경우,  */}
-								{userImg ? (
-									<img
-										style={{ borderRadius: 40 }}
-										width="40"
-										height="40"
-										src={userImg}
-										alt="user-male-circle--v1"
-									/>
-								) : (
-									// 카카오 사용자 프로필 동의 하지 않은 경우,
-									<img
-										width="40"
-										height="40"
-										src="https://img.icons8.com/ios/50/ffd0ca/user-male-circle--v1.png"
-										alt="user-male-circle--v1"
-									/>
-								)}
-
 								<Dropdown.Menu>
 									<Link to={"myclass"} className="dropdown-link ">
 										<Dropdown.Item href="#/action-2">MY 클래스</Dropdown.Item>
