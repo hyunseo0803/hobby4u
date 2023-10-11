@@ -1,9 +1,13 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { IoMailOutline } from "react-icons/io5";
-import { IoMdRibbon, IoMdCreate } from "react-icons/io";
+import { IoMdRibbon } from "react-icons/io";
+
+import { useNavigate } from "react-router-dom";
 
 function Setting(props) {
+	const navigate = useNavigate();
+
 	const [achive, setAchive] = useState([]);
 
 	const [inputText, setInputText] = useState({
@@ -13,25 +17,23 @@ function Setting(props) {
 	});
 
 	const [inputImg, setInputImg] = useState("");
+	const [updatedImg, setUpdatedImg] = useState("");
 
 	const [inputCheck, setInputCheck] = useState(false);
 
 	const [imagepreview, setImagepreview] = useState("");
 
-	const uploadfile = (e) => {
+	const uploadProfile = (e) => {
 		const file = e;
 
 		if (file) {
 			const reader = new FileReader();
 
 			reader.onload = () => {
-				if (file.type.startsWith("image/")) {
-					setImagepreview(reader.result);
-					setInputImg(file);
-				}
-
-				reader.readAsDataURL(file);
+				setInputImg(file);
+				setImagepreview(reader.result);
 			};
+			reader.readAsDataURL(file);
 		}
 	};
 
@@ -59,6 +61,7 @@ function Setting(props) {
 			);
 			if (response.ok) {
 				const user = await response.json();
+				const userImgUpdate = user.updateprofile;
 				setInputText({
 					email: user.email,
 					// img: user.profileImg,
@@ -66,6 +69,11 @@ function Setting(props) {
 					info: user.info,
 				});
 				setInputImg(user.profileImg);
+				if (userImgUpdate) {
+					setUpdatedImg(userImgUpdate.replace("/frontend/public/", "/"));
+				} else {
+					setInputImg(user.profileImg);
+				}
 			} else {
 				// 예외처리
 				throw new Error("Failed to fetch user data");
@@ -146,6 +154,8 @@ function Setting(props) {
 			// 오류 처리
 			console.error("Error while saving data:", error);
 		}
+		getUserData();
+		navigate("/myclass");
 	};
 	const handlechangEdit = () => {
 		setInputCheck(true);
@@ -162,7 +172,7 @@ function Setting(props) {
 					}}
 				>
 					<div className="user_img">
-						{imagepreview !== "" && inputCheck ? (
+						{imagepreview !== "" ? (
 							<img
 								src={imagepreview}
 								style={{
@@ -172,18 +182,56 @@ function Setting(props) {
 								}}
 								alt="preview-img"
 							/>
+						) : updatedImg ? (
+							<img
+								src={updatedImg}
+								style={{
+									objectFit: "contain",
+									width: "100%",
+									height: "100%",
+								}}
+								alt=""
+							/>
 						) : (
-							<img src={inputImg} alt="" />
+							<img
+								src={inputImg}
+								style={{
+									objectFit: "contain",
+									width: "100%",
+									height: "100%",
+								}}
+								alt=""
+							/>
 						)}
 					</div>
-					<input
-						accept="image/*"
-						type="file"
-						onChange={(e) => {
-							uploadfile(e.target.files[0]);
-						}}
-					/>
+					{inputCheck && (
+						<>
+							<label className="component_row_wrapper" htmlFor="ex_file">
+								<div className="file-selector-button" width={100}>
+									<p
+										style={{
+											textAlign: "center",
+											padding: 3,
+										}}
+									>
+										파일 선택
+									</p>
+								</div>
+							</label>
+							<input
+								className="profileimg"
+								id="ex_file"
+								accept="image/*"
+								type="file"
+								onChange={(e) => {
+									uploadProfile(e.target.files[0]);
+								}}
+							/>
+						</>
+					)}
+					{/* </div> */}
 				</div>
+
 				<div style={{ margin: 10 }}>
 					<div style={{ display: "flex", flexDirection: "row" }}>
 						<input
