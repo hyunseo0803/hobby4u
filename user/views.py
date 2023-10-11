@@ -129,25 +129,14 @@ def get_user_data(request):
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
         member=Member.objects.get(id=user_id)
-        # achive_all=Performance.objects.all()
-        
-        # achive= Performance.objects.filter(id=user_id)
-        # achive_list=[]
-        # for achive_data in achive:
-        #     data={
-        #         'achive_file':achive_data.file is not None,
-        #         'achive_link':achive_data.link is not None
-        #     }
-            
-        #     achive_list.append(data)
-        
-            
+
         response_data = {
                     'id': member.id,
                     'nickname': member.nickname,
                     'info': member.info,
                     'email':member.email,
-                    'profileImg':member.profileimg
+                    'profileImg':member.profileimg if member.profileimg else None,
+                    'updateprofile':member.updateprofile.url if member.updateprofile else None
                     
                 }
         
@@ -157,6 +146,17 @@ def get_user_data(request):
 @api_view(['POST'])
 def save_user_info(request):
     if request.method=="POST":
+        
+        def check_image_url(url):
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    return True  # 외부 URL로 판단
+                else:
+                    return False  # 로컬 URL 또는 잘못된 URL로 판단
+            except Exception as e:
+                print(f"Error checking image URL: {e}")
+                return False  # 에러 발생 시 로컬 URL 또는 잘못된 URL로 판단
         
         jwt_token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
@@ -168,15 +168,25 @@ def save_user_info(request):
 
             # 파일 데이터 추출
         img = request.FILES.get('img')
-        print(img)        
-        member=Member.objects.get(id=user_id)
-        member.profileimg=img
+        
+        print(img)      
+        
+        member=Member.objects.get(id=user_id) 
+        
+        is_external_url = check_image_url(img)
+
+        if is_external_url:
+            member.profileimg=img
+            # 외부 이미지 URL에 대한 추가 처리
+        else:
+            member.updateprofile=img
+            
         member.nickname=nickname
         member.email=email
         member.info=info
         member.save()
         
-        return Response("success")
+    return Response("success")
 
 @api_view(['POST'])       
 def get_user_achive(request):

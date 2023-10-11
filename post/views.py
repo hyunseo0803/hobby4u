@@ -119,7 +119,8 @@ def read_all_data(request):
             'class_id': all.class_id,
             'id':{
                 'nickname':all.id.nickname,
-                'profile':all.id.profileimg,
+                'profile':all.id.profileimg if all.id.profileimg else None,
+                'updateprofile':all.id.updateprofile.url if all.id.updateprofile else None,
             },
             'title': all.title,
             'info': all.info,
@@ -169,7 +170,8 @@ def read_new_data(request):
             'goodCount': date.goodcount,
             'id':{
                 'nickname':date.id.nickname,
-                'profile':date.id.profileimg,
+                'profile':date.id.profileimg if date.id.profileimg else None,
+                'updateprofile':date.id.updateprofile.url if date.id.updateprofile else None,
             }
         }
         # print(type(date.id))
@@ -191,7 +193,8 @@ def read_some_data(request):
                 'class_id': cls.class_id,
                 'id':{
                     'nickname':cls.id.nickname,
-                    'profile':cls.id.profileimg,
+                    'profile':cls.id.profileimg if cls.id.profileimg else None,
+                    'updateprofile':cls.id.updateprofile.url if cls.id.updateprofile else None,
                 },
                 'title': cls.title,
                 'info': cls.info,
@@ -366,7 +369,8 @@ def read_filter_data(request):
             'class_id': item.class_id,
             'id': {
                 'nickname':item.id.nickname,
-                'profile':item.id.profileimg,
+                'profile':item.id.profileimg if item.id.profileimg else None,
+                'updateprofile':item.id.updateprofile.url if item.id.updateprofile else None,
                 
             },
             'title': item.title,
