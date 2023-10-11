@@ -244,7 +244,8 @@ class Member(models.Model):
     email = models.CharField(max_length=100)        
     provider = models.CharField(max_length=100, blank=True, null=True)
     info = models.CharField(max_length=100, blank=True, null=True)
-    profileimg = models.CharField(db_column='profileImg', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    profileimg = models.CharField(db_column='profileImg',max_length=200, blank=True, null=True)  # Field name made lowercase.
+    updateprofile = models.ImageField(upload_to="userimg/",max_length=200, blank=True, null=True)  # Field name made lowercase.
     goodcount = models.CharField(db_column='goodCount', max_length=100, blank=True, null=True)  # Field name made lowercase.
     joindate = models.CharField(db_column='joinDate', max_length=100)  # Field name made lowercase.     
 
