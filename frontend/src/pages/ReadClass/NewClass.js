@@ -69,6 +69,10 @@ export default function NEW_CLASS(props) {
 					? like_status.find((item) => item.class_id === newItem.class_id)
 					: null;
 
+				const updatedImg = newItem.id.updateprofile
+					? newItem.id.updateprofile.replace("/frontend/public/", "/")
+					: null;
+
 				return (
 					<div className="class_div_btn">
 						<div className="firstimg_container">
@@ -115,13 +119,23 @@ export default function NEW_CLASS(props) {
 							{newItem.title}
 						</button>
 						<div className="row_center_wrap">
-							<img
-								src={newItem.id.profile}
-								alt="profile"
-								width={30}
-								height={30}
-								style={{ borderRadius: "50%" }}
-							/>
+							{updatedImg ? (
+								<img
+									src={updatedImg}
+									alt="profile"
+									width={30}
+									height={30}
+									style={{ borderRadius: "50%" }}
+								/>
+							) : (
+								<img
+									src={newItem.id.profile}
+									alt="profile"
+									width={30}
+									height={30}
+									style={{ borderRadius: "50%" }}
+								/>
+							)}
 							<div className="class_nickname_btn">{newItem.id.nickname}</div>
 						</div>
 					</div>

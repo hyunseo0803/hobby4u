@@ -57,6 +57,10 @@ export default function FILTER_CLASS(props) {
 								? like_status.find((item) => item.class_id === filter.class_id)
 								: null;
 
+							const updatedImg = filter.id.updateprofile
+								? filter.id.updateprofile.replace("/frontend/public/", "/")
+								: null;
+
 							return (
 								<div key={index} className="class_div_btn">
 									<div className="firstimg_container">
@@ -103,13 +107,24 @@ export default function FILTER_CLASS(props) {
 										{filter.title}
 									</button>
 									<div className="row_center_wrap">
-										<img
-											src={filter.id.profile}
-											alt="profile"
-											width={30}
-											height={30}
-											style={{ borderRadius: "50%" }}
-										/>
+										{updatedImg ? (
+											<img
+												src={updatedImg}
+												alt="profile"
+												width={30}
+												height={30}
+												style={{ borderRadius: "50%" }}
+											/>
+										) : (
+											<img
+												src={filter.id.profile}
+												alt="profile"
+												width={30}
+												height={30}
+												style={{ borderRadius: "50%" }}
+											/>
+										)}
+
 										<div className="class_nickname_btn">
 											{filter.id.nickname}
 										</div>

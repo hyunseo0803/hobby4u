@@ -37,6 +37,10 @@ export default function ALL_CLASS(props) {
 					? like_status.find((item) => item.class_id === classItem.class_id)
 					: null;
 
+				const updatedImg = classItem.id.updateprofile
+					? classItem.id.updateprofile.replace("/frontend/public/", "/")
+					: null;
+
 				return (
 					<div key={index} className="class_div_btn">
 						<div className="firstimg_container">
@@ -83,13 +87,23 @@ export default function ALL_CLASS(props) {
 							{classItem.title}
 						</button>
 						<div className="row_center_wrap">
-							<img
-								src={classItem.id.profile}
-								alt="profile"
-								width={30}
-								height={30}
-								style={{ borderRadius: "50%" }}
-							/>
+							{updatedImg ? (
+								<img
+									src={updatedImg}
+									alt="profile"
+									width={30}
+									height={30}
+									style={{ borderRadius: "50%" }}
+								/>
+							) : (
+								<img
+									src={classItem.id.profile}
+									alt="profile"
+									width={30}
+									height={30}
+									style={{ borderRadius: "50%" }}
+								/>
+							)}
 							<div className="class_nickname_btn">{classItem.id.nickname}</div>
 						</div>
 					</div>
