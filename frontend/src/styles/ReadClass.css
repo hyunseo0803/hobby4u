@@ -6,6 +6,8 @@
 	justify-content: center;
 	align-items: center;
 	/* background-color: yellow; */
+	display: flex;
+	flex-direction: column;
 }
 .center_label {
 	text-align: center;
@@ -53,6 +55,14 @@
 	border-radius: 8px;
 }
 
+/* .class_user_img {
+	width: 40px;
+	height: 40px;
+	border-radius: 50px;
+	overflow: hidden;
+	/* margin-left: 2vh; */
+/* margin-right: 2vh; */
+
 .firstimg {
 	object-fit: cover;
 	width: 100%;
@@ -99,7 +109,7 @@
 .class_nickname_btn {
 	align-items: center;
 	justify-content: center;
-	width: 90%;
+	/* width: 90%; */
 	text-align: left;
 	padding: 4;
 	margin-top: 5px;
