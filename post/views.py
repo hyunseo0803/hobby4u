@@ -258,7 +258,7 @@ def read_filter_data(request):
     if incoding_word is not None and unquote(incoding_field)=="제목":
         filter_result = filter_result.filter(title__contains=unquote(incoding_word))
     if incoding_word is not None and unquote(incoding_field)=="멘토":
-        filter_result = Class.objects.filter(Q(id__nickname=unquote(incoding_word)))
+        filter_result = Class.objects.filter(Q(id__nickname__contains=unquote(incoding_word)))
     
     if themeEng =='quiet':
         theme='# 조용한'
