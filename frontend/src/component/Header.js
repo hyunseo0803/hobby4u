@@ -162,7 +162,7 @@ function Header(props) {
 										</Dropdown.Item>
 									</Link>
 									<Link to={"setting"} className="dropdown-link ">
-										<Dropdown.Item href="/intro">설정</Dropdown.Item>
+										<Dropdown.Item href="/intro">프로필 수정</Dropdown.Item>
 									</Link>
 									<Dropdown.Item href="#/logout" onClick={logout}>
 										로그아웃
