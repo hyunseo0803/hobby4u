@@ -1,14 +1,23 @@
 import React from "react";
+import "../styles/Setting.css";
 import { useEffect, useState } from "react";
 import { IoMailOutline } from "react-icons/io5";
 import { IoMdRibbon } from "react-icons/io";
+
+import { Modal } from "../component/Modal";
 
 import { useNavigate } from "react-router-dom";
 
 function Setting(props) {
 	const navigate = useNavigate();
 
-	const [achive, setAchive] = useState([]);
+	const [achiveLink, setAchiveLink] = useState([]);
+	const [achiveFile, setAchiveFile] = useState([]);
+
+	const [inputLink, setInputLink] = useState([]);
+	const [inputFile, setInputFile] = useState([]);
+
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const [inputText, setInputText] = useState({
 		email: "",
@@ -30,7 +39,7 @@ function Setting(props) {
 			const reader = new FileReader();
 
 			reader.onload = () => {
-				setInputImg(file);
+				setUpdatedImg(file);
 				setImagepreview(reader.result);
 			};
 			reader.readAsDataURL(file);
@@ -39,8 +48,11 @@ function Setting(props) {
 
 	useEffect(() => {
 		getUserData();
-		getUserAchiv();
+		// getUserAchiv();
 	}, []);
+	// useEffect(() => {
+	// 	console.log(updatedImg);
+	// });
 
 	const getUserData = async () => {
 		try {
@@ -69,6 +81,7 @@ function Setting(props) {
 					info: user.info,
 				});
 				setInputImg(user.profileImg);
+				// setUpdatedImg(user.updateprofile);
 				if (userImgUpdate) {
 					setUpdatedImg(userImgUpdate.replace("/frontend/public/", "/"));
 				} else {
@@ -102,7 +115,8 @@ function Setting(props) {
 			);
 			if (response.ok) {
 				const achive = await response.json();
-				setAchive(achive);
+				setAchiveFile(achive.file);
+				setAchiveLink(achive.link);
 			} else {
 				// 예외처리
 				throw new Error("Failed to fetch user data");
@@ -113,8 +127,38 @@ function Setting(props) {
 		}
 	};
 
+	const addAchiveLink = (link) => {
+		setAchiveLink([...achiveLink, link]);
+	};
+
+	const handleLinkClick = (url) => {
+		window.open(url, "_blank");
+	};
+
+	const uploadAchive = (e) => {
+		const file = e;
+
+		if (file) {
+			const reader = new FileReader();
+
+			reader.onload = () => {
+				setUpdatedImg(file);
+				setImagepreview(reader.result);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const openModal = () => {
+		setIsModalOpen(true);
+	};
+
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
+
 	const handleSave = async () => {
-		console.log(inputImg);
+		console.log("------------------------" + updatedImg);
 
 		setInputCheck(false);
 		try {
@@ -131,6 +175,9 @@ function Setting(props) {
 			const formdata = new FormData();
 			formdata.append("json", JSON.stringify(dataToSend));
 			formdata.append("img", inputImg);
+			if (updatedImg) {
+				formdata.append("updatedimg", updatedImg);
+			}
 
 			const response = await fetch(
 				"http://localhost:8000/api/user/save_user_info/",
@@ -158,55 +205,53 @@ function Setting(props) {
 		navigate("/myclass");
 	};
 	const handlechangEdit = () => {
+		console.log(updatedImg);
+
 		setInputCheck(true);
 	};
 
 	return (
-		<div className="wrap">
-			<div style={{ display: "flex", flexDirection: "row", marginBottom: 30 }}>
+		<div className="setting_wrap">
+			<div
+				style={{
+					justifyContent: "center",
+					display: "flex",
+					flexDirection: "row",
+					marginBottom: 30,
+					// backgroundColor: "red",
+				}}
+			>
 				<div
 					style={{
+						display: "flex",
 						justifyContent: "center",
 						textAlign: "center",
-						position: "relative",
+						// backgroundColor: "blue",
+						marginRight: 20,
+						flexDirection: "column",
+						// position: "relative",
 					}}
 				>
 					<div className="user_img">
 						{imagepreview !== "" ? (
 							<img
 								src={imagepreview}
-								style={{
-									objectFit: "contain",
-									width: "100%",
-									height: "100%",
-								}}
+								// style={{
+								// 	objectFit: "contain",
+								// }}
+								width="40"
+								height="40"
 								alt="preview-img"
 							/>
 						) : updatedImg ? (
-							<img
-								src={updatedImg}
-								style={{
-									objectFit: "contain",
-									width: "100%",
-									height: "100%",
-								}}
-								alt=""
-							/>
+							<img src={updatedImg} width="40" height="40" alt="" />
 						) : (
-							<img
-								src={inputImg}
-								style={{
-									objectFit: "contain",
-									width: "100%",
-									height: "100%",
-								}}
-								alt=""
-							/>
+							<img src={inputImg} width="40" height="40" alt="" />
 						)}
 					</div>
 					{inputCheck && (
 						<>
-							<label className="component_row_wrapper" htmlFor="ex_file">
+							<label htmlFor="setting_file">
 								<div className="file-selector-button" width={100}>
 									<p
 										style={{
@@ -214,13 +259,13 @@ function Setting(props) {
 											padding: 3,
 										}}
 									>
-										파일 선택
+										이미지 수정
 									</p>
 								</div>
 							</label>
 							<input
-								className="profileimg"
-								id="ex_file"
+								// className="profileimg"
+								id="setting_file"
 								accept="image/*"
 								type="file"
 								onChange={(e) => {
@@ -232,10 +277,10 @@ function Setting(props) {
 					{/* </div> */}
 				</div>
 
-				<div style={{ margin: 10 }}>
+				<div>
 					<div style={{ display: "flex", flexDirection: "row" }}>
 						<input
-							className="user_nickname"
+							// className="user_nickname"
 							value={inputText.nickname}
 							onChange={(e) =>
 								setInputText({ ...inputText, nickname: e.target.value })
@@ -243,9 +288,9 @@ function Setting(props) {
 							disabled={!inputCheck}
 						/>
 					</div>
-					<div style={{ width: "80vh", height: 100, position: "relative" }}>
+					<div style={{ width: "80vh", height: 100 }}>
 						<input
-							className="user_nickname"
+							// className="user_nickname"
 							style={{
 								width: "90%",
 							}}
@@ -260,9 +305,14 @@ function Setting(props) {
 			</div>
 			<div
 				style={{
+					justifyContent: "center",
+					display: "flex",
+					alignItems: "center",
+					textAlign: "center",
 					borderTop: "1px solid gray",
 					width: 1000,
 					marginTop: 20,
+					margin: "auto",
 					opacity: 0.5,
 				}}
 			></div>
@@ -270,9 +320,10 @@ function Setting(props) {
 				style={{
 					display: "flex",
 					flexDirection: "row",
+					justifyContent: "center",
 					// backgroundColor: "yellow",
 					padding: 10,
-					position: "relative",
+					// position: "relative",
 				}}
 			>
 				<div
@@ -292,12 +343,14 @@ function Setting(props) {
 					style={{
 						width: "80vh",
 						// backgroundColor: "blue",
-						marginLeft: 10,
-						padding: 5,
+						alignItems: "center",
+						display: "flex",
+						marginLeft: 20,
+						// padding: 5,
 					}}
 				>
 					<input
-						className="user_nickname"
+						// className="user_nickname"
 						value={inputText.email}
 						onChange={(e) =>
 							setInputText({ ...inputText, email: e.target.value })
@@ -308,9 +361,14 @@ function Setting(props) {
 			</div>
 			<div
 				style={{
+					justifyContent: "center",
+					display: "flex",
+					alignItems: "center",
+					textAlign: "center",
 					borderTop: "1px solid gray",
 					width: 1000,
-					// margin: 20,
+					marginTop: 20,
+					margin: "auto",
 					opacity: 0.5,
 				}}
 			></div>
@@ -318,9 +376,11 @@ function Setting(props) {
 				style={{
 					display: "flex",
 					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
 					// backgroundColor: "red",
 					padding: 10,
-					position: "relative",
+					// position: "relative",
 				}}
 			>
 				<div
@@ -330,7 +390,9 @@ function Setting(props) {
 						textAlign: "center",
 						alignItems: "center",
 						justifyContent: "center",
+						// backgroundColor: "yellow",
 						display: "flex",
+						// margin: "auto",
 					}}
 				>
 					<IoMdRibbon size={30} color="#FFD550" />
@@ -339,73 +401,171 @@ function Setting(props) {
 					style={{
 						width: "80vh",
 						// backgroundColor: "blue",
-						marginLeft: 10,
-						padding: 5,
+						// alignItems: "center",
+						flexDirection: "column",
+						display: "flex",
+						marginLeft: 20,
+						// padding: 5,
 					}}
 				>
-					{achive.length !== 0 ? (
-						achive.map((a, index) => <div key={index}>{a}</div>)
+					{achiveLink.length !== 0 || achiveFile.length !== 0 ? (
+						<div>
+							{achiveLink.length !== 0 &&
+								achiveLink.map((a, index) => <div key={index}>{a}</div>)}
+							{achiveFile.length !== 0 &&
+								achiveFile.map((a, index) => <div key={index}>{a}</div>)}
+						</div>
 					) : (
-						<div>등록된 성과물이 없습니다 ! </div>
+						<>
+							{inputLink.length !== 0 || inputFile.length !== 0 ? (
+								<>
+									{/* <div> */}
+									{inputLink.length !== 0 &&
+										inputLink.map((slink, index) => (
+											<div key={index}>
+												<a
+													href="https://www.youtube.com/watch?v=hJvjPKXRqCI"
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{/* <button
+														className="achive-file-selector-button"
+														onClick={() => handleLinkClick(slink)}
+													>
+														{slink}
+													</button> */}
+													{slink}
+												</a>
+											</div>
+										))}
+									{/* </div> */}
+								</>
+							) : (
+								<div>등록된 성과물이 없습니다 ! </div>
+							)}
+						</>
 					)}
 
-					{inputCheck && <button>등록하기</button>}
+					{inputCheck && (
+						<div
+							style={{
+								alignItems: "center",
+								marginTop: 20,
+								display: "flex",
+								flexDirection: "row",
+								// backgroundColor: "red",
+							}}
+						>
+							<button
+								className="achive-file-selector-button"
+								onClick={openModal}
+							>
+								링크 업로드
+							</button>
+							<Modal
+								isOpen={isModalOpen}
+								onClose={closeModal}
+								onSave={addAchiveLink}
+							/>
+							<label htmlFor="setting_file">
+								<div
+									className="achive-file-selector-button"
+									style={{ marginLeft: 10 }}
+									width={100}
+								>
+									<p
+										style={{
+											textAlign: "center",
+											padding: 3,
+											color: "white",
+										}}
+									>
+										파일 선택
+									</p>
+								</div>
+							</label>
+							<input
+								// className="profileimg"
+								id="setting_file"
+								accept="image/*"
+								type="file"
+								onChange={(e) => {
+									uploadAchive(e.target.files[0]);
+								}}
+							/>
+						</div>
+					)}
 				</div>
 			</div>
 
 			<div
 				style={{
+					justifyContent: "center",
+					display: "flex",
+					alignItems: "center",
+					textAlign: "center",
 					borderTop: "1px solid gray",
 					width: 1000,
-					marginBottom: 80,
+					marginTop: 20,
+					margin: "auto",
 					opacity: 0.5,
 				}}
 			></div>
-			{inputCheck !== true ? (
-				<button
-					style={{
-						border: "1px solid #F26B6B",
-						color: "#F26B6B",
-						backgroundColor: "transparent",
-						width: 120,
-						padding: 5,
-						marginBottom: 20,
-						textAlign: "center",
-						borderRadius: 8,
-					}}
-					onClick={handlechangEdit}
-				>
-					정보 수정
-				</button>
-			) : (
-				<button
-					style={{
-						border: "1px solid #F26B6B",
-						color: "#F26B6B",
-						backgroundColor: "transparent",
-						width: 120,
-						padding: 5,
-						marginBottom: 20,
-						textAlign: "center",
-						borderRadius: 8,
-					}}
-					onClick={handleSave}
-				>
-					저장
-				</button>
-			)}
 			<div
 				style={{
-					backgroundColor: "#F26B6B",
-					color: "white",
-					// margin: 50,
-					width: 120,
-					padding: 5,
-					textAlign: "center",
-					borderRadius: 8,
+					margin: 100,
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					flexDirection: "column",
 				}}
 			>
-				회원탈퇴
+				{inputCheck !== true ? (
+					<button
+						style={{
+							border: "1px solid #F26B6B",
+							color: "#F26B6B",
+							backgroundColor: "transparent",
+							width: 120,
+							padding: 5,
+							marginBottom: 20,
+							textAlign: "center",
+							borderRadius: 8,
+						}}
+						onClick={handlechangEdit}
+					>
+						정보 수정
+					</button>
+				) : (
+					<button
+						style={{
+							border: "1px solid #F26B6B",
+							color: "#F26B6B",
+							backgroundColor: "transparent",
+							width: 120,
+							padding: 5,
+							marginBottom: 20,
+							textAlign: "center",
+							borderRadius: 8,
+						}}
+						onClick={handleSave}
+					>
+						저장
+					</button>
+				)}
+				<div
+					style={{
+						backgroundColor: "#F26B6B",
+						color: "white",
+						// margin: 50,
+						width: 120,
+						padding: 5,
+						textAlign: "center",
+						borderRadius: 8,
+					}}
+				>
+					회원탈퇴
+				</div>
 			</div>
 		</div>
 	);
