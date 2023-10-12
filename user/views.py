@@ -167,20 +167,36 @@ def save_user_info(request):
         email = json_data.get('email')
 
             # 파일 데이터 추출
-        img = request.FILES.get('img')
+        # kakaoimg = request.FILES.get('kakaoimg')
+        # localimg= request.FILES.get('localimg')
+        # img=request.FILES.get('img')
+        updateimg=request.FILES.get('updatedimg')
+        print("----------------------------------")
         
-        print(img)      
+        print(updateimg)      
         
         member=Member.objects.get(id=user_id) 
         
-        is_external_url = check_image_url(img)
+        # is_external_url = check_image_url(img)
 
-        if is_external_url:
-            member.profileimg=img
-            # 외부 이미지 URL에 대한 추가 처리
-        else:
-            member.updateprofile=img
-            
+        # if is_external_url:
+        #     member.profileimg=img
+        #     # 외부 이미지 URL에 대한 추가 처리
+        # else:
+        #     member.updateprofile=img
+        
+        
+        #CASE 1: 이미지 수정을 하지 않을때ProfileImg 유지 
+        #CASE 2: 이미지 수정했을때, 
+        #        - 이미지가 
+        # if kakaoimg is not None and localimg is None:
+        #     member.profileimg=kakaoimg
+        # elif kakaoimg is not None and localimg is not None:
+        #     member.profileimg=kakaoimg
+        #     member.updateprofile=localimg
+        # member.profileimg=kakaoimg
+        if updateimg is not None:
+            member.updateprofile=updateimg
         member.nickname=nickname
         member.email=email
         member.info=info
