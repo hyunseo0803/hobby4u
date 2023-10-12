@@ -106,29 +106,30 @@ export default function FILTER_CLASS(props) {
 									>
 										{filter.title}
 									</button>
-									<div className="row_center_wrap">
-										{updatedImg ? (
-											<img
-												src={updatedImg}
-												alt="profile"
-												width={30}
-												height={30}
-												style={{ borderRadius: "50%" }}
-											/>
-										) : (
-											<img
-												src={filter.id.profile}
-												alt="profile"
-												width={30}
-												height={30}
-												style={{ borderRadius: "50%" }}
-											/>
-										)}
-
+									{/* <div className="row_center_wrap">
+										<div className="class_user_img">
+											{updatedImg ? (
+												<img
+													src={updatedImg}
+													alt="profile"
+													width={30}
+													height={30}
+													style={{ borderRadius: "50%" }}
+												/>
+											) : (
+												<img
+													src={filter.id.profile}
+													alt="profile"
+													width={30}
+													height={30}
+													style={{ borderRadius: "50%" }}
+												/>
+											)}
+										</div>
 										<div className="class_nickname_btn">
 											{filter.id.nickname}
 										</div>
-									</div>
+									</div> */}
 								</div>
 							);
 						})}

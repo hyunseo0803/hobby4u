@@ -86,26 +86,28 @@ export default function ALL_CLASS(props) {
 						>
 							{classItem.title}
 						</button>
-						<div className="row_center_wrap">
-							{updatedImg ? (
-								<img
-									src={updatedImg}
-									alt="profile"
-									width={30}
-									height={30}
-									style={{ borderRadius: "50%" }}
-								/>
-							) : (
-								<img
-									src={classItem.id.profile}
-									alt="profile"
-									width={30}
-									height={30}
-									style={{ borderRadius: "50%" }}
-								/>
-							)}
+						{/* <div className="row_center_wrap">
+							<div className="class_user_img">
+								{updatedImg ? (
+									<img
+										src={updatedImg}
+										alt="profile"
+										width={40}
+										height={40}
+										style={{ borderRadius: "50%" }}
+									/>
+								) : (
+									<img
+										src={classItem.id.profile}
+										alt="profile"
+										width="20"
+										height="20"
+										style={{ objectFit: "contain" }}
+									/>
+								)}
+							</div>
 							<div className="class_nickname_btn">{classItem.id.nickname}</div>
-						</div>
+						</div> */}
 					</div>
 				);
 			})}

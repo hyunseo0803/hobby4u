@@ -118,26 +118,28 @@ export default function NEW_CLASS(props) {
 						>
 							{newItem.title}
 						</button>
-						<div className="row_center_wrap">
-							{updatedImg ? (
-								<img
-									src={updatedImg}
-									alt="profile"
-									width={30}
-									height={30}
-									style={{ borderRadius: "50%" }}
-								/>
-							) : (
-								<img
-									src={newItem.id.profile}
-									alt="profile"
-									width={30}
-									height={30}
-									style={{ borderRadius: "50%" }}
-								/>
-							)}
+						{/* <div className="row_center_wrap">
+							<div className="class_user_img">
+								{updatedImg ? (
+									<img
+										src={updatedImg}
+										alt="profile"
+										width={30}
+										height={30}
+										style={{ borderRadius: "50%" }}
+									/>
+								) : (
+									<img
+										src={newItem.id.profile}
+										alt="profile"
+										width={30}
+										height={30}
+										style={{ borderRadius: "50%" }}
+									/>
+								)}
+							</div>
 							<div className="class_nickname_btn">{newItem.id.nickname}</div>
-						</div>
+						</div> */}
 					</div>
 				);
 			})}
