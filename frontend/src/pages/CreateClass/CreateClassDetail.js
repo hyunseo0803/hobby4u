@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import moment from "moment";
 import "../../styles/CreateClassDetail.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import edit from "../../assets/edit.png";
 
@@ -24,6 +24,8 @@ function CreateClassDetail(props) {
 
 	const [activityStartDate, setActivityStartDate] = useState(null);
 	const [activityEndDate, setActivityEndDate] = useState(null);
+
+	const navigate = useNavigate();
 
 	const { kakao } = window;
 
@@ -542,6 +544,7 @@ function CreateClassDetail(props) {
 			.catch((error) => {
 				console.error("Error submitting data:", error);
 			});
+		navigate("/readclass");
 	};
 
 	return (
