@@ -267,7 +267,7 @@ function CreateClass(props) {
 									justifyContent: "center",
 									alignItems: "center",
 									textAlign: "center",
-									margin: 20,
+									marginTop: 30,
 								}}
 							>
 								<div>
