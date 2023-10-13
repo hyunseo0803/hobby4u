@@ -16,6 +16,9 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
 
+from jwt.exceptions import ExpiredSignatureError
+from rest_framework.exceptions import APIException
+
 
 load_dotenv()
 
@@ -123,40 +126,46 @@ def KakaoCallbackView(request):
         
 @api_view(['POST'])       
 def get_user_data(request):
-    if request.method == "POST":
-        jwt_token = request.headers.get('Authorization').split(' ')[1]
-        
-        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
-        user_id=payload['id']
-        member=Member.objects.get(id=user_id)
+    try:
+        if request.method == "POST":
+            jwt_token = request.headers.get('Authorization').split(' ')[1]
+            
+            payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+            user_id=payload['id']
+            member=Member.objects.get(id=user_id)
 
-        response_data = {
-                    'id': member.id,
-                    'nickname': member.nickname,
-                    'info': member.info,
-                    'email':member.email,
-                    'profileImg':member.profileimg if member.profileimg else None,
-                    'updateprofile':member.updateprofile.url if member.updateprofile else None
-                    
-                }
-        
+            response_data = {
+                        'id': member.id,
+                        'nickname': member.nickname,
+                        'info': member.info,
+                        'email':member.email,
+                        'profileImg':member.profileimg if member.profileimg else None,
+                        'updateprofile':member.updateprofile.url if member.updateprofile else None
+                        
+                    }
         return Response(response_data)
+    except ExpiredSignatureError:
+        # 만료된 토큰에 대한 예외 처리
+        return Response({'error': 'Token has expired'}, status=401)
+    except Exception as e:
+        # 다른 예외가 발생한 경우 클라이언트로 에러 응답을 보냅니다.
+        return Response({'error': str(e)}, status=500)
     
     
 @api_view(['POST'])
 def save_user_info(request):
     if request.method=="POST":
         
-        def check_image_url(url):
-            try:
-                response = requests.get(url)
-                if response.status_code == 200:
-                    return True  # 외부 URL로 판단
-                else:
-                    return False  # 로컬 URL 또는 잘못된 URL로 판단
-            except Exception as e:
-                print(f"Error checking image URL: {e}")
-                return False  # 에러 발생 시 로컬 URL 또는 잘못된 URL로 판단
+        # def check_image_url(url):
+        #     try:
+        #         response = requests.get(url)
+        #         if response.status_code == 200:
+        #             return True  # 외부 URL로 판단
+        #         else:
+        #             return False  # 로컬 URL 또는 잘못된 URL로 판단
+        #     except Exception as e:
+        #         print(f"Error checking image URL: {e}")
+        #         return False  # 에러 발생 시 로컬 URL 또는 잘못된 URL로 판단
         
         jwt_token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
