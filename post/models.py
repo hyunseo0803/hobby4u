@@ -245,7 +245,7 @@ class Member(models.Model):
     provider = models.CharField(max_length=100, blank=True, null=True)
     info = models.CharField(max_length=100, blank=True, null=True)
     profileimg = models.CharField(db_column='profileImg',max_length=200, blank=True, null=True)  # Field name made lowercase.
-    updateprofile = models.ImageField(upload_to="userimg/",max_length=200, blank=True, null=True)  # Field name made lowercase.
+    updateprofile = models.ImageField(db_column='updateprofile', upload_to="userimg/",max_length=200, blank=True, null=True)  # Field name made lowercase.
     goodcount = models.CharField(db_column='goodCount', max_length=100, blank=True, null=True)  # Field name made lowercase.
     joindate = models.CharField(db_column='joinDate', max_length=100)  # Field name made lowercase.     
 
@@ -273,6 +273,7 @@ class Performance(models.Model):
     id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id')
     file = models.FileField(max_length=100, upload_to="images/",blank=True, null=True)
     link = models.CharField(max_length=100, blank=True, null=True)
+    link_title=models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         managed = False
