@@ -12,6 +12,7 @@
 .user_info_box {
 	padding: 15px;
 	width: 65%;
+	margin-top: 50px;
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
