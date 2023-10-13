@@ -4,6 +4,9 @@ import bad_review from "../assets/bad_review.png";
 import good_review from "../assets/good_review.png";
 
 function Myclass(props) {
+	// const [error, setError] = useState("");
+	// const [loginChck, setLoginChck] = useState(false);
+
 	const [userNickname, setUserNickname] = useState("");
 
 	const [userImg, setUserImg] = useState("");
@@ -36,6 +39,18 @@ function Myclass(props) {
 	useEffect(() => {
 		getUserData();
 	});
+
+	// useEffect(() => {
+	// 	if (localStorage.getItem("token")) {
+	// 		setLoginChck(true);
+	// 	} else {
+	// 		setLoginChck(false);
+	// 	}
+
+	// 	// if (error) {
+	// 	// 	alert("세션이 만료되었습니다. 다시 로그인해주세요 ! ");
+	// 	// }
+	// });
 	const getUserData = async () => {
 		try {
 			const token = localStorage.getItem("token");
@@ -75,53 +90,66 @@ function Myclass(props) {
 			}
 		} catch (error) {
 			// 예외처리
-			throw new Error("Token is not available");
+			if (error.response && error.response.status === 401) {
+				// 만료된 토큰 에러 메시지를 저장
+				console.log("로그인 필요");
+			} else {
+				// 다른 에러 메시지를 저장
+				console.log("서버 오류가 발생했습니다.");
+			}
 		}
 	};
 
 	return (
 		<div className="wrap">
-			<div className="user_info_box">
-				<div className="user_img">
-					{updatedImg ? (
-						<img
-							style={{ borderRadius: 40 }}
-							width="40"
-							height="40"
-							src={updatedImg}
-							alt="user-male-circle--v1"
-						/>
-					) : (
-						<img
-							style={{ borderRadius: 40 }}
-							width="40"
-							height="40"
-							src={userImg}
-							alt="user-male-circle--v1"
-						/>
-					)}
-				</div>
-				<div className="user_info">
-					<div className="user_nickname">{userNickname}</div>
-					<div className="user_info_text">{userInfo}</div>
-					<div className="user_email">{userEmail}</div>
-				</div>
-			</div>
-			<div className="review_wrapper">
-				<button
-					className={bad ? "review_unclick" : "review"}
-					onClick={GoodreviewEvent}
-				>
-					<img width={40} src={good_review} alt="" /> <text>Good_Review</text>
-				</button>
-				<button
-					className={good ? "review_unclick" : "review"}
-					onClick={BadReviewEvent}
-				>
-					<img width={40} src={bad_review} alt="" />
-					<text>Bad_Review</text>
-				</button>
-			</div>
+			{userNickname ? (
+				<>
+					<div className="user_info_box">
+						<div className="user_img">
+							{updatedImg ? (
+								<img
+									style={{ borderRadius: 40 }}
+									width="40"
+									height="40"
+									src={updatedImg}
+									alt="user-male-circle--v1"
+								/>
+							) : (
+								<img
+									style={{ borderRadius: 40 }}
+									width="40"
+									height="40"
+									src={userImg}
+									alt="user-male-circle--v1"
+								/>
+							)}
+						</div>
+						<div className="user_info">
+							<div className="user_nickname">{userNickname}</div>
+							<div className="user_info_text">{userInfo}</div>
+							<div className="user_email">{userEmail}</div>
+						</div>
+					</div>
+					<div className="review_wrapper">
+						<button
+							className={bad ? "review_unclick" : "review"}
+							onClick={GoodreviewEvent}
+						>
+							<img width={40} src={good_review} alt="" />{" "}
+							<text>Good_Review</text>
+						</button>
+						<button
+							className={good ? "review_unclick" : "review"}
+							onClick={BadReviewEvent}
+						>
+							<img width={40} src={bad_review} alt="" />
+							<text>Bad_Review</text>
+						</button>
+					</div>
+				</>
+			) : (
+				<div>로그인 필요</div>
+			)}
 		</div>
 	);
 }
