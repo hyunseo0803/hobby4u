@@ -3,6 +3,8 @@ import "../../styles/CreateClass.css";
 import { useNavigate } from "react-router-dom";
 import { XCircleFillIcon } from "@primer/octicons-react";
 import { IoMdDownload } from "react-icons/io";
+import LoginRequired from "../../common/LoginRequired";
+import Swal from "sweetalert2";
 
 function CreateClass(props) {
 	const navigate = useNavigate();
@@ -58,11 +60,25 @@ function CreateClass(props) {
 	};
 
 	const handleRemoveImg = () => {
-		if (window.confirm("정말 삭제합니까?")) {
-			setImageSrc(null);
-			setImagepreview(null);
-			setVideopreview(null);
-		}
+		Swal.fire({
+			title: "정말로 삭제 하시겠습니까?",
+			icon: "warning",
+
+			showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+			confirmButtonColor: "#3085d6", // confrim 버튼 색깔 지정
+			cancelButtonColor: "#d33", // cancel 버튼 색깔 지정
+			confirmButtonText: "삭제", // confirm 버튼 텍스트 지정
+			cancelButtonText: "취소", // cancel 버튼 텍스트 지정
+		}).then((result) => {
+			// 만약 Promise리턴을 받으면,
+			if (result.isConfirmed) {
+				// 만약 모달창에서 confirm 버튼을 눌렀다면
+
+				setImageSrc(null);
+				setImagepreview(null);
+				setVideopreview(null);
+			}
+		});
 	};
 
 	function handlePageChange() {
@@ -303,7 +319,7 @@ function CreateClass(props) {
 				</>
 			) : (
 				<>
-					<div>로그인 필요함</div>
+					<LoginRequired />
 				</>
 			)}
 		</div>
