@@ -20,8 +20,8 @@ class App extends Component {
 			<BrowserRouter>
 				<div className="Container">
 					<Header />
-					{/* <FirstMain /> */}
 					<Routes>
+						<Route path="/" element={<Intro />} />
 						<Route path="intro" element={<Intro />} />
 						<Route path="setting" element={<Setting />} />
 						<Route path="myclass" element={<Myclass />} />

@@ -155,18 +155,6 @@ def get_user_data(request):
 @api_view(['POST'])
 def save_user_info(request):
     if request.method=="POST":
-        
-        # def check_image_url(url):
-        #     try:
-        #         response = requests.get(url)
-        #         if response.status_code == 200:
-        #             return True  # 외부 URL로 판단
-        #         else:
-        #             return False  # 로컬 URL 또는 잘못된 URL로 판단
-        #     except Exception as e:
-        #         print(f"Error checking image URL: {e}")
-        #         return False  # 에러 발생 시 로컬 URL 또는 잘못된 URL로 판단
-        
         jwt_token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
@@ -175,35 +163,10 @@ def save_user_info(request):
         info = json_data.get('info')
         email = json_data.get('email')
 
-            # 파일 데이터 추출
-        # kakaoimg = request.FILES.get('kakaoimg')
-        # localimg= request.FILES.get('localimg')
-        # img=request.FILES.get('img')
         updateimg=request.FILES.get('updatedimg')
-        print("----------------------------------")
-        
-        print(updateimg)      
         
         member=Member.objects.get(id=user_id) 
         
-        # is_external_url = check_image_url(img)
-
-        # if is_external_url:
-        #     member.profileimg=img
-        #     # 외부 이미지 URL에 대한 추가 처리
-        # else:
-        #     member.updateprofile=img
-        
-        
-        #CASE 1: 이미지 수정을 하지 않을때ProfileImg 유지 
-        #CASE 2: 이미지 수정했을때, 
-        #        - 이미지가 
-        # if kakaoimg is not None and localimg is None:
-        #     member.profileimg=kakaoimg
-        # elif kakaoimg is not None and localimg is not None:
-        #     member.profileimg=kakaoimg
-        #     member.updateprofile=localimg
-        # member.profileimg=kakaoimg
         if updateimg is not None:
             member.updateprofile=updateimg
         member.nickname=nickname
@@ -216,9 +179,7 @@ def save_user_info(request):
 @api_view(['POST'])       
 def get_user_achive(request):
     if request.method =='POST':
-        # print("--------------------------------")
         jwt_token = request.headers.get('Authorization').split(' ')[1]
-        # print(jwt_token)
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
         achive= Performance.objects.filter(id=user_id)
@@ -230,5 +191,4 @@ def get_user_achive(request):
             }
             
             achive_list.append(data)
-            print(data)
     return Response(achive_list)

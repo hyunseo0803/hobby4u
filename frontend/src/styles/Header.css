@@ -34,8 +34,7 @@
 	font-family: "Pretendard-Regular";
 	font-size: 17px;
 	letter-spacing: 2px;
-	white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
-	/* overflow-x: auto; */
+	white-space: nowrap;
 }
 
 .memu_item {
@@ -59,7 +58,6 @@
 }
 
 .login_item .link {
-	/* text-decoration: none; */
 	color: #ffd0ca;
 	font-weight: 300px;
 	padding: 10px;

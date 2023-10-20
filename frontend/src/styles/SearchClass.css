@@ -1,12 +1,7 @@
 .search_wrapper {
-	/* background-color: yellow; */
-	/* min-height: 1000px; */
 	margin-top: 70px;
 	margin-left: 6%;
 	margin-right: 6%;
-	/* justify-content: center; */
-	/* display: flex; */
-	/* flex-direction: column; */
 }
 .search_flex_row {
 	display: flex;
@@ -14,22 +9,21 @@
 	justify-content: center;
 	align-items: center;
 	font-family: "omyu_pretty";
-	/* letter-spacing: 5px; */
-	/* background-color: red; */
 }
 .result_cnt {
 	padding: 10px;
 	margin: 20px;
 }
 .theme_div {
-	/* height: 400px; */
-	/* background-color: red; */
-	/* flex-direction: row; */
-	/* display: flex; */
-	/* justify-content: center; */
 	width: 300px;
 }
+.dropdown_btn {
+	letter-spacing: 5px !important;
+}
 
+#dropdown-basic-button {
+	letter-spacing: 5px !important;
+}
 @font-face {
 	font-family: "HakgyoansimWoojuR";
 	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimWoojuR.woff2")

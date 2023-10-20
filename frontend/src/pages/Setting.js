@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLink } from "react-icons/ai";
 
 import { BsFillMortarboardFill, BsXCircleFill } from "react-icons/bs";
+import LoginRequired from "../common/LoginRequired";
 
 function Setting(props) {
 	const navigate = useNavigate();
@@ -169,12 +170,6 @@ function Setting(props) {
 		}
 	};
 
-	// const replace = (content) => {
-	// 	const convertContent = content.replace(urlRegex, function (url) {
-	// 	  return '<a href="' + url + '" target="_blank">' + url + '</a>';
-	// 	})
-	//   }
-
 	const openModal = () => {
 		setIsModalOpen(true);
 	};
@@ -243,12 +238,9 @@ function Setting(props) {
 					<div
 						style={{
 							justifyContent: "center",
-							// textAlign: "center",
 							display: "flex",
 							flexDirection: "row",
 							marginBottom: 30,
-							// width: "50%",
-							// backgroundColor: "red",
 						}}
 					>
 						<div
@@ -256,19 +248,14 @@ function Setting(props) {
 								display: "flex",
 								justifyContent: "center",
 								textAlign: "center",
-								// backgroundColor: "blue",
 								marginRight: 20,
 								flexDirection: "column",
-								// position: "relative",
 							}}
 						>
 							<div className="user_img">
 								{imagepreview !== "" ? (
 									<img
 										src={imagepreview}
-										// style={{
-										// 	objectFit: "contain",
-										// }}
 										width="40"
 										height="40"
 										alt="preview-img"
@@ -294,7 +281,6 @@ function Setting(props) {
 										</div>
 									</label>
 									<input
-										// className="profileimg"
 										id="setting_file"
 										accept="image/*"
 										type="file"
@@ -304,13 +290,11 @@ function Setting(props) {
 									/>
 								</>
 							)}
-							{/* </div> */}
 						</div>
 
 						<div>
 							<div style={{ display: "flex", flexDirection: "row" }}>
 								<input
-									// className="user_nickname"
 									value={inputText.nickname}
 									onChange={(e) =>
 										setInputText({ ...inputText, nickname: e.target.value })
@@ -320,7 +304,6 @@ function Setting(props) {
 							</div>
 							<div style={{ width: "80vh", height: 100 }}>
 								<input
-									// className="user_nickname"
 									style={{
 										width: "90%",
 									}}
@@ -351,15 +334,12 @@ function Setting(props) {
 							display: "flex",
 							flexDirection: "row",
 							justifyContent: "center",
-							// backgroundColor: "yellow",
 							padding: 10,
-							// position: "relative",
 						}}
 					>
 						<div
 							style={{
 								width: 196,
-								// backgroundColor: "red",
 								height: 35,
 								textAlign: "center",
 								alignItems: "center",
@@ -372,15 +352,12 @@ function Setting(props) {
 						<div
 							style={{
 								width: "80vh",
-								// backgroundColor: "blue",
 								alignItems: "center",
 								display: "flex",
 								marginLeft: 20,
-								// padding: 5,
 							}}
 						>
 							<input
-								// className="user_nickname"
 								value={inputText.email}
 								onChange={(e) =>
 									setInputText({ ...inputText, email: e.target.value })
@@ -408,9 +385,7 @@ function Setting(props) {
 							flexDirection: "row",
 							justifyContent: "center",
 							alignItems: "center",
-							// backgroundColor: "red",
 							padding: 10,
-							// position: "relative",
 						}}
 					>
 						<div
@@ -421,7 +396,6 @@ function Setting(props) {
 								alignItems: "center",
 								justifyContent: "center",
 								display: "flex",
-								// margin: "auto",
 							}}
 						>
 							<BsFillMortarboardFill size={30} color="#FFD550" />
@@ -430,12 +404,9 @@ function Setting(props) {
 						<div
 							style={{
 								width: "80vh",
-								// backgroundColor: "blue",
-								// alignItems: "center",
 								flexDirection: "column",
 								display: "flex",
 								marginLeft: 20,
-								// padding: 5,
 							}}
 						>
 							{achiveLink.length > 0 ||
@@ -455,9 +426,7 @@ function Setting(props) {
 												<div
 													style={{
 														display: "flex",
-														// height: 20,
 														flexDirection: "row",
-														// alignItems: "center",
 													}}
 												>
 													<div
@@ -480,8 +449,6 @@ function Setting(props) {
 																flexDirection: "row",
 																alignItems: "center",
 																height: 30,
-
-																// justifyContent: "space-between",
 															}}
 														>
 															<div style={{ fontSize: 16, marginRight: 10 }}>
@@ -528,7 +495,6 @@ function Setting(props) {
 										marginTop: 20,
 										display: "flex",
 										flexDirection: "row",
-										// backgroundColor: "red",
 									}}
 								>
 									<button
@@ -538,7 +504,6 @@ function Setting(props) {
 									>
 										<div
 											style={{
-												// backgroundColor: "red",
 												justifyContent: "center",
 												alignItems: "center",
 												display: "flex",
@@ -573,7 +538,6 @@ function Setting(props) {
 										</div>
 									</label>
 									<input
-										// className="profileimg"
 										id="setting_file"
 										accept="image/*"
 										type="file"
@@ -657,7 +621,7 @@ function Setting(props) {
 					</div>
 				</>
 			) : (
-				<div>로그인 필요함</div>
+				<LoginRequired />
 			)}
 		</div>
 	);

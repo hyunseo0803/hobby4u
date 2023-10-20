@@ -33,7 +33,6 @@ def submit_data(request):
     if request.method == 'POST':
         json_data = request.POST.get('json')  # JSON 데이터 받기
         data = json.loads(json_data)
-        # if data.get('option')=='offline':
         token=data.get('token')
         payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
@@ -47,7 +46,6 @@ def submit_data(request):
         address = data.get('address')
         money = data.get('money')
         theme = data.get('theme')
-        applystartdate=data.get('applyStartDate')
         applyenddate=data.get('applyEndDate')
         activitystartdate=data.get('activityStartDate')
         activityenddate=data.get('activityEndDate')
@@ -79,7 +77,6 @@ def submit_data(request):
                                             intro2_content=inputinfo2,
                                             intro3_file=inputimage3,
                                             intro3_content=inputinfo3,
-                                            applystart=applystartdate,
                                             applyend=applyenddate,
                                             activitystart=activitystartdate,
                                             activityend=activityenddate,
@@ -241,17 +238,11 @@ def read_some_data(request):
 def read_filter_data(request):
     money = request.GET.get('money')
     option = request.GET.get('option')
-    apply_ok_str=request.GET.get('apply_ok')
-    today = request.GET.get('today')
     themeEng=request.GET.get('theme')
     incoding_word=request.GET.get('word')
     incoding_field=request.GET.get('searchfield')
 
-    if apply_ok_str == 'true':
-        apply_ok = True
-    else:
-        apply_ok = False
-    # 기본 쿼리셋
+    # # 기본 쿼리셋
     filter_result = Class.objects.all()
    
         
@@ -318,9 +309,6 @@ def read_filter_data(request):
     if option == "offline":
         filter_result = filter_result.filter(type='offline')
     
-    if apply_ok:
-        filter_result=filter_result.filter(applyend__gt=today)
-    
     # 유료이면서 온라인
     if money == "fee" and option == "online":
         filter_result = filter_result.exclude(money=0).filter(type='online')
@@ -333,36 +321,6 @@ def read_filter_data(request):
     if money == "fee" and option == "offline":
         filter_result = filter_result.exclude(money=0).filter(type='offline')
 
-    #무료이면서 신청가능
-    if money=="free" and apply_ok:
-        filter_result = filter_result.filter(money=0).filter(applyend__gt=today)
-    #유료이면서 신청가능
-    if money=="fee" and apply_ok:
-        filter_result = filter_result.exclude(money=0).filter(applyend__gt=today)
-    #오프라인이면서 신청가능
-    if option=="offline" and apply_ok:
-        filter_result = filter_result.filter(type="offline").filter(applyend__gt=today)
-    #온라인이면서 신청가능
-    if option=="online" and apply_ok:
-        filter_result = filter_result.filter(type="online").filter(applyend__gt=today)
-    
-    # 무료이면서 오프라인
-    if money == "free" and option == "offline":
-        filter_result = filter_result.filter(money=0).filter(type='offline')
-        
-    #무료이면서 오프라인 이면서 신청가능
-    if money == "free" and option == "offline" and apply_ok:
-        filter_result = filter_result.filter(money=0).filter(type='offline').filter(applyend__gt=today)
-    #유료이면서 오프라인 이면서 신청가능 
-    if money == "fee" and option == "offline" and apply_ok:
-        filter_result = filter_result.exclude(money=0).filter(type='offline').filter(applyend__gt=today)
-    #무료이면서 온라인 이면서 신청가능
-    if money == "free" and option == "online" and apply_ok:
-        filter_result = filter_result.filter(money=0).filter(type='online').filter(applyend__gt=today)
-    #우료이면서 오프라인 이면서 신청가능
-    if money == "fee" and option == "online" and apply_ok:
-        filter_result = filter_result.exclude(money=0).filter(type='online').filter(applyend__gt=today)
-    
     filter_data_list = []
     for item in filter_result:
         filter_data = {
@@ -419,20 +377,6 @@ def create_goodCount_data(request):
                 class_info.goodcount+= 1
                 class_info.save()
                 liked = True
-            print(liked)
-            
-            # like_all=LikeClass.objects.all()
-            
-            # like_data_list = []
-            
-            # for like in like_all:
-            #     like_data={
-            #         'class_id':like.class_id
-            #     }
-                
-            # like_data_list.append(like_data)
-        
-      
             return JsonResponse({'liked':liked} ,safe=False)
 
         return JsonResponse({'message': 'Data received and processed successfully!'})

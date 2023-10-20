@@ -1,6 +1,5 @@
 .wrap {
-	margin-top: 150px;
-	/* height: 600px; */
+	margin-top: 130px;
 	margin-left: 7%;
 	margin-right: 7%;
 	justify-content: center;
@@ -32,11 +31,9 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: 10px;
-	/* position: relative; */
 }
 
 .remove_icon {
-	/* position: absolute; */
 	right: 0px;
 	top: 0px;
 	border: none;

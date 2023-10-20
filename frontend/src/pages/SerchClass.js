@@ -19,19 +19,15 @@ import { useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 
 function SearchClass() {
-	// console.log("----------------------SearchClass rendered");
-
 	const [searchfilterField, setSearchFilterField] = useState("제목");
 	const [inputValue, setInputValue] = useState("");
 
 	const [word, setWord] = useState("");
 	const [searchClick, setSearchClick] = useState(false);
 
-	// const [themeFilter, setThemeFilter] = useState("");
 	const [themefKO, setThemefKO] = useState("");
 	const [themef, setThemef] = useState("");
 	const [loading, setLoading] = useState(true);
-	// const prevThemeFilter = useRef(themeFilter);
 
 	const [like_status, setLikeStatus] = useState([]);
 	const [fliteredata, setFliteredata] = useState([]);
@@ -160,27 +156,25 @@ function SearchClass() {
 	function ReadGoodCount() {
 		const token = localStorage.getItem("token");
 		const userData = { token: token };
-		axios
-			.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
-			.then((response) => {
-				const likeData = response.data.like_data_list;
-				setLikeStatus(likeData);
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
+		if (token) {
+			axios
+				.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then((response) => {
+					const likeData = response.data.like_data_list;
+					setLikeStatus(likeData);
+				})
+				.catch((error) => {
+					console.error("Error submitting data:", error);
+				});
+		}
 	}
 	function readThemeFilter(theme) {
 		setLoading(true);
 		console.log("Reading theme filter...", theme);
-		// const themeF = toString(themeFilter);
-
-		// if (themeFilter.trim() !== "") {
-		// 빈 문자열이 아닌 경우에만 요청 보냄
 		axios
 			.get(`http://localhost:8000/api/post/read_filter_data/?theme=${theme}`)
 			.then((response) => {
@@ -238,13 +232,18 @@ function SearchClass() {
 			{((!themef && searchClick) || (!themef && !searchClick)) && (
 				<div className="search_flex_row" style={{ height: 40, marginTop: 100 }}>
 					<DropdownButton
+						// className="dropdown_btn"
 						variant="secondary"
 						id="dropdown-basic-button"
 						title={searchfilterField}
 						onSelect={handleSelectKeyword}
 					>
-						<Dropdown.Item eventKey="title">제목</Dropdown.Item>
-						<Dropdown.Item eventKey="mentor">멘토</Dropdown.Item>
+						<Dropdown.Item eventKey="title" className="dropdown_btn">
+							제목
+						</Dropdown.Item>
+						<Dropdown.Item eventKey="mentor" className="dropdown_btn">
+							멘토
+						</Dropdown.Item>
 					</DropdownButton>
 					<input
 						type="text"
@@ -333,8 +332,6 @@ function SearchClass() {
 					))}
 				</div>
 			)}
-
-			{/* )} */}
 		</div>
 	);
 }
