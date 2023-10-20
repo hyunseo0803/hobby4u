@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import "../styles/Myclass.css";
 import bad_review from "../assets/bad_review.png";
 import good_review from "../assets/good_review.png";
+import LoginRequired from "../common/LoginRequired";
 
 function Myclass(props) {
-	// const [error, setError] = useState("");
-	// const [loginChck, setLoginChck] = useState(false);
-
 	const [userNickname, setUserNickname] = useState("");
 
 	const [userImg, setUserImg] = useState("");
@@ -40,17 +38,6 @@ function Myclass(props) {
 		getUserData();
 	});
 
-	// useEffect(() => {
-	// 	if (localStorage.getItem("token")) {
-	// 		setLoginChck(true);
-	// 	} else {
-	// 		setLoginChck(false);
-	// 	}
-
-	// 	// if (error) {
-	// 	// 	alert("세션이 만료되었습니다. 다시 로그인해주세요 ! ");
-	// 	// }
-	// });
 	const getUserData = async () => {
 		try {
 			const token = localStorage.getItem("token");
@@ -148,7 +135,7 @@ function Myclass(props) {
 					</div>
 				</>
 			) : (
-				<div>로그인 필요</div>
+				<LoginRequired />
 			)}
 		</div>
 	);
