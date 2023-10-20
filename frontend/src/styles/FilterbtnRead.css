@@ -1,11 +1,14 @@
-.flex_row {
+.filter_btn_flex_row {
+	width: "100%";
 	display: flex;
 	flex-direction: row;
 }
 
 .btn_normal_click {
 	border: none;
-	background-color: pink;
+
+	border-bottom: 3px solid pink;
+	background-color: transparent;
 }
 
 .btn_normal {
@@ -13,6 +16,5 @@
 	background-color: white;
 }
 .btn_normal:hover {
-	border: none;
-	background-color: pink;
+	border-bottom: 3px solid pink;
 }
