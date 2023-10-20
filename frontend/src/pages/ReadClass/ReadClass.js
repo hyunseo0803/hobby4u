@@ -18,9 +18,10 @@ function Allclass() {
 	const [fliteredata, setFliteredata] = useState([]);
 	const [like_status, setLikeStatus] = useState([]);
 
+	const [token, setToken] = useState("");
+
 	const [money, setMoney] = useState("");
 	const [option, setOption] = useState("");
-	const [apply_ok, setApply_ok] = useState(false);
 
 	function handleReadDetail(value) {
 		axios
@@ -57,18 +58,17 @@ function Allclass() {
 			setOption("offline");
 		}
 
-		if (value === "apply") {
-			setApply_ok(!apply_ok);
+		if (value === "reset") {
+			setOption("");
+			setMoney("");
 		}
 		readFilter();
 	};
 
 	function readFilter() {
-		const today = moment(new Date()).format("YYYY-MM-DD");
-
 		axios
 			.get(
-				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}&apply_ok=${apply_ok}&today=${today}`
+				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}`
 			)
 			.then((response) => {
 				setFliteredata(response.data.filter_data_list);
@@ -115,60 +115,72 @@ function Allclass() {
 	function ReadGoodCount() {
 		const token = localStorage.getItem("token");
 		const userData = { token: token };
-		axios
-			.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
-			.then((response) => {
-				const likeData = response.data.like_data_list;
-				setLikeStatus(likeData);
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
+		if (token) {
+			axios
+				.post("http://localhost:8000/api/post/read_goodCount_data/", userData, {
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then((response) => {
+					const likeData = response.data.like_data_list;
+					setLikeStatus(likeData);
+				})
+				.catch((error) => {
+					console.error("Error submitting data:", error);
+				});
+		}
 	}
 
 	async function goodClick(classId) {
 		const token = localStorage.getItem("token");
 		const classidData = { classId: classId, token: token };
+		if (token) {
+			try {
+				await axios.post(
+					"http://localhost:8000/api/post/create_goodCount_data/",
+					classidData,
+					{
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}
+				);
 
-		try {
-			await axios.post(
-				"http://localhost:8000/api/post/create_goodCount_data/",
-				classidData,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
+				ReadGoodCount();
+
+				readNew();
+				if (option === "" && money === "") {
+					readAll();
+				} else {
+					readFilter();
 				}
-			);
-
-			ReadGoodCount();
-
-			readNew();
-			if (option === "" && money === "" && apply_ok === false) {
-				readAll();
-			} else {
-				readFilter();
+			} catch (error) {
+				console.error("Error submitting data:", error);
 			}
-		} catch (error) {
-			console.error("Error submitting data:", error);
 		}
 	}
 
 	useEffect(() => {
-		if (option === "" && money === "" && apply_ok === false) {
+		if (option === "" && money === "") {
 			readAll();
 		} else {
 			readFilter();
 		}
-	}, [money, option, apply_ok]);
+	}, [money, option]);
 
 	useEffect(() => {
 		readAll();
 	}, []);
+
+	useEffect(() => {
+		const localtoken = localStorage.getItem("token");
+		if (localtoken) {
+			setToken(localtoken);
+		} else {
+			setToken("");
+		}
+	});
 
 	return (
 		<div className="read_container">
@@ -182,20 +194,16 @@ function Allclass() {
 						like_status={like_status}
 						ReadGoodCount={ReadGoodCount}
 						goodClick={goodClick}
+						token={token}
 					/>
 				</div>
 			</div>
 			<div className="new_read_container">
 				<div className="center_label">ALL</div>
-				<FILTER_BTN
-					addFilter={addFilter}
-					money={money}
-					option={option}
-					apply_ok={apply_ok}
-				/>
+				<FILTER_BTN addFilter={addFilter} money={money} option={option} />
 				<div className="row_center_wrap">
 					{/* 필터링 했을 경우 */}
-					{option === "" && money === "" && apply_ok === false ? (
+					{option === "" && money === "" ? (
 						<ALL_CLASS
 							data={data}
 							readAll={readAll}
@@ -203,12 +211,12 @@ function Allclass() {
 							like_status={like_status}
 							handleReadDetail={handleReadDetail}
 							ReadGoodCount={ReadGoodCount}
+							token={token}
 						/>
 					) : (
 						<FILTER_CLASS
 							option={option}
 							money={money}
-							apply_ok={apply_ok}
 							data={data}
 							readAll={readAll}
 							goodClick={goodClick}
@@ -217,6 +225,7 @@ function Allclass() {
 							fliteredata={fliteredata}
 							ReadGoodCount={ReadGoodCount}
 							readFilter={readFilter}
+							token={token}
 						/>
 					)}
 				</div>
