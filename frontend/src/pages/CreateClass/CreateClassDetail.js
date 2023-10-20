@@ -4,22 +4,24 @@ import "../../styles/CreateClassDetail.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import edit from "../../assets/edit.png";
+import Swal from "sweetalert2";
 
 import remove from "../../assets/remove.png";
 import { DAY_PLAN, PLACE_PERIOD } from "../CreateClass/OfflineClass";
 import ONLINE_DAY_PLAN from "../CreateClass/OnlineClass";
 import { OfflinFollowbar, OnlineFollowbar } from "../../component/CCFollowbar";
 import axios from "axios";
+import LoginRequired from "../../common/LoginRequired";
 
 function CreateClassDetail(props) {
 	const [selectedTheme, setSelectedTheme] = useState([]);
 	const [person, setPerson] = useState("");
 	const [money, setMoney] = useState("");
 	const [address, setAdress] = useState("");
+	const [token, setToken] = useState("");
 
 	const [isOpen, setIsOpen] = useState(false);
 
-	const [applyStartDate, setApplyStartDate] = useState(null);
 	const [applyEndDate, setApplyEndDate] = useState(null);
 
 	const [activityStartDate, setActivityStartDate] = useState(null);
@@ -43,10 +45,7 @@ function CreateClassDetail(props) {
 			dayVideopreview: "",
 			title: "",
 			date: new Date(),
-			// startTime: "",
-			// endTime: "",
 			content: "",
-			// prepare: "",
 		},
 	]);
 
@@ -117,6 +116,18 @@ function CreateClassDetail(props) {
 		"# 문화예술",
 	];
 
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "center-center",
+		showConfirmButton: false,
+		timer: 3000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
+
 	const location = useLocation();
 
 	const title = location.state.title;
@@ -128,6 +139,15 @@ function CreateClassDetail(props) {
 
 	const [isFirstImage, setIsFirstImage] = useState("");
 	const [isImage, setIsImage] = useState("");
+
+	useEffect(() => {
+		const localtoken = localStorage.getItem("token");
+		if (localtoken) {
+			setToken(localtoken);
+		} else {
+			setToken("");
+		}
+	});
 
 	const All_submit_Offline =
 		!All_select_theme ||
@@ -171,16 +191,28 @@ function CreateClassDetail(props) {
 	};
 
 	const handleRemoveImg = (number) => {
-		if (window.confirm("정말 삭제합니까?")) {
-			setInputImagePreview((prevInputImagePreview) => ({
-				...prevInputImagePreview,
-				[`inputImage${number}preview`]: null,
-			}));
-			setInputImage((prevInputImage) => ({
-				...prevInputImage,
-				[`inputImage${number}`]: null,
-			}));
-		}
+		Swal.fire({
+			title: "정말로 삭제 하시겠습니까?",
+			icon: "warning",
+
+			showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+			confirmButtonColor: "#3085d6", // confrim 버튼 색깔 지정
+			cancelButtonColor: "#d33", // cancel 버튼 색깔 지정
+			confirmButtonText: "삭제", // confirm 버튼 텍스트 지정
+			cancelButtonText: "취소", // cancel 버튼 텍스트 지정
+		}).then((result) => {
+			// 만약 Promise리턴을 받으면,
+			if (result.isConfirmed) {
+				setInputImagePreview((prevInputImagePreview) => ({
+					...prevInputImagePreview,
+					[`inputImage${number}preview`]: null,
+				}));
+				setInputImage((prevInputImage) => ({
+					...prevInputImage,
+					[`inputImage${number}`]: null,
+				}));
+			}
+		});
 	};
 
 	const handleFree = (e) => {
@@ -189,21 +221,16 @@ function CreateClassDetail(props) {
 	};
 
 	const onChangeApply = (dates) => {
-		const [start, end] = dates;
-
-		setApplyStartDate(start);
-
-		if (end) {
-			setApplyEndDate(end);
-		} else {
-			setApplyEndDate(null);
-		}
+		setApplyEndDate(dates);
 	};
 	const onChangeActivity = (dates) => {
 		const [start, end] = dates;
 
-		if (applyStartDate === null || applyEndDate === null) {
-			alert("신청 기간을 먼저 선택해주세요");
+		if (applyEndDate === null) {
+			Toast.fire({
+				icon: "error",
+				title: "신청 기간을 먼저 선택해 주세요",
+			});
 			setActivityStartDate(null);
 			setActivityEndDate(null);
 		} else {
@@ -241,13 +268,7 @@ function CreateClassDetail(props) {
 
 	const blank_check = useCallback(() => {
 		const isAtLeastOneDayValidoff = days.every(
-			(day) =>
-				day.title !== "" &&
-				day.date !== "" &&
-				// day.startTime !== "" &&
-				// day.endTime !== "" &&
-				day.content !== ""
-			// day.prepare !== ""
+			(day) => day.title !== "" && day.date !== "" && day.content !== ""
 		);
 		const isAtLeastOneDayValidon = days.every(
 			(day) =>
@@ -289,7 +310,6 @@ function CreateClassDetail(props) {
 			setAllpersonmoney(false);
 		}
 		if (
-			applyStartDate &&
 			applyEndDate &&
 			activityStartDate &&
 			activityEndDate &&
@@ -310,7 +330,6 @@ function CreateClassDetail(props) {
 		person,
 		money,
 		applyEndDate,
-		applyStartDate,
 		activityEndDate,
 		activityStartDate,
 		address,
@@ -368,10 +387,7 @@ function CreateClassDetail(props) {
 			dayImgpreview: "",
 			dayVideopreview: "",
 			date: "",
-			// startTime: "",
-			// endTime: "",
 			content: "",
-			// prepare: "",
 		};
 		setDays((prevDays) => [...prevDays, newDay]);
 		console.log(days);
@@ -383,22 +399,33 @@ function CreateClassDetail(props) {
 	};
 
 	const handleDayRemoveImg = (id) => {
-		if (window.confirm("정말 삭제합니까?")) {
-			const updatedDays = [...days];
+		Swal.fire({
+			title: "정말로 삭제 하시겠습니까?",
+			icon: "warning",
 
-			const dayIndex = updatedDays.findIndex((day) => day.id === id);
+			showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+			confirmButtonColor: "#3085d6", // confrim 버튼 색깔 지정
+			cancelButtonColor: "#d33", // cancel 버튼 색깔 지정
+			confirmButtonText: "삭제", // confirm 버튼 텍스트 지정
+			cancelButtonText: "취소", // cancel 버튼 텍스트 지정
+		}).then((result) => {
+			if (result.isConfirmed) {
+				const updatedDays = [...days];
 
-			if (dayIndex !== -1) {
-				updatedDays[dayIndex] = {
-					...updatedDays[dayIndex],
-					dayImg: null,
-					dayImgpreview: "",
-					dayVideopreview: "",
-				};
+				const dayIndex = updatedDays.findIndex((day) => day.id === id);
 
-				setDays(updatedDays);
+				if (dayIndex !== -1) {
+					updatedDays[dayIndex] = {
+						...updatedDays[dayIndex],
+						dayImg: null,
+						dayImgpreview: "",
+						dayVideopreview: "",
+					};
+
+					setDays(updatedDays);
+				}
 			}
-		}
+		});
 	};
 
 	//Day별 입력창 변경 이벤트 처리 함수 , id, 필드이름, 입력값
@@ -406,7 +433,11 @@ function CreateClassDetail(props) {
 		if (field === "date") {
 			// 신청 기간과 활동 기간을 먼저 체크
 			if (activityStartDate == null || activityEndDate == null) {
-				alert("신청 기간과 활동 기간을 먼저 선택해주세요");
+				Toast.fire({
+					icon: "error",
+					title: "신청 기간과 활동 기간을 먼저 선택해주세요",
+				});
+
 				return;
 			}
 
@@ -419,7 +450,10 @@ function CreateClassDetail(props) {
 
 			// 선택한 날짜가 활동 기간에 속하지 않으면 경고 메시지 표시
 			if (selectedDate < startDate || selectedDate > endDate) {
-				alert("활동 기간 중 날짜를 선택해주세요");
+				Toast.fire({
+					icon: "error",
+					title: "활동 기간 중 날짜를 선택해주세요",
+				});
 				return;
 			}
 		}
@@ -509,7 +543,7 @@ function CreateClassDetail(props) {
 			address: address,
 			money: money,
 			theme: selectedTheme,
-			applyStartDate: moment(applyStartDate).format("YYYY-MM-DD"),
+			// applyStartDate: moment(applyStartDate).format("YYYY-MM-DD"),
 			applyEndDate: moment(applyEndDate).format("YYYY-MM-DD"),
 			activityStartDate: moment(activityStartDate).format("YYYY-MM-DD"),
 			activityEndDate: moment(activityEndDate).format("YYYY-MM-DD"),
@@ -549,420 +583,468 @@ function CreateClassDetail(props) {
 
 	return (
 		<div className="create_wrap">
-			{option === "offline" ? (
-				<OfflinFollowbar
-					checkList_offline={checkList_offline}
-					listContents_offline={listContents_offline}
-				/>
-			) : (
-				<OnlineFollowbar
-					checkList_online={checkList_online}
-					listContents_online={listContents_online}
-				/>
-			)}
-			<div className="large_label" style={{ padding: 20, textAlign: "center" }}>
-				TITLE : {title}
-			</div>
-
-			{imagepreview || videopreview ? (
+			{token ? (
 				<>
-					<div className="all_img_wrapper">
-						{isFirstImage ? (
-							<img
-								style={{
-									objectFit: "cover",
-									width: "85%",
-									height: "100%",
-									justifyContent: "center",
-								}}
-								src={imagepreview}
-								alt=""
-							/>
-						) : (
-							<video
-								style={{
-									objectFit: "cover",
-									width: "85%",
-									height: "100%",
-									justifyContent: "center",
-								}}
-								controls
-								src={videopreview}
-								alt=""
-							/>
-						)}
-					</div>
-				</>
-			) : null}
-
-			<div
-				style={{
-					fontSize: "10",
-					justifyContent: "center",
-					textAlign: "center",
-				}}
-			>
-				{info}
-			</div>
-
-			<div className="flex_center" style={{ flexDirection: "column" }}>
-				<div className="theme_wrapper">
-					{theme.map((item, index) => (
-						<button
-							className={
-								selectedTheme.includes(item)
-									? "select_theme_button"
-									: "theme_button"
-							}
-							key={index}
-							onClick={() => addTheme(item)}
-						>
-							<div className="theme_text_wrapper">{item}</div>
-						</button>
-					))}
-				</div>
-				<div
-					className="flex_center"
-					style={{
-						alignItems: "center",
-					}}
-				>
-					<div className="middle_text">
-						<div className="_text">
-							수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
-							자율적으로 책정해주세요.
-						</div>
-						<div className="_text">
-							수강료는 개인 당 수강료가 아닌 전체 수강인원에 대한 수강료입니다.
-						</div>
-					</div>
-					<div
-						className="flex_center"
-						style={{ margin: 20, display: "flex", flexDirection: "row" }}
-					>
-						<div className="person_money">
-							<img
-								className="flex_center"
-								style={{ margin: 10 }}
-								width={64}
-								height={64}
-								src="https://img.icons8.com/cotton/64/conference-call.png"
-								alt="conference-call"
-							/>
-							<div className="person_money_label">수강 인원</div>
-							<input
-								className="person_money_input"
-								name="person"
-								type="number"
-								value={person}
-								onChange={(e) => setPerson(e.target.value)}
-							></input>{" "}
-						</div>
-						<div className="person_money">
-							<div className="person_money_icon">
-								<img
-									className="flex_center"
-									style={{ margin: 10 }}
-									width={55}
-									height={55}
-									src="https://img.icons8.com/ios/64/get-cash--v1.png"
-									alt="get-cash--v1"
-								/>
-							</div>
-							<div className="person_money_label">수강료</div>
-							<div className="radio_fee">
-								<div className="flex_row" style={{ height: 33 }}>
-									<input
-										type="radio"
-										value="pay"
-										checked={fee === "pay"}
-										onChange={(e) => setFee(e.target.value)}
-									></input>
-									<div className="radio_label">유료</div>
-									<div className="flex_center">
-										<input
-											className="person_money_input"
-											name="money"
-											type="number"
-											value={money}
-											min="1000"
-											placeholder="1000원~"
-											onChange={(e) => setMoney(e.target.value)}
-											disabled={fee === "free"}
-										></input>
-									</div>
-								</div>
-								<div className="flex_row" style={{ height: 33 }}>
-									<input
-										type="radio"
-										value="free"
-										checked={fee === "free"}
-										onChange={handleFree}
-									></input>
-									<div className="radio_label">무료</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			{option === "offline" && (
-				<PLACE_PERIOD
-					applyStartDate={applyStartDate}
-					applyEndDate={applyEndDate}
-					onChangeApply={onChangeApply}
-					activityStartDate={activityStartDate}
-					activityEndDate={activityEndDate}
-					onChangeActivity={onChangeActivity}
-					isOpen={isOpen}
-					handleComplete={handleComplete}
-					address={address}
-					handleModal={handleModal}
-				/>
-			)}
-
-			<div className="period_place">
-				<div className="flex_row" style={{ marginBottom: 10 }}>
-					<div
-						className="large_label"
-						style={{ marginLeft: "8%", textAlign: "left" }}
-					>
-						클래스 소개
-					</div>
-					<div className="period_place_label_hint">
-						자신의 클래스를 사람들이 이끌릴만한 간단한 소개
-					</div>
-				</div>
-				<div style={{}}>
-					{intro_map.map((number) => (
+					{option === "offline" ? (
+						<OfflinFollowbar
+							checkList_offline={checkList_offline}
+							listContents_offline={listContents_offline}
+						/>
+					) : (
+						<OnlineFollowbar
+							checkList_online={checkList_online}
+							listContents_online={listContents_online}
+						/>
+					)}
+					<div className="flex_center">
 						<div
-							className="flex_row"
+							className="large_label"
 							style={{
-								alignItems: "center",
+								width: "60%",
+								padding: 10,
+								margin: 20,
+								fontSize: "10",
 								justifyContent: "center",
-								margin: 10,
+								textAlign: "center",
 							}}
 						>
-							{inputImagePreview[`inputImage${number}preview`] !== null ? (
-								<>
-									<div
-										style={{
-											position: "relative",
-											width: "15%",
-											display: "flex",
-											flexDirection: "row",
-											marginRight: 15,
-										}}
-									>
+							TITLE : {title}
+						</div>
+
+						{imagepreview || videopreview ? (
+							<>
+								<div className="all_img_wrapper">
+									{isFirstImage ? (
 										<img
-											src={inputImagePreview[`inputImage${number}preview`]}
-											className="day_img_true"
 											style={{
 												objectFit: "cover",
-												width: "72%",
-												height: 130,
+												width: "75%",
+												height: "100%",
 												justifyContent: "center",
 											}}
-											alt="preview-img"
+											src={imagepreview}
+											alt=""
 										/>
-
-										<button
-											className="editImg_text"
-											style={{ right: 0 }}
-											onClick={() => {
-												const inputElement = document.getElementById(
-													`infoimage${number}`
-												);
-												if (inputElement) {
-													inputElement.click();
-												}
+									) : (
+										<video
+											style={{
+												objectFit: "cover",
+												width: "75%",
+												height: "100%",
+												justifyContent: "center",
 											}}
-										>
-											<img src={edit} width={15} alt="edit" />
-										</button>
-										<button
-											className="editImg_text"
-											style={{ right: 0, top: 25 }}
-											onClick={() => handleRemoveImg(number)}
-										>
-											<img src={remove} width={15} alt="edit" />
-										</button>
-									</div>
+											controls
+											src={videopreview}
+											alt=""
+										/>
+									)}
+								</div>
+							</>
+						) : null}
 
-									<input
-										type="file"
-										accept="image/*"
-										id={`infoimage${number}`}
-										name={`infoimage${number}`}
-										style={{ display: "none" }}
-										onChange={(e) => {
-											onChangeImage(e.target.files[0], number);
-										}}
-									/>
-								</>
-							) : (
-								<>
-									<div>
-										<button
-											className="uploadImg_behind"
-											onClick={() => {
-												const inputElement = document.getElementById(
-													`infoimage${number}`
-												);
-												if (inputElement) {
-													inputElement.click();
-												}
-											}}
-										>
-											<img
-												width="50"
-												height="50"
-												src="https://img.icons8.com/ios/50/image--v1.png"
-												alt="--v1"
-											/>
-										</button>
-									</div>
-									<input
-										type="file"
-										accept="image/*"
-										id={`infoimage${number}`}
-										style={{ display: "none" }}
-										onChange={(e) => {
-											onChangeImage(e.target.files[0], number);
-										}}
-									/>
-								</>
-							)}
+						<div
+							style={{
+								width: "60%",
+								padding: 10,
+								margin: 20,
+								fontSize: "10",
+								justifyContent: "center",
+								textAlign: "center",
+							}}
+						>
+							{info}
+						</div>
+					</div>
 
-							<div className="word_info">
-								<textarea
-									className="info_box_long"
-									maxLength={500}
-									type="text"
-									name={`inputInfo${number}`}
-									value={inputInfo[`inputInfo${number}`]}
-									placeholder="이미지 및 간단한 소개"
-									onChange={(e) => onChangeInput(e, number)}
-								/>
-								<div className="word_how_many">
-									<span>{inputCount[`inputCount${number}`]}</span>
-									<span>/500자</span>
+					<div className="flex_center" style={{ flexDirection: "column" }}>
+						<div className="theme_wrapper">
+							{theme.map((item, index) => (
+								<button
+									className={
+										selectedTheme.includes(item)
+											? "select_theme_button"
+											: "theme_button"
+									}
+									key={index}
+									onClick={() => addTheme(item)}
+								>
+									<div className="theme_text_wrapper">{item}</div>
+								</button>
+							))}
+						</div>
+						<div
+							className="flex_center"
+							style={{
+								alignItems: "center",
+							}}
+						>
+							<div className="middle_text">
+								<div className="_text">
+									수강 인원과 수강료는 합리적이고 효율적인 가격과 인원으로
+									자율적으로 책정해주세요.
+								</div>
+								<div className="_text">
+									수강료는 개인 당 수강료가 아닌 전체 수강인원에 대한
+									수강료입니다.
+								</div>
+							</div>
+							<div className="flex_center" style={{ margin: 10 }}>
+								<div className="person_money">
+									<img
+										className="flex_center"
+										style={{ margin: 10 }}
+										width={60}
+										height={60}
+										src="https://img.icons8.com/cotton/64/conference-call.png"
+										alt="conference-call"
+									/>
+									<div className="person_money_label">최대 수강 인원</div>
+									<input
+										className="person_money_input"
+										name="person"
+										type="number"
+										value={person}
+										onChange={(e) => setPerson(e.target.value)}
+									/>
+									<div style={{ marginLeft: 10 }}>명</div>
+								</div>
+								<div className="person_money">
+									<div className="person_money_icon">
+										<img
+											className="flex_center"
+											style={{ margin: 10 }}
+											width={58}
+											height={55}
+											src="https://img.icons8.com/ios/64/get-cash--v1.png"
+											alt="get-cash--v1"
+										/>
+									</div>
+									<div className="person_money_label">수강료</div>
+									<div className="radio_fee">
+										<div className="mo_flex_row" style={{ height: 33 }}>
+											<input
+												type="radio"
+												value="pay"
+												checked={fee === "pay"}
+												onChange={(e) => setFee(e.target.value)}
+											></input>
+											<div
+												style={{
+													// backgroundColor: "red",
+													display: "flex",
+													flexDirection: "row",
+													alignItems: "center",
+												}}
+											>
+												<div className="radio_label">유료</div>
+												<div className="flex_center">
+													<input
+														className="person_money_input"
+														name="money"
+														type="number"
+														value={money}
+														min="1000"
+														placeholder="1000원~"
+														onChange={(e) => setMoney(e.target.value)}
+														disabled={fee === "free"}
+													></input>
+												</div>
+											</div>
+										</div>
+										<div className="mo_flex_row" style={{ height: 33 }}>
+											<input
+												type="radio"
+												value="free"
+												checked={fee === "free"}
+												onChange={handleFree}
+											></input>
+											<div className="radio_label">무료</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-					))}
-				</div>
-			</div>
-			{option === "offline" ? (
-				<DAY_PLAN
-					days={days}
-					isImage={isImage}
-					handleDayRemoveImg={handleDayRemoveImg}
-					activityEndDate={activityEndDate}
-					activityStartDate={activityStartDate}
-					onChangeImage_day={onChangeImage_day}
-					handleChange={handleChange}
-					handleRemoveDay={handleRemoveDay}
-					handleAddDay={handleAddDay}
-				/>
-			) : (
-				<ONLINE_DAY_PLAN
-					days={days}
-					isImage={isImage}
-					handleDayRemoveImg={handleDayRemoveImg}
-					activityEndDate={activityEndDate}
-					activityStartDate={activityStartDate}
-					onChangeImage_day={onChangeImage_day}
-					handleChange={handleChange}
-					handleRemoveDay={handleRemoveDay}
-					handleAddDay={handleAddDay}
-				/>
-			)}
-			{option === "offline" && (
-				<>
-					<div
-						style={{
-							width: "100%",
-							textAlign: "center",
-							borderBottom: "2px solid #f1f3f5 ",
-							lineHeight: "0.5em",
-							margin: "30px 0 20px",
-						}}
-					></div>
-					<div
-						className="flex_center"
-						style={{ padding: 10, flexDirection: "row" }}
-					>
-						<img
-							width="35"
-							height="35"
-							src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
-							alt="round-pushpin-emoji"
-						/>
-						활동 계획서 및 상세 일정 파일 첨부
-						<img
-							width="35"
-							height="35"
-							src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
-							alt="round-pushpin-emoji"
-						/>
-					</div>
-					<div class="flex_center" style={{ marginTop: 20 }}>
-						<label for="file">파일찾기</label>
-						<input
-							type="file"
-							accept=".pdf"
-							id="file"
-							onChange={(e) => {
-								onChangefile(e.target.files[0]);
+
+						<div
+							style={{
+								width: "70%",
+								textAlign: "center",
+								borderBottom: "1px solid #adb5bd",
+								lineHeight: "0.5em",
+								margin: 30,
 							}}
-						/>
-						<input
-							class="upload-name"
-							value={fileSrc}
-							placeholder="첨부파일"
-							readOnly
-						/>
-					</div>
-					<div className="long_text_zip">
-						<div className="flex_center" style={{ flexDirection: "row" }}>
-							<div className="_text">위 파일은</div>
-							<div className="important_text">
-								(클래스 이름)(작성자)_활동계획서 및 상세일.pdf
+						></div>
+						{option === "offline" && (
+							<PLACE_PERIOD
+								// applyStartDate={applyStartDate}
+								applyEndDate={applyEndDate}
+								onChangeApply={onChangeApply}
+								activityStartDate={activityStartDate}
+								activityEndDate={activityEndDate}
+								onChangeActivity={onChangeActivity}
+								isOpen={isOpen}
+								handleComplete={handleComplete}
+								address={address}
+								handleModal={handleModal}
+							/>
+						)}
+
+						<div style={{ width: "75%" }}>
+							<div style={{ marginBottom: 10 }}>
+								<div className="large_label">클래스 소개</div>
+								<div className="period_place_label_hint">
+									자신의 클래스를 사람들이 이끌릴만한 간단한 소개
+								</div>
 							</div>
-							<div className="_text">이름으로 업로드 해주세요.</div>
+							<div style={{}}>
+								{intro_map.map((number) => (
+									<div
+										className="mo_flex_row"
+										style={{
+											alignItems: "center",
+											justifyContent: "center",
+											margin: 10,
+										}}
+									>
+										{inputImagePreview[`inputImage${number}preview`] !==
+										null ? (
+											<>
+												<div
+													style={{
+														position: "relative",
+														width: "15%",
+														display: "flex",
+														flexDirection: "row",
+														marginRight: 15,
+													}}
+												>
+													<img
+														src={
+															inputImagePreview[`inputImage${number}preview`]
+														}
+														className="day_img_true"
+														style={{
+															objectFit: "cover",
+															width: "72%",
+															height: 130,
+															justifyContent: "center",
+														}}
+														alt="preview-img"
+													/>
+
+													<button
+														className="editImg_text"
+														style={{ right: 0 }}
+														onClick={() => {
+															const inputElement = document.getElementById(
+																`infoimage${number}`
+															);
+															if (inputElement) {
+																inputElement.click();
+															}
+														}}
+													>
+														<img src={edit} width={15} alt="edit" />
+													</button>
+													<button
+														className="editImg_text"
+														style={{ right: 0, top: 25 }}
+														onClick={() => handleRemoveImg(number)}
+													>
+														<img src={remove} width={15} alt="edit" />
+													</button>
+												</div>
+
+												<input
+													type="file"
+													accept="image/*"
+													id={`infoimage${number}`}
+													name={`infoimage${number}`}
+													style={{ display: "none" }}
+													onChange={(e) => {
+														onChangeImage(e.target.files[0], number);
+													}}
+												/>
+											</>
+										) : (
+											<>
+												<div>
+													<button
+														className="uploadImg_behind"
+														onClick={() => {
+															const inputElement = document.getElementById(
+																`infoimage${number}`
+															);
+															if (inputElement) {
+																inputElement.click();
+															}
+														}}
+													>
+														<img
+															width="50"
+															height="50"
+															src="https://img.icons8.com/ios/50/image--v1.png"
+															alt="--v1"
+														/>
+													</button>
+												</div>
+												<input
+													type="file"
+													accept="image/*"
+													id={`infoimage${number}`}
+													style={{ display: "none" }}
+													onChange={(e) => {
+														onChangeImage(e.target.files[0], number);
+													}}
+												/>
+											</>
+										)}
+
+										<div className="word_info">
+											<textarea
+												className="info_box_long"
+												maxLength={500}
+												type="text"
+												name={`inputInfo${number}`}
+												value={inputInfo[`inputInfo${number}`]}
+												placeholder="이미지 및 간단한 소개"
+												onChange={(e) => onChangeInput(e, number)}
+											/>
+											<div className="word_how_many">
+												<span>{inputCount[`inputCount${number}`]}</span>
+												<span>/500자</span>
+											</div>
+										</div>
+									</div>
+								))}
+							</div>
 						</div>
-						<div className="last_text_row">
-							<div className="_text">파일 안에 꼭 있어야하는 내용</div>
-							<div className="important_text">
-								클래스 소개 및 일별 상세 활동 소개, 준비물, 연락 가능한 연락망{" "}
-							</div>
-							<div className="_text">
-								이 포함되지 않았을 시 클래스 업로드에 제약이 있을 수 있습니다.
-							</div>
+						{option === "offline" ? (
+							<DAY_PLAN
+								days={days}
+								isImage={isImage}
+								handleDayRemoveImg={handleDayRemoveImg}
+								activityEndDate={activityEndDate}
+								activityStartDate={activityStartDate}
+								onChangeImage_day={onChangeImage_day}
+								handleChange={handleChange}
+								handleRemoveDay={handleRemoveDay}
+								handleAddDay={handleAddDay}
+							/>
+						) : (
+							<ONLINE_DAY_PLAN
+								days={days}
+								isImage={isImage}
+								handleDayRemoveImg={handleDayRemoveImg}
+								activityEndDate={activityEndDate}
+								activityStartDate={activityStartDate}
+								onChangeImage_day={onChangeImage_day}
+								handleChange={handleChange}
+								handleRemoveDay={handleRemoveDay}
+								handleAddDay={handleAddDay}
+							/>
+						)}
+						{option === "offline" && (
+							<>
+								<div
+									style={{
+										width: "70%",
+										textAlign: "center",
+										borderBottom: "1px solid #adb5bd",
+										lineHeight: "0.5em",
+										margin: 30,
+									}}
+								></div>
+								<div
+									className="flex_center"
+									style={{ padding: 10, flexDirection: "row" }}
+								>
+									<img
+										width="35"
+										height="35"
+										src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
+										alt="round-pushpin-emoji"
+									/>
+									활동 계획서 및 상세 일정 파일 첨부
+									<img
+										width="35"
+										height="35"
+										src="https://img.icons8.com/emoji/48/round-pushpin-emoji.png"
+										alt="round-pushpin-emoji"
+									/>
+								</div>
+								<div
+									class="flex_center"
+									style={{
+										marginTop: 20,
+										display: "flex",
+										flexDirection: "row",
+									}}
+								>
+									<label for="file">파일찾기</label>
+									<input
+										type="file"
+										accept=".pdf"
+										id="file"
+										onChange={(e) => {
+											onChangefile(e.target.files[0]);
+										}}
+									/>
+									<input
+										class="upload-name"
+										value={fileSrc}
+										placeholder="첨부파일"
+										readOnly
+									/>
+								</div>
+								<div className="long_text_zip">
+									<div className="flex_center" style={{ flexDirection: "row" }}>
+										<div className="_text">위 파일은</div>
+										<div className="important_text">
+											(클래스 이름)(작성자)_활동계획서 및 상세일.pdf
+										</div>
+										<div className="_text">이름으로 업로드 해주세요.</div>
+									</div>
+									<div className="last_text_row">
+										<div className="_text">파일 안에 꼭 있어야하는 내용</div>
+										<div className="important_text">
+											클래스 소개 및 일별 상세 활동 소개, 준비물, 연락 가능한
+											연락망{" "}
+										</div>
+										<div className="_text">
+											이 포함되지 않았을 시 클래스 업로드에 제약이 있을 수
+											있습니다.
+										</div>
+									</div>
+								</div>
+							</>
+						)}
+						<div className="submit_button_wrapper">
+							{option === "offline" ? (
+								<button
+									className={
+										!All_submit_Offline ? "submit_ok" : "submit_button"
+									}
+									onClick={handleSubmit}
+									disabled={All_submit_Offline}
+								>
+									등록하기
+								</button>
+							) : (
+								<button
+									className={!All_submit_Online ? "submit_ok" : "submit_button"}
+									onClick={handleSubmit}
+									disabled={All_submit_Online}
+								>
+									등록하기
+								</button>
+							)}
 						</div>
 					</div>
 				</>
+			) : (
+				<LoginRequired />
 			)}
-			<div className="submit_button_wrapper">
-				{option === "offline" ? (
-					<button
-						className={!All_submit_Offline ? "submit_ok" : "submit_button"}
-						onClick={handleSubmit}
-						disabled={All_submit_Offline}
-					>
-						등록하기
-					</button>
-				) : (
-					<button
-						className={!All_submit_Online ? "submit_ok" : "submit_button"}
-						onClick={handleSubmit}
-						disabled={All_submit_Online}
-					>
-						등록하기
-					</button>
-				)}
-			</div>
 		</div>
 	);
 }
