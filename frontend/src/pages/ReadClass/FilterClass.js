@@ -1,12 +1,12 @@
 import "../../styles/ReadClass.css";
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
 import { useEffect, useState } from "react";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function FILTER_CLASS(props) {
 	const {
 		option,
 		money,
-		apply_ok,
 		theme,
 		word,
 		readWordFilter,
@@ -15,6 +15,7 @@ export default function FILTER_CLASS(props) {
 		like_status,
 		goodClick,
 		readFilter,
+		token,
 	} = props;
 
 	function isImage(urlString) {
@@ -26,14 +27,14 @@ export default function FILTER_CLASS(props) {
 	}
 
 	useEffect(() => {
-		if (option !== "" || money !== "" || apply_ok === false) {
+		if (option !== "" || money !== "") {
 			if (theme !== "") {
 				readFilter(theme);
 			} else if (word !== "") {
 				readWordFilter(word);
 			} else readFilter();
 		}
-	}, [option, money, apply_ok, theme, word]);
+	}, [option, money, theme, word]);
 
 	return (
 		<>
@@ -55,10 +56,6 @@ export default function FILTER_CLASS(props) {
 
 							const likeStatusItem = like_status
 								? like_status.find((item) => item.class_id === filter.class_id)
-								: null;
-
-							const updatedImg = filter.id.updateprofile
-								? filter.id.updateprofile.replace("/frontend/public/", "/")
 								: null;
 
 							return (
@@ -90,12 +87,21 @@ export default function FILTER_CLASS(props) {
 									>
 										<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 										<div className="class_GCount">
-											<button
-												className="like_btn"
-												onClick={() => goodClick(filter.class_id)}
-											>
-												{likeStatusItem ? "❤️" : "🤍"} 좋아요
-											</button>
+											{token ? (
+												<button
+													className="like_btn"
+													onClick={() => goodClick(filter.class_id)}
+												>
+													{likeStatusItem ? (
+														<AiFillHeart size={20} color="#EC3535" />
+													) : (
+														<AiOutlineHeart size={20} color="#EC3535" />
+													)}
+												</button>
+											) : (
+												<div className="like">좋아요</div>
+											)}
+
 											<div className="like_text">{filter.goodCount}</div>
 										</div>
 									</div>
@@ -106,35 +112,10 @@ export default function FILTER_CLASS(props) {
 									>
 										{filter.title}
 									</button>
-									{/* <div className="row_center_wrap">
-										<div className="class_user_img">
-											{updatedImg ? (
-												<img
-													src={updatedImg}
-													alt="profile"
-													width={30}
-													height={30}
-													style={{ borderRadius: "50%" }}
-												/>
-											) : (
-												<img
-													src={filter.id.profile}
-													alt="profile"
-													width={30}
-													height={30}
-													style={{ borderRadius: "50%" }}
-												/>
-											)}
-										</div>
-										<div className="class_nickname_btn">
-											{filter.id.nickname}
-										</div>
-									</div> */}
 								</div>
 							);
 						})}
 				</div>
-				{/* )} */}
 			</div>
 		</>
 	);

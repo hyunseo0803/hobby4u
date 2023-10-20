@@ -2,11 +2,12 @@ import "../../styles/ReadClass.css";
 import React, { useEffect, useState, useCallback } from "react";
 
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
-import left from "../../assets/Left.png";
-import right from "../../assets/Right.png";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function NEW_CLASS(props) {
-	const { newdata, handleReadDetail, like_status, goodClick, readNew } = props;
+	const { newdata, handleReadDetail, like_status, goodClick, readNew, token } =
+		props;
 
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsPerPage = 3;
@@ -49,7 +50,7 @@ export default function NEW_CLASS(props) {
 		<div className="row_center_wrap">
 			<div className="test">
 				<button className="border_transcolor" onClick={prevSlide}>
-					<img src={left} alt="left" />
+					<HiChevronLeft size={50} />
 				</button>
 			</div>
 			{paginateData().map((newItem, index) => {
@@ -67,10 +68,6 @@ export default function NEW_CLASS(props) {
 				const isOnline = newItem.type === "online";
 				const likeStatusItem = like_status
 					? like_status.find((item) => item.class_id === newItem.class_id)
-					: null;
-
-				const updatedImg = newItem.id.updateprofile
-					? newItem.id.updateprofile.replace("/frontend/public/", "/")
 					: null;
 
 				return (
@@ -101,12 +98,21 @@ export default function NEW_CLASS(props) {
 						>
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
-								<button
-									className="like_btn"
-									onClick={() => goodClick(newItem.class_id)}
-								>
-									{likeStatusItem ? "❤️" : "🤍"} 좋아요
-								</button>
+								{token ? (
+									<button
+										className="like_btn"
+										onClick={() => goodClick(newItem.class_id)}
+									>
+										{likeStatusItem ? (
+											<AiFillHeart size={20} color="#EC3535" />
+										) : (
+											<AiOutlineHeart size={20} color="#EC3535" />
+										)}
+									</button>
+								) : (
+									<div className="like">좋아요</div>
+								)}
+
 								<div className="like_text">{newItem.goodCount}</div>
 							</div>
 						</div>
@@ -118,34 +124,12 @@ export default function NEW_CLASS(props) {
 						>
 							{newItem.title}
 						</button>
-						{/* <div className="row_center_wrap">
-							<div className="class_user_img">
-								{updatedImg ? (
-									<img
-										src={updatedImg}
-										alt="profile"
-										width={30}
-										height={30}
-										style={{ borderRadius: "50%" }}
-									/>
-								) : (
-									<img
-										src={newItem.id.profile}
-										alt="profile"
-										width={30}
-										height={30}
-										style={{ borderRadius: "50%" }}
-									/>
-								)}
-							</div>
-							<div className="class_nickname_btn">{newItem.id.nickname}</div>
-						</div> */}
 					</div>
 				);
 			})}
 			<div className="test">
 				<button className="border_transcolor" onClick={nextSlide}>
-					<img src={right} alt="right" />
+					<HiChevronRight size={50} />
 				</button>
 			</div>
 		</div>

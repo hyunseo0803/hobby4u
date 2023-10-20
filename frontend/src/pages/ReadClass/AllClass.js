@@ -1,9 +1,11 @@
 import "../../styles/ReadClass.css";
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
 import { useEffect } from "react";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function ALL_CLASS(props) {
-	const { data, readAll, handleReadDetail, like_status, goodClick } = props;
+	const { data, readAll, handleReadDetail, like_status, goodClick, token } =
+		props;
 
 	function isImage(urlString) {
 		const fileEx = urlString.split(".").pop().toLowerCase();
@@ -37,10 +39,6 @@ export default function ALL_CLASS(props) {
 					? like_status.find((item) => item.class_id === classItem.class_id)
 					: null;
 
-				const updatedImg = classItem.id.updateprofile
-					? classItem.id.updateprofile.replace("/frontend/public/", "/")
-					: null;
-
 				return (
 					<div key={index} className="class_div_btn">
 						<div className="firstimg_container">
@@ -70,12 +68,21 @@ export default function ALL_CLASS(props) {
 						>
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
-								<button
-									className="like_btn"
-									onClick={() => goodClick(classItem.class_id)}
-								>
-									{likeStatusItem ? "❤️" : "🤍"} 좋아요
-								</button>
+								{token ? (
+									<button
+										className="like_btn"
+										onClick={() => goodClick(classItem.class_id)}
+									>
+										{likeStatusItem ? (
+											<AiFillHeart size={20} color="#EC3535" />
+										) : (
+											<AiOutlineHeart size={20} color="#EC3535" />
+										)}
+									</button>
+								) : (
+									<div className="like">좋아요</div>
+								)}
+
 								<div className="like_text">{classItem.goodCount}</div>
 							</div>
 						</div>
@@ -86,28 +93,6 @@ export default function ALL_CLASS(props) {
 						>
 							{classItem.title}
 						</button>
-						{/* <div className="row_center_wrap">
-							<div className="class_user_img">
-								{updatedImg ? (
-									<img
-										src={updatedImg}
-										alt="profile"
-										width={40}
-										height={40}
-										style={{ borderRadius: "50%" }}
-									/>
-								) : (
-									<img
-										src={classItem.id.profile}
-										alt="profile"
-										width="20"
-										height="20"
-										style={{ objectFit: "contain" }}
-									/>
-								)}
-							</div>
-							<div className="class_nickname_btn">{classItem.id.nickname}</div>
-						</div> */}
 					</div>
 				);
 			})}
