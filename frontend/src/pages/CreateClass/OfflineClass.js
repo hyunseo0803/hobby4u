@@ -6,6 +6,7 @@ import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
 import Place_search_icon from "../../assets/place_search_icon.png";
+import Swal from "sweetalert2";
 import { IoIosSearch } from "react-icons/io";
 
 import minus from "../../assets/day_class_minus.png";
@@ -18,7 +19,6 @@ export function PLACE_PERIOD(props) {
 	const {
 		handleComplete,
 		isOpen,
-		applyStartDate,
 		onChangeApply,
 		applyEndDate,
 		activityStartDate,
@@ -29,14 +29,26 @@ export function PLACE_PERIOD(props) {
 	} = props;
 
 	const todaymin = new Date();
+	todaymin.setDate(todaymin.getDate() + 8);
+
+	const activitymin = new Date();
+
+	if (applyEndDate) {
+		activitymin.setDate(applyEndDate.getDate() + 1);
+	}
 
 	return (
-		<div className="flex_row" style={{ justifyContent: "center" }}>
+		<div className="mo_flex_row" style={{ justifyContent: "center" }}>
 			<div className="period_place">
-				<div className="flex_row" style={{ marginBottom: 10 }}>
-					<div className="period_place_label">신청 기간</div>
-					<div className="period_place_label_hint">
-						클래스 신청 기간을 선택해 주세요.{" "}
+				<div style={{ marginBottom: 10 }}>
+					<div className="period_place_label">신청 마감</div>
+					<div className="period_place_label_hint_box">
+						<div className="period_place_label_hint">
+							클래스 심사는 등록 기준 최대 7일이 소요되며,
+						</div>
+						<div className="period_place_label_hint">
+							심사 기간 이후 날짜로 설정 할 수 있습니다.
+						</div>
 					</div>
 				</div>
 				<div>
@@ -51,12 +63,9 @@ export function PLACE_PERIOD(props) {
 							>
 								<DatePicker
 									locale={ko}
-									selected={applyStartDate}
+									selected={applyEndDate}
 									onChange={onChangeApply}
-									startDate={applyStartDate}
-									endDate={applyEndDate}
 									minDate={todaymin}
-									selectsRange
 									inline
 								/>
 							</div>
@@ -64,7 +73,6 @@ export function PLACE_PERIOD(props) {
 						<div className="selected_result">
 							{applyEndDate !== null ? (
 								<div className="calender-box">
-									{moment(applyStartDate).format("YYYY-MM-DD")} -
 									{moment(applyEndDate).format("YYYY-MM-DD")}
 								</div>
 							) : null}
@@ -73,10 +81,12 @@ export function PLACE_PERIOD(props) {
 				</div>
 			</div>
 			<div className="period_place">
-				<div className="flex_row" style={{ marginBottom: 10 }}>
+				<div style={{ marginBottom: 10 }}>
 					<div className="period_place_label">활동 기간</div>
-					<div className="period_place_label_hint">
-						클래스 활동 기간을 선택해 주세요.
+					<div className="period_place_label_hint_box">
+						<div className="period_place_label_hint">
+							클래스 활동 기간을 선택해 주세요.
+						</div>
 					</div>
 				</div>
 
@@ -96,7 +106,7 @@ export function PLACE_PERIOD(props) {
 								onChange={onChangeActivity}
 								startDate={activityStartDate}
 								endDate={activityEndDate}
-								minDate={applyEndDate || todaymin}
+								minDate={activitymin}
 								selectsRange
 								inline
 							/>
@@ -113,10 +123,12 @@ export function PLACE_PERIOD(props) {
 				</div>
 			</div>
 			<div className="period_place">
-				<div className="flex_row" style={{ marginBottom: 10 }}>
+				<div style={{ marginBottom: 10 }}>
 					<div className="period_place_label">활동 장소</div>
-					<div className="period_place_label_hint">
-						클래스 활동 장소를 선택해 주세요.
+					<div className="period_place_label_hint_box">
+						<div className="period_place_label_hint">
+							클래스 활동 장소를 선택해 주세요.
+						</div>
 					</div>
 				</div>
 				<div className="period_place_choice">
@@ -151,27 +163,34 @@ export function PLACE_PERIOD(props) {
 							</div>
 						</>
 					) : (
-						<button
+						<div
 							className="flex_center"
 							style={{
-								width: "70%",
-								height: 200,
-								backgroundColor: "transparent",
-								border: "1px solid gray",
-								borderRadius: 10,
+								marginTop: 10,
+								height: 300,
+								margin: "auto",
 							}}
-							onClick={handleModal}
 						>
-							<IoIosSearch size={100} />
-						</button>
+							<button
+								className="flex_center"
+								style={{
+									width: 200,
+									height: 200,
+									backgroundColor: "transparent",
+									border: "1px solid gray",
+									borderRadius: 10,
+								}}
+								onClick={handleModal}
+							>
+								<IoIosSearch size={100} />
+							</button>
+						</div>
 					)}
 				</div>
 			</div>
 		</div>
 	);
 }
-
-// import React, { useState, useEffect } from "react";
 
 export function DAY_PLAN(props) {
 	const {
@@ -186,12 +205,21 @@ export function DAY_PLAN(props) {
 		handleAddDay,
 	} = props;
 
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "center-center",
+		showConfirmButton: false,
+		timer: 3000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
+
 	return (
 		<div className="daydetail_all_wrapper">
-			<div
-				className="large_label"
-				style={{ marginLeft: "5%", textAlign: "left", marginBottom: 20 }}
-			>
+			<div className="large_label" style={{ marginBottom: 20 }}>
 				DAY별 클래스 상세 소개
 			</div>
 			<div className="dayclasswrapper">
@@ -212,13 +240,12 @@ export function DAY_PLAN(props) {
 													<img
 														src={day.dayImgpreview}
 														style={{
-															// position: "relative",
 															objectFit: "cover",
 															width: "80%",
 															maxHeight: 500,
 															justifyContent: "center",
-															maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
-															height: "auto", // 높이는 자동으로 조정됩니다.
+															maxWidth: "100%",
+															height: "auto",
 														}}
 														alt="preview-img"
 													/>
@@ -231,7 +258,7 @@ export function DAY_PLAN(props) {
 														width: "80%",
 														maxHeight: 500,
 														justifyContent: "center",
-														maxWidth: "100%", // 이미지의 최대 너비를 100%로 설정합니다.
+														maxWidth: "100%",
 														height: "auto",
 													}}
 													controls
@@ -291,9 +318,11 @@ export function DAY_PLAN(props) {
 									onChange={(e) => {
 										const minSizeInBytes = 200 * 200;
 										if (e.target.files[0].size < minSizeInBytes) {
-											alert(
-												"이미지/영상의 크기가 너무 작습니다. 다시 선택해주세요."
-											);
+											Toast.fire({
+												icon: "error",
+												title:
+													"이미지/영상의 크기가 너무 작습니다. 다시 선택해주세요.",
+											});
 										} else {
 											onChangeImage_day(e.target.files[0], `day_img_${day.id}`);
 										}
@@ -301,12 +330,11 @@ export function DAY_PLAN(props) {
 								/>
 							</div>
 							<div
-								// className="flex_row"
-								style={{ justifyContent: "flex-start" }}
+								style={{ width: "100%", display: "flex", flexDirection: "row" }}
 							>
 								<input
 									className="day_input_text"
-									style={{ width: 950 }}
+									style={{ width: "100%" }}
 									type="text"
 									maxLength={50}
 									name={`title_${day.id}`}
@@ -316,20 +344,9 @@ export function DAY_PLAN(props) {
 										handleChange(day.id, "title", e.target.value)
 									}
 								/>
-							</div>
-							<div
-								// className="flex_row"
-								style={{
-									justifyContent: "flex-start",
-									display: "flex",
-									textAlign: "left",
-									alignItems: "flex-start",
-									left: 0,
-								}}
-							>
 								<input
 									className="day_input_text"
-									style={{ width: 400 }}
+									style={{ width: 250 }}
 									type="date"
 									dateFormat="yyyy-MM-dd"
 									name={`date_${day.id}`}
@@ -340,10 +357,8 @@ export function DAY_PLAN(props) {
 									onChange={(e) => handleChange(day.id, "date", e.target.value)}
 								/>
 							</div>
-							<div
-								// className="flex_row"
-								style={{ justifyContent: "flex-start" }}
-							>
+
+							<div style={{ justifyContent: "flex-start" }}>
 								<textarea
 									className="day_input_text"
 									style={{ width: 950 }}
@@ -357,7 +372,6 @@ export function DAY_PLAN(props) {
 									}
 								/>
 							</div>
-							{/* </div> */}
 							<div style={{ border: "none" }}>
 								{days.length > 1 && day.id === days[days.length - 1].id && (
 									<button
