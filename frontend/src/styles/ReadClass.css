@@ -1,11 +1,10 @@
 .read_container {
 	margin-top: 80px;
-	/* height: 600px; */
+	width: "100%";
 	margin-left: 5%;
 	margin-right: 5%;
 	justify-content: center;
 	align-items: center;
-	/* background-color: yellow; */
 	display: flex;
 	flex-direction: column;
 }
@@ -18,7 +17,7 @@
 }
 
 .new_read_container {
-	/* background-color: antiquewhite; */
+	width: 1300px;
 	margin: 10px;
 }
 
@@ -36,10 +35,9 @@
 	margin: 50px;
 }
 .class_div_btn {
-	width: 300px;
-	height: 280px;
+	width: 260px;
 	padding: 0px;
-	margin: 15px;
+	margin: 20px;
 	background-color: white;
 	border: none;
 	border-radius: 8px;
@@ -55,14 +53,6 @@
 	border-radius: 8px;
 }
 
-/* .class_user_img {
-	width: 40px;
-	height: 40px;
-	border-radius: 50px;
-	overflow: hidden;
-	/* margin-left: 2vh; */
-/* margin-right: 2vh; */
-
 .firstimg {
 	object-fit: cover;
 	width: 100%;
@@ -76,12 +66,13 @@
 
 .class_MO {
 	border-radius: 50px;
-	height: 30px;
+	height: 27px;
 	background-color: antiquewhite;
-	padding: 3px;
+	padding: 2px;
 	margin-top: 8px;
 	margin-right: 5px;
 	text-align: center;
+	font-size: 14.5px;
 }
 
 .like_btn {
@@ -89,13 +80,22 @@
 	background-color: transparent;
 	justify-content: center;
 	align-items: center;
-	width: 90px;
+	width: 30px;
 	cursor: pointer;
+	font-size: 14px;
+}
+.like {
+	width: 50px;
+	font-size: 14px;
+	align-items: center;
+	display: flex;
+	color: #f26b6b;
 }
 .like_text {
 	font-size: 17px;
 	width: 20px;
-	padding: 2px;
+	/* padding: 2px; */
+	margin-left: 3px;
 	color: #f26b6b;
 }
 .class_title_btn {
@@ -105,6 +105,9 @@
 	left: 0;
 	margin-top: 5px;
 	border: none;
+	font-size: 22px;
+	font-family: "LeeSeoyun";
+	letter-spacing: 1px;
 }
 .class_nickname_btn {
 	align-items: center;
@@ -119,6 +122,13 @@
 .class_GCount {
 	display: flex;
 	justify-content: center;
-	padding: 5px;
 	margin-top: 3px;
+}
+
+@font-face {
+	font-family: "LeeSeoyun";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff")
+		format("woff");
+	font-weight: normal;
+	font-style: normal;
 }
