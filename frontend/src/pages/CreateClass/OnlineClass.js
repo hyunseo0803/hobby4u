@@ -2,6 +2,7 @@ import "../../styles/CreateClassDetail.css";
 
 import minus from "../../assets/day_class_minus.png";
 import add from "../../assets/day_class_add.png";
+import Swal from "sweetalert2";
 
 import edit from "../../assets/edit.png";
 import remove from "../../assets/remove.png";
@@ -9,7 +10,6 @@ import remove from "../../assets/remove.png";
 export default function CreateOnlineClass_day_plan(props) {
 	const {
 		days,
-		isImage,
 		handleDayRemoveImg,
 		onChangeImage_day,
 		handleChange,
@@ -17,12 +17,21 @@ export default function CreateOnlineClass_day_plan(props) {
 		handleAddDay,
 	} = props;
 
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "center-center",
+		showConfirmButton: false,
+		timer: 3000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
+
 	return (
 		<div className="daydetail_all_wrapper">
-			<div
-				className="large_label"
-				style={{ marginLeft: "5%", textAlign: "left", marginBottom: 20 }}
-			>
+			<div className="large_label" style={{ marginBottom: 20 }}>
 				DAY별 클래스 상세 소개
 			</div>
 			<div className="dayclasswrapper">
@@ -104,9 +113,11 @@ export default function CreateOnlineClass_day_plan(props) {
 									onChange={(e) => {
 										const minSizeInBytes = 200 * 200;
 										if (e.target.files[0].size < minSizeInBytes) {
-											alert(
-												"이미지/영상의 크기가 너무 작습니다. 다시 선택해주세요."
-											);
+											Toast.fire({
+												icon: "error",
+												title:
+													"이미지/영상의 크기가 너무 작습니다. 다시 선택해주세요.",
+											});
 										} else {
 											onChangeImage_day(e.target.files[0], `day_img_${day.id}`);
 										}
@@ -114,59 +125,52 @@ export default function CreateOnlineClass_day_plan(props) {
 								/>
 							</div>
 							<div>
-								<div className="day_class_input">
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<input
-											className="day_input_text"
-											style={{ width: 950 }}
-											type="text"
-											maxLength={50}
-											name={`title_${day.id}`}
-											placeholder="제목"
-											value={day.title}
-											onChange={(e) =>
-												handleChange(day.id, "title", e.target.value)
-											}
-										/>
-									</div>
+								<div
+									style={{
+										width: "100%",
+										display: "flex",
+										flexDirection: "row",
+									}}
+								>
+									<input
+										className="day_input_text"
+										style={{ width: "100%" }}
+										type="text"
+										maxLength={50}
+										name={`title_${day.id}`}
+										placeholder="제목"
+										value={day.title}
+										onChange={(e) =>
+											handleChange(day.id, "title", e.target.value)
+										}
+									/>
+									<input
+										className="day_input_text"
+										style={{ width: 250 }}
+										type="text"
+										multiple="false"
+										name={`prepare_${day.id}`}
+										placeholder="준비물"
+										value={day.prepare}
+										onChange={(e) =>
+											handleChange(day.id, "prepare", e.target.value)
+										}
+									/>
+								</div>
 
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<input
-											className="day_input_text"
-											style={{ width: 400 }}
-											type="text"
-											multiple="false"
-											name={`prepare_${day.id}`}
-											placeholder="준비물"
-											value={day.prepare}
-											onChange={(e) =>
-												handleChange(day.id, "prepare", e.target.value)
-											}
-										/>
-									</div>
-									<div
-										className="flex_row"
-										style={{ justifyContent: "flex-start" }}
-									>
-										<textarea
-											className="day_input_text"
-											style={{ width: 950 }}
-											type="text"
-											multiple="true"
-											name={`content_${day.id}`}
-											placeholder="내용"
-											value={day.content}
-											onChange={(e) =>
-												handleChange(day.id, "content", e.target.value)
-											}
-										/>
-									</div>
+								<div style={{ justifyContent: "flex-start" }}>
+									<textarea
+										className="day_input_text"
+										style={{ width: 950 }}
+										type="text"
+										multiple="true"
+										name={`content_${day.id}`}
+										placeholder="내용"
+										value={day.content}
+										onChange={(e) =>
+											handleChange(day.id, "content", e.target.value)
+										}
+									/>
 								</div>
 							</div>
 							<div style={{ border: "none" }}>
