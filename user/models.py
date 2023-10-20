@@ -129,7 +129,6 @@ class Class(models.Model):
     intro2_content = models.CharField(max_length=1000, blank=True, null=True)
     intro3_file = models.ImageField(upload_to="introimg/", blank=True, null=True)
     intro3_content = models.CharField(max_length=1000, blank=True, null=True)
-    applystart = models.CharField(max_length=100, blank=True, null=True)
     applyend = models.CharField(max_length=100, blank=True, null=True)
     activitystart = models.CharField(max_length=100, blank=True, null=True)
     activityend = models.CharField(max_length=100, blank=True, null=True)
