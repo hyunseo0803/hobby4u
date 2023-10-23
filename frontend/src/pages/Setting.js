@@ -1,24 +1,29 @@
 import React from "react";
 import "../styles/Setting.css";
 import { useEffect, useState } from "react";
-import { IoMailOutline } from "react-icons/io5";
+import { IoMailOutline, IoCut } from "react-icons/io5";
 import { IoMdRibbon } from "react-icons/io";
 
 import { Modal } from "../component/Modal";
 
 import { Link, useNavigate } from "react-router-dom";
-import { AiOutlineLink } from "react-icons/ai";
+import { AiOutlineLink, AiOutlineFilePdf } from "react-icons/ai";
 
 import { BsFillMortarboardFill, BsXCircleFill } from "react-icons/bs";
 import LoginRequired from "../common/LoginRequired";
 
 function Setting(props) {
 	const navigate = useNavigate();
+
 	const [loginChck, setLoginChck] = useState(false);
+
 	const [achiveLink, setAchiveLink] = useState([]);
+	// const [achiveLinkName, setAchiveLinkName] = useState([]);
 	const [achiveFile, setAchiveFile] = useState([]);
+	// const [achiveFileName, setAchiveFileName] = useState([]);
 
 	const [inputLink, setInputLink] = useState([]);
+
 	const [inputFile, setInputFile] = useState([]);
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,6 +67,22 @@ function Setting(props) {
 			setLoginChck(false);
 		}
 	});
+
+	useEffect(() => {
+		// console.log("입력한 파일" + inputFile);
+		// console.log("입력한 링크" + inputLink);
+		getUserAchiv();
+		// console.log("첨-------------------------");
+		// console.log(achiveFile);
+	}, []);
+	useEffect(() => {
+		// console.log("입력한 파일" + inputFile);
+		// console.log("입력한 링크" + inputLink);
+		// getUserAchiv();
+		console.log("첨-------------------------");
+		console.log(achiveFile);
+		console.log(achiveLink);
+	}, [achiveFile, achiveLink]);
 
 	const getUserData = async () => {
 		try {
@@ -114,27 +135,39 @@ function Setting(props) {
 	const getUserAchiv = async () => {
 		try {
 			const token = localStorage.getItem("token");
-
-			if (!token) {
-				throw new Error("Token is not available");
-			}
-
-			const response = await fetch(
-				"http://localhost:8000/api/user/get_user_achive/",
-				{
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-					},
+			if (token) {
+				if (!token) {
+					throw new Error("Token is not available");
 				}
-			);
-			if (response.ok) {
-				const achive = await response.json();
-				setAchiveFile(achive.file);
-				setAchiveLink(achive.link);
-			} else {
-				// 예외처리
-				throw new Error("Failed to fetch user data");
+
+				const response = await fetch(
+					"http://localhost:8000/api/user/get_user_achive/",
+					{
+						method: "POST",
+						headers: {
+							Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
+						},
+					}
+				);
+				if (response.ok) {
+					const achive = await response.json();
+					console.log(achive);
+					const linkdata = achive.filter((item) => item.achive_file === null);
+					const filedata = achive.filter((item) => item.achive_file !== null);
+					console.log("파일파일" + filedata);
+					console.log("링크링크" + linkdata);
+
+					console.log(filedata.length);
+					if (filedata.length > 0) {
+						setAchiveFile(filedata);
+					}
+					if (linkdata.length > 0) {
+						setAchiveLink(linkdata);
+					}
+				} else {
+					// 예외처리
+					throw new Error("Failed to fetch user data");
+				}
 			}
 		} catch (error) {
 			// 예외처리
@@ -156,18 +189,70 @@ function Setting(props) {
 		setInputLink(updatedLinks);
 	};
 
-	const uploadAchive = (e) => {
-		const file = e;
+	const achiveLinkDelete = async (type, index) => {
+		// console.log(type, index);
+		console.log(achiveFile[index]);
 
-		if (file) {
-			const reader = new FileReader();
+		try {
+			const token = localStorage.getItem("token");
+			if (token) {
+				const achivedata = {
+					type: type === "link" ? "link" : "file",
+					data:
+						type === "link"
+							? achiveLink[index].achive_link
+							: achiveFile[index].achive_filename,
+				};
+				console.log(achivedata);
 
-			reader.onload = () => {
-				setUpdatedImg(file);
-				setImagepreview(reader.result);
-			};
-			reader.readAsDataURL(file);
+				const achive_formdata = new FormData();
+				achive_formdata.append("json", JSON.stringify(achivedata));
+				const response = await fetch(
+					"http://localhost:8000/api/user/delete_user_achive/",
+					{
+						method: "POST",
+						headers: {
+							// "Content-Type": "application/json",
+							Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
+						},
+						body: achive_formdata,
+					}
+				);
+				if (response.ok) {
+					console.log("ok");
+				} else {
+					// 예외처리
+					throw new Error("Failed to fetch user data");
+				}
+			}
+		} catch (error) {
+			// 예외처리
+			throw new Error("Token is not available");
 		}
+	};
+
+	const uploadAchive = (e) => {
+		if (inputFile.length === 0) {
+			setInputFile([{ file: e, fileName: e.name }]);
+		} else {
+			setInputFile([...inputFile, { file: e, fileName: e.name }]); // 입력된 데이터를 부모 페이지의 상태에 추가
+		}
+	};
+
+	const handleFilePreview = (file) => {
+		console.log(file.file);
+		const pdfUrl = URL.createObjectURL(file.file);
+		window.open(
+			pdfUrl,
+			"blob",
+			"width:1500, height:1000, resizeable, scrollbars, noopener"
+		);
+		window.URL.revokeObjectURL(pdfUrl);
+	};
+
+	const handleLocalFilePreview = (file) => {
+		const localpdffile = file.replace("/frontend/public/", "/");
+		window.open(localpdffile, "_blank");
 	};
 
 	const openModal = () => {
@@ -179,23 +264,35 @@ function Setting(props) {
 	};
 
 	const handleSave = async () => {
-		console.log("------------------------" + updatedImg);
-
 		setInputCheck(false);
 		try {
 			const token = localStorage.getItem("token");
 			if (!token) {
 				throw new Error("Token is not available");
 			}
+			console.log(inputLink);
+			console.log(inputFile);
+
+			const linkArray = Array.isArray(inputLink) ? inputLink : [inputLink];
+			const fileArray = Array.isArray(inputFile) ? inputFile : [inputFile];
+			console.log(linkArray);
+
 			const dataToSend = {
 				nickname: inputText.nickname,
 				info: inputText.info,
 				email: inputText.email,
+				link: linkArray.map((item) => item.link),
+				linkName: linkArray.map((item) => item.title),
+				fileName: fileArray.map((item) => item.fileName),
 			};
 
 			const formdata = new FormData();
 			formdata.append("json", JSON.stringify(dataToSend));
 			formdata.append("img", inputImg);
+			// formdata.append("file", inputFile);
+			inputFile.forEach((item, index) => {
+				formdata.append(`file${index}`, item.file);
+			});
 			if (updatedImg) {
 				formdata.append("updatedimg", updatedImg);
 			}
@@ -223,10 +320,12 @@ function Setting(props) {
 			console.error("Error while saving data:", error);
 		}
 		getUserData();
-		navigate("/myclass");
+		window.location.reload();
 	};
 	const handlechangEdit = () => {
 		console.log(updatedImg);
+		setInputFile([]);
+		setInputLink([]);
 
 		setInputCheck(true);
 	};
@@ -245,11 +344,15 @@ function Setting(props) {
 					>
 						<div
 							style={{
+								width: 190,
 								display: "flex",
 								justifyContent: "center",
 								textAlign: "center",
-								marginRight: 20,
+								alignItems: "center",
+								// marginRight: 20,
 								flexDirection: "column",
+								// padding: "
+								// backgroundColor: "red",
 							}}
 						>
 							<div className="user_img">
@@ -267,45 +370,58 @@ function Setting(props) {
 								)}
 							</div>
 							{inputCheck && (
-								<>
-									<label htmlFor="setting_file">
-										<div className="file-selector-button" width={100}>
-											<p
-												style={{
-													textAlign: "center",
-													padding: 3,
-												}}
-											>
-												이미지 수정
-											</p>
-										</div>
-									</label>
-									<input
-										id="setting_file"
-										accept="image/*"
-										type="file"
-										onChange={(e) => {
-											uploadProfile(e.target.files[0]);
+								<div
+									style={{
+										// backgroundColor: "red",
+										display: "flex",
+										justifyContent: "center",
+									}}
+								>
+									<div
+										class="achive-file-selector-button"
+										style={{
+											textAlign: "center",
+											color: "white",
 										}}
-									/>
-								</>
+									>
+										<label for="add_image_file">이미지 선택</label>
+										<input
+											type="file"
+											accept="image/*"
+											id="add_image_file"
+											onChange={(e) => {
+												uploadProfile(e.target.files[0]);
+											}}
+										/>
+									</div>
+								</div>
 							)}
 						</div>
 
-						<div>
-							<div style={{ display: "flex", flexDirection: "row" }}>
+						<div style={{ width: "45%", marginLeft: 20 }}>
+							<div
+								style={{
+									width: 500,
+									display: "flex",
+									flexDirection: "row",
+									marginBottom: 20,
+									overflow: "hidden",
+								}}
+							>
 								<input
 									value={inputText.nickname}
+									type="text"
 									onChange={(e) =>
 										setInputText({ ...inputText, nickname: e.target.value })
 									}
+									maxlength="8"
 									disabled={!inputCheck}
 								/>
 							</div>
-							<div style={{ width: "80vh", height: 100 }}>
+							<div style={{ height: 100 }}>
 								<input
 									style={{
-										width: "90%",
+										width: "100%",
 									}}
 									value={inputText.info}
 									onChange={(e) =>
@@ -334,12 +450,16 @@ function Setting(props) {
 							display: "flex",
 							flexDirection: "row",
 							justifyContent: "center",
-							padding: 10,
+							marginTop: 15,
+							marginBottom: 15,
+							// padding: 10,
 						}}
 					>
 						<div
 							style={{
-								width: 196,
+								// backgroundColor: "yellow",
+
+								width: 190,
 								height: 35,
 								textAlign: "center",
 								alignItems: "center",
@@ -351,10 +471,13 @@ function Setting(props) {
 						</div>
 						<div
 							style={{
-								width: "80vh",
+								// backgroundColor: "gray",
+								width: "45%",
 								alignItems: "center",
 								display: "flex",
 								marginLeft: 20,
+								// marginTop: 15,
+								// marginBottom: 15,
 							}}
 						>
 							<input
@@ -385,17 +508,18 @@ function Setting(props) {
 							flexDirection: "row",
 							justifyContent: "center",
 							alignItems: "center",
-							padding: 10,
+							// padding: 10,
 						}}
 					>
 						<div
 							style={{
-								width: 196,
+								width: 190,
 								height: 35,
 								textAlign: "center",
 								alignItems: "center",
 								justifyContent: "center",
 								display: "flex",
+								// backgroundColor: "gainsboro",
 							}}
 						>
 							<BsFillMortarboardFill size={30} color="#FFD550" />
@@ -403,10 +527,13 @@ function Setting(props) {
 
 						<div
 							style={{
-								width: "80vh",
+								width: "45%",
 								flexDirection: "column",
 								display: "flex",
 								marginLeft: 20,
+								// backgroundColor: "yellow",
+								marginTop: 15,
+								marginBottom: 15,
 							}}
 						>
 							{achiveLink.length > 0 ||
@@ -415,72 +542,240 @@ function Setting(props) {
 							inputFile.length > 0 ? (
 								<>
 									<div>
-										{achiveLink.length !== 0 &&
-											achiveLink.map((a, index) => <div key={index}>{a}</div>)}
-										{achiveFile.length !== 0 &&
-											achiveFile.map((a, index) => <div key={index}>{a}</div>)}
+										{(achiveLink.length !== 0 || achiveFile.length !== 0) && (
+											<>
+												{achiveLink.length !== 0 && (
+													<>
+														{achiveLink.map((a, index) => (
+															<div
+																key={index}
+																style={{
+																	display: "flex",
+																	flexDirection: "row",
+																	// width: "90%",
+																	// backgroundColor: "red",
+																}}
+															>
+																<div
+																	style={{
+																		width: 15,
+																		height: 20,
+																		marginRight: 12,
+																	}}
+																>
+																	{inputCheck ? (
+																		<button
+																			onClick={() =>
+																				achiveLinkDelete("link", index)
+																			}
+																		>
+																			<IoCut size={17} color="black" />
+																		</button>
+																	) : (
+																		<AiOutlineLink size={17} color="black" />
+																	)}
+																</div>
+																<div
+																	key={index}
+																	style={{
+																		// width: "100%",
+																		marginBottom: 10,
+																		wordBreak: "break-all",
+																		padding: 5,
+																		borderRadius: 5,
+																		backgroundColor: "blanchedAlmond",
+																	}}
+																>
+																	<div
+																		style={{
+																			fontSize: 15,
+																			marginRight: 10,
+																		}}
+																	>
+																		{a.achive_linkname}
+																	</div>
+																	<a
+																		href={a.achive_link}
+																		target="_blank"
+																		style={{
+																			color: "#1A1A3A",
+																			fontSize: 14,
+																			// backgroundColor: "red",
+																		}}
+																		rel="noopener noreferrer"
+																	>
+																		{a.achive_link}
+																	</a>
+																</div>
+															</div>
+														))}
+													</>
+												)}
+												{achiveFile.length !== 0 && (
+													<>
+														{achiveFile.map((a, index) => (
+															<div
+																key={index}
+																style={{
+																	display: "flex",
+																	flexDirection: "row",
+																}}
+															>
+																<div
+																	style={{
+																		width: 15,
+																		height: 20,
+																		marginRight: 12,
+																	}}
+																>
+																	{inputCheck ? (
+																		<button
+																			onClick={() =>
+																				achiveLinkDelete("file", index)
+																			}
+																		>
+																			<IoCut size={17} color="black" />
+																		</button>
+																	) : (
+																		<AiOutlineFilePdf size={16} color="black" />
+																	)}
+																</div>
+																<div
+																	key={index}
+																	style={{
+																		width: "100%",
+																		marginBottom: 10,
+																		wordBreak: "break-all",
+																	}}
+																>
+																	<button
+																		style={{
+																			color: "#1A1A3A",
+																			fontSize: 14,
+																			border: "none",
+																			padding: 7,
+																			borderRadius: 5,
+																			backgroundColor: "blanchedAlmond",
+																		}}
+																		onClick={() =>
+																			handleLocalFilePreview(a.achive_file)
+																		}
+																	>
+																		{a.achive_filename}
+																	</button>
+																</div>
+															</div>
+														))}
+													</>
+												)}
+											</>
+										)}
 									</div>
-									{inputLink.length > 0 && (
-										<div className="real_link">
-											{inputLink.map((slink, index) => (
-												<div
-													style={{
-														display: "flex",
-														flexDirection: "row",
-													}}
-												>
-													<div
-														style={{ width: 15, height: 20, marginRight: 12 }}
-													>
-														<AiOutlineLink size={15} color="black" />
-													</div>
-													<div
-														key={index}
-														style={{
-															width: "100%",
-															marginBottom: 10,
-															wordBreak: "break-all",
-														}}
-													>
+									{(inputLink.length > 0 || inputFile.length > 0) && (
+										<div
+											className="real_link"
+											// style={{ backgroundColor: "yellow" }}
+										>
+											{inputLink.length > 0 && (
+												<>
+													{inputLink.map((slink, index) => (
 														<div
 															style={{
-																width: "100%",
 																display: "flex",
 																flexDirection: "row",
-																alignItems: "center",
-																height: 30,
+																width: "90%",
+																// backgroundColor: "red",
 															}}
 														>
-															<div style={{ fontSize: 16, marginRight: 10 }}>
-																{slink.title}
-															</div>
-
-															<button
+															<div
 																style={{
-																	width: 30,
-																	height: 30,
-																	justifyContent: "center",
-																	display: "flex",
-																	alignItems: "center",
-																	border: "none",
-																	backgroundColor: "transparent",
+																	width: 15,
+																	height: 20,
+																	marginRight: 12,
 																}}
-																onClick={() => handleLinkDelete(index)}
 															>
-																<BsXCircleFill size={16} color="red" />
-															</button>
+																<IoCut size={20} color="black" />
+															</div>
+															<div
+																key={index}
+																style={{
+																	width: "100%",
+																	marginBottom: 10,
+																	wordBreak: "break-all",
+																	padding: 5,
+																	borderRadius: 5,
+																	backgroundColor: "blanchedAlmond",
+																}}
+															>
+																<div
+																	style={{
+																		fontSize: 15,
+																		marginRight: 10,
+																	}}
+																>
+																	{slink.title}
+																</div>
+																<a
+																	href={slink}
+																	target="_blank"
+																	style={{
+																		color: "#1A1A3A",
+																		fontSize: 14,
+																		// backgroundColor: "red",
+																	}}
+																	rel="noopener noreferrer"
+																>
+																	{slink.link}
+																</a>
+															</div>
 														</div>
-														<a
-															href={slink}
-															target="_blank"
-															style={{ color: "#1A1A3A", fontSize: 14 }}
-															rel="noopener noreferrer"
+													))}
+												</>
+											)}
+											{inputFile.length > 0 && (
+												<>
+													{inputFile.map((sfile, index) => (
+														<div
+															style={{
+																display: "flex",
+																flexDirection: "row",
+															}}
 														>
-															{slink.link}
-														</a>
-													</div>
-												</div>
-											))}
+															<div
+																style={{
+																	width: 15,
+																	height: 20,
+																	marginRight: 12,
+																}}
+															>
+																<IoCut size={16} color="black" />
+															</div>
+															<div
+																key={index}
+																style={{
+																	width: "100%",
+																	marginBottom: 10,
+																	wordBreak: "break-all",
+																}}
+															>
+																<button
+																	style={{
+																		color: "#1A1A3A",
+																		fontSize: 14,
+																		border: "none",
+																		padding: 7,
+																		borderRadius: 5,
+																		backgroundColor: "blanchedAlmond",
+																	}}
+																	onClick={() => handleFilePreview(sfile)}
+																>
+																	{sfile.fileName}
+																</button>
+															</div>
+														</div>
+													))}
+												</>
+											)}
 										</div>
 									)}
 								</>
@@ -492,7 +787,7 @@ function Setting(props) {
 								<div
 									style={{
 										alignItems: "center",
-										marginTop: 20,
+										marginTop: 10,
 										display: "flex",
 										flexDirection: "row",
 									}}
@@ -513,38 +808,34 @@ function Setting(props) {
 										>
 											<AiOutlineLink size={20} color="white" />
 										</div>
-										<div style={{ height: 25 }}>링크 업로드</div>
+										<div style={{ height: 25, textAlign: "center" }}>
+											링크 업로드
+										</div>
 									</button>
 									<Modal
 										isOpen={isModalOpen}
 										onClose={closeModal}
 										onSave={handleLinkSave}
 									/>
-									<label htmlFor="setting_file">
-										<div
-											className="achive-file-selector-button"
-											style={{ marginLeft: 10 }}
-											width={100}
-										>
-											<p
-												style={{
-													textAlign: "center",
-													padding: 3,
-													color: "white",
-												}}
-											>
-												파일 선택
-											</p>
-										</div>
-									</label>
-									<input
-										id="setting_file"
-										accept="image/*"
-										type="file"
-										onChange={(e) => {
-											uploadAchive(e.target.files[0]);
+									<div
+										class="achive-file-selector-button"
+										style={{
+											marginLeft: 10,
+											textAlign: "center",
+											// padding: 3,
+											color: "white",
 										}}
-									/>
+									>
+										<label for="add_file">파일 선택</label>
+										<input
+											type="file"
+											accept=".pdf"
+											id="add_file"
+											onChange={(e) => {
+												uploadAchive(e.target.files[0]);
+											}}
+										/>
+									</div>
 								</div>
 							)}
 						</div>
