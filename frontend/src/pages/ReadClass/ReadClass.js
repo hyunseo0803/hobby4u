@@ -33,6 +33,7 @@ function Allclass() {
 						DayDetail: response.data.day_data,
 					},
 				});
+				tokenCheck();
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
@@ -72,6 +73,7 @@ function Allclass() {
 			)
 			.then((response) => {
 				setFliteredata(response.data.filter_data_list);
+				tokenCheck();
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
@@ -89,6 +91,7 @@ function Allclass() {
 				const classItem = response.data.all_data_list;
 				setData(classItem);
 				ReadGoodCount();
+				tokenCheck();
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
@@ -125,6 +128,7 @@ function Allclass() {
 				.then((response) => {
 					const likeData = response.data.like_data_list;
 					setLikeStatus(likeData);
+					tokenCheck();
 				})
 				.catch((error) => {
 					console.error("Error submitting data:", error);
@@ -173,14 +177,15 @@ function Allclass() {
 		readAll();
 	}, []);
 
-	useEffect(() => {
+	const tokenCheck = () => {
 		const localtoken = localStorage.getItem("token");
 		if (localtoken) {
 			setToken(localtoken);
 		} else {
 			setToken("");
 		}
-	});
+		console.log(token);
+	};
 
 	return (
 		<div className="read_container">
