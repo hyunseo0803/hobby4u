@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from rest_framework import generics 
+from rest_framework import generics ,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
@@ -11,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 import jwt
 import os
 import requests
+
 import json
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -162,13 +163,41 @@ def save_user_info(request):
         nickname = json_data.get('nickname')
         info = json_data.get('info')
         email = json_data.get('email')
-
+        link=json_data.get('link')
+        linkName = json_data.get('linkName')
+        # file=request.FILES.get('file')
+        fileName=json_data.get('fileName')
+        achive_file_list =[]
+        for index in range(len(request.FILES)):
+            file_key = f'file{index}'
+            if file_key in request.FILES:
+                achive_file = request.FILES[file_key]
+            achive_file_list.append(achive_file)
+            
         updateimg=request.FILES.get('updatedimg')
         
         member=Member.objects.get(id=user_id) 
         
+        if len(link)>0:
+            print("링크넣엇음 링크을")
+            for l, ln in zip(link, linkName):
+                achive=Performance(id=Member.objects.get(id=user_id) )
+
+                achive.link=l
+                achive.link_title=ln
+                achive.save()
+                
+        if len(achive_file_list)>0:
+            print("파일 넣어씅ㅁ 파일")
+            for f, fn in zip(achive_file_list, fileName):
+                achive=Performance(id=Member.objects.get(id=user_id) )
+                achive.file=f
+                achive.file_title=fn
+                achive.save()
+                
         if updateimg is not None:
             member.updateprofile=updateimg
+            
         member.nickname=nickname
         member.email=email
         member.info=info
@@ -176,19 +205,54 @@ def save_user_info(request):
         
     return Response("success")
 
+@api_view(['POST'])
+def delete_user_achive(request):
+    if request.method=="POST":
+        jwt_token = request.headers.get('Authorization').split(' ')[1]
+        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+        user_id=payload['id']
+        json_data = json.loads(request.POST.get('json'))
+        
+        type = json_data.get('type')
+        
+        data = json_data.get('data')
+        
+        print(type)
+        print(data)
+        if type=='link':
+            item = Performance.objects.get(link=data)
+            item.delete()
+            
+        if type=='file':
+            item = Performance.objects.get(file_title=data)
+            item.delete()
+        
+    return Response("success")
+
 @api_view(['POST'])       
 def get_user_achive(request):
     if request.method =='POST':
         jwt_token = request.headers.get('Authorization').split(' ')[1]
-        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
-        user_id=payload['id']
-        achive= Performance.objects.filter(id=user_id)
-        achive_list=[]
+        # try:
+        payload = jwt.decode(jwt_token, SECRET_KEY, ALGORITHM)
+        user_id = payload['id']
+        achive = Performance.objects.filter(id=user_id)
+        achive_list = []
         for achive_data in achive:
-            data={
-                'achive_file':achive_data.file is not None,
-                'achive_link':achive_data.link is not None
+            data = {
+                'achive_file': achive_data.file.url if achive_data.file else None,
+                'achive_filename': achive_data.file_title,
+                'achive_link': achive_data.link,
+                'achive_linkname': achive_data.link_title
             }
-            
             achive_list.append(data)
-    return Response(achive_list)
+        return Response(achive_list)
+    #     except jwt.ExpiredSignatureError:
+    #         return Response({'error': 'Expired token'}, status=status.HTTP_401_UNAUTHORIZED)
+    #     except jwt.InvalidTokenError:
+    #         return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+    #     except Exception as e:
+    #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # else:
+    #     return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST)
+
