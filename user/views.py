@@ -162,10 +162,58 @@ def save_user_info(request):
         json_data = json.loads(request.POST.get('json'))
         nickname = json_data.get('nickname')
         info = json_data.get('info')
-        email = json_data.get('email')
+        # email = json_data.get('email')
+        # link=json_data.get('link')
+        # linkName = json_data.get('linkName')
+        # file=request.FILES.get('file')
+        # fileName=json_data.get('fileName')
+        # achive_file_list =[]
+        # for index in range(len(request.FILES)):
+        #     file_key = f'file{index}'
+        #     if file_key in request.FILES:
+        #         achive_file = request.FILES[file_key]
+        #     achive_file_list.append(achive_file)
+            
+        updateimg=request.FILES.get('updatedimg')
+        
+        member=Member.objects.get(id=user_id) 
+        
+        # if len(link)>0:
+        #     print("링크넣엇음 링크을")
+        #     for l, ln in zip(link, linkName):
+        #         achive=Performance(id=Member.objects.get(id=user_id) )
+
+        #         achive.link=l
+        #         achive.link_title=ln
+        #         achive.save()
+                
+        # if len(achive_file_list)>0:
+        #     print("파일 넣어씅ㅁ 파일")
+        #     for f, fn in zip(achive_file_list, fileName):
+        #         achive=Performance(id=Member.objects.get(id=user_id) )
+        #         achive.file=f
+        #         achive.file_title=fn
+        #         achive.save()
+                
+        if updateimg is not None:
+            member.updateprofile=updateimg
+            
+        member.nickname=nickname
+        # member.email=email
+        member.info=info
+        member.save()
+        
+    return Response("success")
+
+@api_view(['POST'])
+def save_user_achive(request):
+    if request.method=="POST":
+        jwt_token = request.headers.get('Authorization').split(' ')[1]
+        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+        user_id=payload['id']
+        json_data = json.loads(request.POST.get('json'))
         link=json_data.get('link')
         linkName = json_data.get('linkName')
-        # file=request.FILES.get('file')
         fileName=json_data.get('fileName')
         achive_file_list =[]
         for index in range(len(request.FILES)):
@@ -174,12 +222,7 @@ def save_user_info(request):
                 achive_file = request.FILES[file_key]
             achive_file_list.append(achive_file)
             
-        updateimg=request.FILES.get('updatedimg')
-        
-        member=Member.objects.get(id=user_id) 
-        
         if len(link)>0:
-            print("링크넣엇음 링크을")
             for l, ln in zip(link, linkName):
                 achive=Performance(id=Member.objects.get(id=user_id) )
 
@@ -188,21 +231,12 @@ def save_user_info(request):
                 achive.save()
                 
         if len(achive_file_list)>0:
-            print("파일 넣어씅ㅁ 파일")
             for f, fn in zip(achive_file_list, fileName):
                 achive=Performance(id=Member.objects.get(id=user_id) )
                 achive.file=f
                 achive.file_title=fn
                 achive.save()
                 
-        if updateimg is not None:
-            member.updateprofile=updateimg
-            
-        member.nickname=nickname
-        member.email=email
-        member.info=info
-        member.save()
-        
     return Response("success")
 
 @api_view(['POST'])
@@ -217,8 +251,8 @@ def delete_user_achive(request):
         
         data = json_data.get('data')
         
-        print(type)
-        print(data)
+        # print(type)
+        # print(data)
         if type=='link':
             item = Performance.objects.get(link=data)
             item.delete()
