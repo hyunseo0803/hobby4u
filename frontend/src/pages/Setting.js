@@ -74,15 +74,16 @@ function Setting(props) {
 		getUserAchiv();
 		// console.log("첨-------------------------");
 		// console.log(achiveFile);
-	}, []);
+	}, [inputLink, inputFile]);
+
 	useEffect(() => {
 		// console.log("입력한 파일" + inputFile);
 		// console.log("입력한 링크" + inputLink);
-		// getUserAchiv();
+		// getUserAchiv();V
 		console.log("첨-------------------------");
 		console.log(achiveFile);
 		console.log(achiveLink);
-	}, [achiveFile, achiveLink]);
+	}, []);
 
 	const getUserData = async () => {
 		try {
@@ -150,19 +151,24 @@ function Setting(props) {
 					}
 				);
 				if (response.ok) {
+					console.log("성과물 불러옴");
 					const achive = await response.json();
-					console.log(achive);
+					// console.log(achive);
 					const linkdata = achive.filter((item) => item.achive_file === null);
 					const filedata = achive.filter((item) => item.achive_file !== null);
-					console.log("파일파일" + filedata);
-					console.log("링크링크" + linkdata);
+					// console.log("파일파일" + filedata);
+					// console.log("링크링크" + linkdata);
 
-					console.log(filedata.length);
+					// console.log(filedata.length);
 					if (filedata.length > 0) {
 						setAchiveFile(filedata);
+					} else {
+						setAchiveFile([]);
 					}
 					if (linkdata.length > 0) {
 						setAchiveLink(linkdata);
+					} else {
+						setAchiveLink([]);
 					}
 				} else {
 					// 예외처리
@@ -188,10 +194,15 @@ function Setting(props) {
 		updatedLinks.splice(index, 1); // 해당 인덱스의 객체를 제거
 		setInputLink(updatedLinks);
 	};
+	const handleFileDelete = (index) => {
+		const updatedFiles = [...inputFile];
+		updatedFiles.splice(index, 1); // 해당 인덱스의 객체를 제거
+		setInputFile(updatedFiles);
+	};
 
 	const achiveLinkDelete = async (type, index) => {
 		// console.log(type, index);
-		console.log(achiveFile[index]);
+		// console.log(achiveFile[index]);
 
 		try {
 			const token = localStorage.getItem("token");
@@ -203,7 +214,7 @@ function Setting(props) {
 							? achiveLink[index].achive_link
 							: achiveFile[index].achive_filename,
 				};
-				console.log(achivedata);
+				// console.log(achivedata);
 
 				const achive_formdata = new FormData();
 				achive_formdata.append("json", JSON.stringify(achivedata));
@@ -220,6 +231,7 @@ function Setting(props) {
 				);
 				if (response.ok) {
 					console.log("ok");
+					alert("삭제되었습니다.");
 				} else {
 					// 예외처리
 					throw new Error("Failed to fetch user data");
@@ -229,6 +241,7 @@ function Setting(props) {
 			// 예외처리
 			throw new Error("Token is not available");
 		}
+		getUserAchiv();
 	};
 
 	const uploadAchive = (e) => {
@@ -240,7 +253,7 @@ function Setting(props) {
 	};
 
 	const handleFilePreview = (file) => {
-		console.log(file.file);
+		// console.log(file.file);
 		const pdfUrl = URL.createObjectURL(file.file);
 		window.open(
 			pdfUrl,
@@ -263,36 +276,34 @@ function Setting(props) {
 		setIsModalOpen(false);
 	};
 
-	const handleSave = async () => {
+	const handleInfoSave = async () => {
 		setInputCheck(false);
 		try {
 			const token = localStorage.getItem("token");
 			if (!token) {
 				throw new Error("Token is not available");
 			}
-			console.log(inputLink);
-			console.log(inputFile);
-
-			const linkArray = Array.isArray(inputLink) ? inputLink : [inputLink];
-			const fileArray = Array.isArray(inputFile) ? inputFile : [inputFile];
-			console.log(linkArray);
+			// const linkArray = Array.isArray(inputLink) ? inputLink : [inputLink];
+			// const fileArray = Array.isArray(inputFile) ? inputFile : [inputFile];
 
 			const dataToSend = {
 				nickname: inputText.nickname,
 				info: inputText.info,
-				email: inputText.email,
-				link: linkArray.map((item) => item.link),
-				linkName: linkArray.map((item) => item.title),
-				fileName: fileArray.map((item) => item.fileName),
+				// email: inputText.email,
+
+				// link: linkArray.map((item) => item.link),
+				// linkName: linkArray.map((item) => item.title),
+				// fileName: fileArray.map((item) => item.fileName),
 			};
+			// console.log(dataToSend);
 
 			const formdata = new FormData();
 			formdata.append("json", JSON.stringify(dataToSend));
 			formdata.append("img", inputImg);
 			// formdata.append("file", inputFile);
-			inputFile.forEach((item, index) => {
-				formdata.append(`file${index}`, item.file);
-			});
+			// inputFile.forEach((item, index) => {
+			// 	formdata.append(`file${index}`, item.file);
+			// });
 			if (updatedImg) {
 				formdata.append("updatedimg", updatedImg);
 			}
@@ -320,12 +331,63 @@ function Setting(props) {
 			console.error("Error while saving data:", error);
 		}
 		getUserData();
-		window.location.reload();
+		// window.location.reload();
+	};
+	const handleAchiveSave = async () => {
+		try {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				throw new Error("Token is not available");
+			}
+			// console.log(inputLink);
+			// console.log(inputFile);
+
+			const linkArray = Array.isArray(inputLink) ? inputLink : [inputLink];
+			const fileArray = Array.isArray(inputFile) ? inputFile : [inputFile];
+			console.log(linkArray);
+
+			const dataToSend = {
+				link: linkArray.map((item) => item.link),
+				linkName: linkArray.map((item) => item.title),
+				fileName: fileArray.map((item) => item.fileName),
+			};
+
+			const formdata = new FormData();
+			formdata.append("json", JSON.stringify(dataToSend));
+			inputFile.forEach((item, index) => {
+				formdata.append(`file${index}`, item.file);
+			});
+			const response = await fetch(
+				"http://localhost:8000/api/user/save_user_achive/",
+				{
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+					body: formdata,
+				}
+			);
+
+			if (response.ok) {
+				console.log("Data successfully saved!");
+				alert("저장하였습니다.");
+				setInputFile([]);
+				setInputLink([]);
+			} else {
+				// 저장 실패한 경우의 처리
+				console.error("Failed to save data");
+			}
+		} catch (error) {
+			// 오류 처리
+			console.error("Error while saving data:", error);
+		}
+		getUserData();
+		// window.location.reload();
 	};
 	const handlechangEdit = () => {
-		console.log(updatedImg);
-		setInputFile([]);
-		setInputLink([]);
+		// console.log(updatedImg);
+		// setInputFile([]);
+		// setInputLink([]);
 
 		setInputCheck(true);
 	};
@@ -480,13 +542,14 @@ function Setting(props) {
 								// marginBottom: 15,
 							}}
 						>
-							<input
+							{inputText.email}
+							{/* <input
 								value={inputText.email}
 								onChange={(e) =>
 									setInputText({ ...inputText, email: e.target.value })
 								}
 								disabled={!inputCheck}
-							/>
+							/> */}
 						</div>
 					</div>
 					<div
@@ -563,7 +626,18 @@ function Setting(props) {
 																		marginRight: 12,
 																	}}
 																>
-																	{inputCheck ? (
+																	<button
+																		onClick={() =>
+																			achiveLinkDelete("link", index)
+																		}
+																		style={{
+																			backgroundColor: "transparent",
+																			border: "none",
+																		}}
+																	>
+																		<IoCut size={17} color="black" />
+																	</button>
+																	{/* {inputCheck ? (
 																		<button
 																			onClick={() =>
 																				achiveLinkDelete("link", index)
@@ -573,7 +647,7 @@ function Setting(props) {
 																		</button>
 																	) : (
 																		<AiOutlineLink size={17} color="black" />
-																	)}
+																	)} */}
 																</div>
 																<div
 																	key={index}
@@ -628,7 +702,18 @@ function Setting(props) {
 																		marginRight: 12,
 																	}}
 																>
-																	{inputCheck ? (
+																	<button
+																		onClick={() =>
+																			achiveLinkDelete("file", index)
+																		}
+																		style={{
+																			backgroundColor: "transparent",
+																			border: "none",
+																		}}
+																	>
+																		<IoCut size={17} color="black" />
+																	</button>
+																	{/* {inputCheck ? (
 																		<button
 																			onClick={() =>
 																				achiveLinkDelete("file", index)
@@ -638,7 +723,7 @@ function Setting(props) {
 																		</button>
 																	) : (
 																		<AiOutlineFilePdf size={16} color="black" />
-																	)}
+																	)} */}
 																</div>
 																<div
 																	key={index}
@@ -694,7 +779,15 @@ function Setting(props) {
 																	marginRight: 12,
 																}}
 															>
-																<IoCut size={20} color="black" />
+																<button
+																	onClick={() => handleLinkDelete(index)}
+																	style={{
+																		backgroundColor: "transparent",
+																		border: "none",
+																	}}
+																>
+																	<IoCut size={17} color="black" />
+																</button>
 															</div>
 															<div
 																key={index}
@@ -748,7 +841,15 @@ function Setting(props) {
 																	marginRight: 12,
 																}}
 															>
-																<IoCut size={16} color="black" />
+																<button
+																	onClick={() => handleFileDelete(index)}
+																	style={{
+																		backgroundColor: "transparent",
+																		border: "none",
+																	}}
+																>
+																	<IoCut size={17} color="black" />
+																</button>
 															</div>
 															<div
 																key={index}
@@ -783,61 +884,67 @@ function Setting(props) {
 								<div>등록된 성과물이 없습니다 ! </div>
 							)}
 
-							{inputCheck && (
-								<div
+							{/* {inputCheck && ( */}
+							<div
+								style={{
+									alignItems: "center",
+									marginTop: 10,
+									display: "flex",
+									flexDirection: "row",
+								}}
+							>
+								<button
+									className="achive-file-selector-button"
 									style={{
-										alignItems: "center",
-										marginTop: 10,
 										display: "flex",
 										flexDirection: "row",
+										justifyContent: "center",
 									}}
+									onClick={openModal}
 								>
-									<button
-										className="achive-file-selector-button"
-										style={{ display: "flex", flexDirection: "row" }}
-										onClick={openModal}
-									>
-										<div
-											style={{
-												justifyContent: "center",
-												alignItems: "center",
-												display: "flex",
-												height: 25,
-												marginRight: 3,
-											}}
-										>
-											<AiOutlineLink size={20} color="white" />
-										</div>
-										<div style={{ height: 25, textAlign: "center" }}>
-											링크 업로드
-										</div>
-									</button>
-									<Modal
-										isOpen={isModalOpen}
-										onClose={closeModal}
-										onSave={handleLinkSave}
-									/>
 									<div
-										class="achive-file-selector-button"
 										style={{
-											marginLeft: 10,
-											textAlign: "center",
-											// padding: 3,
-											color: "white",
+											justifyContent: "center",
+											alignItems: "center",
+											display: "flex",
+											// height: 25,
+											marginRight: 3,
 										}}
 									>
-										<label for="add_file">파일 선택</label>
-										<input
-											type="file"
-											accept=".pdf"
-											id="add_file"
-											onChange={(e) => {
-												uploadAchive(e.target.files[0]);
-											}}
-										/>
+										<AiOutlineLink size={17} color="white" />
 									</div>
+									<div style={{ textAlign: "center" }}>링크 업로드</div>
+								</button>
+								<Modal
+									isOpen={isModalOpen}
+									onClose={closeModal}
+									onSave={handleLinkSave}
+								/>
+								<div
+									class="achive-file-selector-button"
+									style={{
+										marginLeft: 10,
+										textAlign: "center",
+										display: "flex",
+										justifyContent: "center",
+										color: "white",
+									}}
+								>
+									<label for="add_file">파일 업로드</label>
+									<input
+										type="file"
+										accept=".pdf"
+										id="add_file"
+										onChange={(e) => {
+											uploadAchive(e.target.files[0]);
+										}}
+									/>
 								</div>
-							)}
+								<button class="achive-file-save-btn" onClick={handleAchiveSave}>
+									등록하기
+								</button>
+							</div>
+							{/* )} */}
 						</div>
 					</div>
 
@@ -891,7 +998,7 @@ function Setting(props) {
 									textAlign: "center",
 									borderRadius: 8,
 								}}
-								onClick={handleSave}
+								onClick={handleInfoSave}
 							>
 								저장
 							</button>
