@@ -1,0 +1,96 @@
+.approve_input-container {
+	position: relative;
+	margin-top: 35px;
+	width: 350px;
+}
+
+.approve_input-container .input_input {
+	font-size: 15px;
+	width: 100%;
+	border: none;
+	border-bottom: 2px solid #ccc;
+	padding: 5px 0px;
+	background-color: transparent;
+	outline: none;
+}
+
+.approve_input-container .label {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	color: #ccc;
+	transition: all 0.3s ease;
+	pointer-events: none;
+}
+.approve_input-container .label_red {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	color: #ff9090;
+	transition: all 0.3s ease;
+	pointer-events: none;
+}
+
+.input_input:focus ~ .label,
+.input_input:valid ~ .label {
+	top: -20px;
+	font-size: 13px;
+	color: #333;
+}
+.input_input:focus ~ .label_red,
+.input_input:valid ~ .label_red {
+	color: #ff9090;
+	top: -20px;
+	font-size: 13px;
+}
+
+.approve_input-container .underline_black {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	height: 2px;
+	width: 100%;
+	background-color: #333;
+	transform: scaleX(0);
+	transition: all 0.3s ease;
+}
+.approve_input-container .underline_red {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	height: 2px;
+	width: 100%;
+	background-color: red;
+	transform: scaleX(0);
+	transition: all 0.3s ease;
+}
+
+.input_input:focus ~ .underline_red,
+.input_input:valid ~ .underline_red {
+	transform: scaleX(1);
+}
+.input_input:focus ~ .underline_black,
+.input_input:valid ~ .underline_black {
+	transform: scaleX(1);
+}
+
+.AdminApprove_Btn {
+	margin: 30px;
+	width: 350px;
+	height: 35px;
+	border: 3px solid royalblue;
+	border-radius: 12px;
+	transition: all 0.3s;
+	cursor: pointer;
+	background: royalblue;
+	color: white;
+	font-size: 0.9em;
+}
+
+.AdminApprove_Btn:hover {
+	background: white;
+	color: #315cfd;
+	font-size: 1em;
+	width: 350px;
+	height: 35px;
+}
