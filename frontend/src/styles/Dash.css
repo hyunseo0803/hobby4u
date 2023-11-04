@@ -1,0 +1,11 @@
+.send_Msg_textarea {
+	width: 90%;
+	padding: 10px;
+	outline: none;
+	background: #ffffff;
+	box-shadow: 5px 5px 17px #c8c8c8, -5px -5px 17px #ffffff;
+	border: none;
+	border-radius: 10px;
+	transition: all 0.5s;
+	resize: none;
+}
