@@ -14,6 +14,7 @@ import AdminProfile from "./pages/adminPage/AdminProfile";
 import AdminLogin from "./pages/adminPage/AdminLogin";
 import Approve from "./pages/adminPage/Approve";
 import MAmanage from "./pages/adminPage/MAmanage";
+import JudgeClassDetail from "./pages/adminPage/JudgeClassDetail";
 
 class ManagerApp extends Component {
 	constructor(props) {
@@ -24,6 +25,7 @@ class ManagerApp extends Component {
 			notJudgeFinish: "",
 			isJudgeFinish: "",
 			asapJudge: 0,
+			asapJudgeList: "",
 		};
 	}
 	async componentDidMount() {
@@ -62,7 +64,10 @@ class ManagerApp extends Component {
 				"http://localhost:8000/api/manager/get_judge_deadline_count/"
 			);
 
-			this.setState({ asapJudge: response.data.deadlineCnt });
+			this.setState({
+				asapJudge: response.data.deadlineCnt,
+				asapJudgeList: response.data.deadline,
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -114,6 +119,7 @@ class ManagerApp extends Component {
 			isJudgeFinish,
 			notJudgeFinish,
 			asapJudge,
+			asapJudgeList,
 		} = this.state;
 
 		return (
@@ -141,7 +147,12 @@ class ManagerApp extends Component {
 							/>
 							<Route
 								path="judge/ing/tlatkwnd"
-								element={<JudgeClass adminData={adminData} />}
+								element={
+									<JudgeClass
+										adminData={adminData}
+										asapJudgeList={asapJudgeList}
+									/>
+								}
 							/>
 							<Route
 								path="judge/result/tlatkrufrhk"
@@ -151,10 +162,10 @@ class ManagerApp extends Component {
 								path="memberAndadmin/wjdqh"
 								element={<MAmanage adminData={adminData} />}
 							/>
-							{/* <Route
-								path="info/wjdqh"
-								element={<AdminInfo adminData={adminData} />}
-							/> */}
+							<Route
+								path="judge/classdetail"
+								element={<JudgeClassDetail adminData={adminData} />}
+							/>
 							<Route
 								path="my/wjdqh"
 								element={<AdminProfile adminData={adminData} />}
