@@ -109,29 +109,31 @@ def submit_data(request):
 
 
 def read_all_data(request):
-    class_all = Class.objects.all()
+    class_all = ExamResult.objects.filter(result='P')
+    
     all_data_list = []
     for all in class_all:
         all_data = {
-            'class_id': all.class_id,
+            'class_id': all.class_id.class_id,
             'id':{
-                'nickname':all.id.nickname,
-                'profile':all.id.profileimg if all.id.profileimg else None,
-                'updateprofile':all.id.updateprofile.url if all.id.updateprofile else None,
+                'nickname':all.class_id.id.nickname,
+                'profile':all.class_id.id.profileimg if all.class_id.id.profileimg else None,
+                'updateprofile':all.class_id.id.updateprofile.url if all.class_id.id.updateprofile else None,
             },
-            'title': all.title,
-            'info': all.info,
-            'img': all.img.url,
-            'theme': all.theme,
-            'people': all.people,
-            'money': all.money,
-            'type': all.type,
-            'applyend': all.applyend,
-            'activitystart': all.activitystart,
-            'activityend': all.activityend,
-            'goodCount': all.goodcount
+            'title': all.class_id.title,
+            'info': all.class_id.info,
+            'img': all.class_id.img.url,
+            'theme': all.class_id.theme,
+            'people': all.class_id.people,
+            'money': all.class_id.money,
+            'type': all.class_id.type,
+            'applyend': all.class_id.applyend,
+            'activitystart': all.class_id.activitystart,
+            'activityend': all.class_id.activityend,
+            'goodCount': all.class_id.goodcount
         }
         all_data_list.append(all_data)
+        print(all_data_list)
         
     return JsonResponse({'all_data_list':all_data_list}, safe=False)
 
@@ -142,29 +144,30 @@ def read_new_data(request):
     current_date = datetime.now().date()
 
     # 한 달 전 날짜 계산
-    one_month_ago = current_date - timedelta(days=30)
+    one_month_ago = current_date - timedelta(days=15)
+    exam_result=ExamResult.objects.filter(result='P')
     
-    filtered_date = Class.objects.filter(date__range=[one_month_ago, current_date])
+    filtered_date = exam_result.filter(date__range=[one_month_ago, current_date])
     new_date_list=[]
     for date in filtered_date:
         date_data={
-            'class_id': date.class_id,
-            'title': date.title,
-            'info': date.info,
-            'img': date.img.url,
-            'theme':date.theme,
-            'people': date.people,
-            'money': date.money,
-            'type': date.type,
+            'class_id': date.class_id.class_id,
+            'title': date.class_id.title,
+            'info': date.class_id.info,
+            'img': date.class_id.img.url,
+            'theme':date.class_id.theme,
+            'people': date.class_id.people,
+            'money': date.class_id.money,
+            'type': date.class_id.type,
             # 'applystart': date.applystart,
-            'applyend': date.applyend,
-            'activitystart': date.activitystart,
-            'activityend': date.activityend,
-            'goodCount': date.goodcount,
+            'applyend': date.class_id.applyend,
+            'activitystart': date.class_id.activitystart,
+            'activityend': date.class_id.activityend,
+            'goodCount': date.class_id.goodcount,
             'id':{
-                'nickname':date.id.nickname,
-                'profile':date.id.profileimg if date.id.profileimg else None,
-                'updateprofile':date.id.updateprofile.url if date.id.updateprofile else None,
+                'nickname':date.class_id.id.nickname,
+                'profile':date.class_id.id.profileimg if date.class_id.id.profileimg else None,
+                'updateprofile':date.class_id.id.updateprofile.url if date.class_id.id.updateprofile else None,
             }
         }
         # print(type(date.id))
@@ -181,6 +184,7 @@ def read_some_data(request):
     class_id = request.GET.get('class_id')
     if class_id is not None:
         try:
+            
             cls = Class.objects.get(class_id=class_id)
             class_data = {
                 'class_id': cls.class_id,
@@ -189,6 +193,7 @@ def read_some_data(request):
                     'profile':cls.id.profileimg if cls.id.profileimg else None,
                     'updateprofile':cls.id.updateprofile.url if cls.id.updateprofile else None,
                 },
+                'date':cls.date,
                 'title': cls.title,
                 'info': cls.info,
                 'img': cls.img.url if cls.img else None,
@@ -237,13 +242,19 @@ def read_filter_data(request):
     
     print(theme)
     # # 기본 쿼리셋
-    filter_result = Class.objects.all()
+    
+    exams_with_result_p = ExamResult.objects.filter(result='P')
+
+    class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+
+    filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+
    
         
     if incoding_word is not None and unquote(incoding_field)=="제목":
         filter_result = filter_result.filter(title__contains=unquote(incoding_word))
     if incoding_word is not None and unquote(incoding_field)=="멘토":
-        filter_result = Class.objects.filter(Q(id__nickname__contains=unquote(incoding_word)))
+        filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
     
     if theme is not None:
         filter_result = filter_result.filter(theme__contains=theme)
