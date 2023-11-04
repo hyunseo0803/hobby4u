@@ -1,16 +1,18 @@
 from django.db import models
+import secrets
 
 
 
 class Admin(models.Model):
     admin_id = models.AutoField(primary_key=True)   
     nickname = models.CharField(max_length=100, blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
+    email =  models.EmailField(unique=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
     notification = models.CharField(max_length=100, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
     pw = models.CharField(max_length=100)
+    is_approve=models.BooleanField(default=False)
 
     class Meta:
         managed = False
@@ -18,10 +20,20 @@ class Admin(models.Model):
         db_table_comment = '관리자 정보 테이블'     
 
 
+class AdminMessage(models.Model):
+    num = models.AutoField(primary_key=True)
+    writer = models.ForeignKey(Admin, models.DO_NOTHING, db_column='writer', blank=True, null=True)
+    message = models.CharField(max_length=100, blank=True, null=True)
+    date = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'admin_message'
+
 class Apply(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey('Member', models.DO_NOTHING, db_column='id', blank=True, null=True)
-    class_field = models.ForeignKey('Class', models.DO_NOTHING, db_column='class_id', blank=True, null=True)  # Field renamed because it was a Python reserved word.
+    class_id = models.ForeignKey('Class', models.DO_NOTHING, db_column='class_id', blank=True, null=True)  # Field renamed because it was a Python reserved word.
 
     class Meta:
         managed = False
@@ -100,7 +112,7 @@ class AuthUserUserPermissions(models.Model):
 
 class Blackmember(models.Model):
     id = models.OneToOneField('Member', models.DO_NOTHING, db_column='id', primary_key=True)
-    admin = models.ForeignKey(Admin, models.DO_NOTHING)
+    admin_id = models.ForeignKey(Admin, models.DO_NOTHING)
     period = models.CharField(max_length=100, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
     coment = models.CharField(max_length=100, blank=True, null=True)
@@ -201,17 +213,18 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class Exam(models.Model):
-    admin = models.ForeignKey(Admin, models.DO_NOTHING)
+class ExamResult(models.Model):
+    admin_id = models.ForeignKey(Admin, models.DO_NOTHING,db_column='admin_id')
     result = models.CharField(max_length=100, blank=True, null=True)
     coment = models.CharField(max_length=100, blank=True, null=True)
     num = models.AutoField(primary_key=True)        
-    class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
-
+    class_id = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
+    date=models.CharField(max_length=100, blank=True, null=True)
+    
     class Meta:
         managed = False
-        db_table = 'exam'
-        db_table_comment = '클래스 심사 테이블'     
+        db_table = 'exam_result'
+        db_table_comment = '클래스 심사 완료 테이블'     
 
 
 class LikeClass(models.Model):
@@ -253,24 +266,10 @@ class Member(models.Model):
         db_table = 'member'
         db_table_comment = '일반회원 및 블랙회원 테 이블'
 
-
-class OnlineClass(models.Model):
-    num = models.AutoField(primary_key=True)        
-    class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')  # Field renamed because it was a Python reserved word.
-    daynum = models.IntegerField(db_column='dayNum', blank=True, null=True)  # Field name made lowercase.
-    file = models.ImageField(max_length=100, upload_to="images/",blank=True, null=True)
-    coment = models.CharField(max_length=100, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'online_class'
-        db_table_comment = '온라인 클래스 수업 업로 드 하는곳.'
-
-
 class Performance(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id')
-    file = models.FileField(max_length=100, upload_to="achive/", null=True)
+    file = models.FileField(max_length=100, upload_to="achive/",blank=True, null=True)
     link = models.CharField(max_length=100, blank=True, null=True)
     file_title = models.CharField(max_length=100, blank=True, null=True)
     link_title = models.CharField(max_length=100, blank=True, null=True)
@@ -285,7 +284,7 @@ class Performance(models.Model):
 class Review(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id', blank=True, null=True, db_comment='writer')
-    class_field = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id', db_comment='receive')  # Field renamed because it was a Python reserved word.
+    class_id = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id', db_comment='receive')  # Field renamed because it was a Python reserved word.
     coment = models.CharField(max_length=100, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
 
