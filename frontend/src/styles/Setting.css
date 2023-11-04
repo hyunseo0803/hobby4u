@@ -7,17 +7,40 @@
 	align-items: center;
 }
 .achive-file-selector-button {
-	width: 125px;
-	height: 30px;
+	width: 120px;
+	height: 28px;
 	background: #3f4a82;
-	border: 1px solid #4d4d4d;
+	border: none;
+	font-size: 14px;
 	border-radius: 8px;
+	text-align: center;
+	align-items: center;
 	cursor: pointer;
 	color: white;
 }
 .achive-file-selector-button:hover {
 	background: #4d4d4d;
 	border-radius: 8px;
+	border: none;
+	color: #fff;
+}
+.achive-file-save-btn {
+	width: 120px;
+	height: 28px;
+	font-size: 14px;
+	background-color: #f26b6b;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	color: white;
+	margin-left: 10px;
+	text-align: center;
+}
+
+.achive-file-save-btn:hover {
+	background: #f14949;
+	border-radius: 8px;
+	border: none;
 	color: #fff;
 }
 
