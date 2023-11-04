@@ -126,7 +126,6 @@ def read_all_data(request):
             'people': all.people,
             'money': all.money,
             'type': all.type,
-            # 'applystart': all.applystart,
             'applyend': all.applyend,
             'activitystart': all.activitystart,
             'activityend': all.activityend,
@@ -134,9 +133,6 @@ def read_all_data(request):
         }
         all_data_list.append(all_data)
         
-        # print(type(all.id.nickname))
-        
-      
     return JsonResponse({'all_data_list':all_data_list}, safe=False)
 
 
@@ -202,7 +198,6 @@ def read_some_data(request):
                 'money': cls.money,
                 'type': cls.type,
                 'address': cls.adress,
-                # 'applystart': cls.applystart,
                 'applyend': cls.applyend,
                 'activitystart': cls.activitystart,
                 'activityend': cls.activityend,
@@ -216,8 +211,6 @@ def read_some_data(request):
                 
                 
             }
-            print(cls.file)
-            
             dls=DayClassinfo.objects.filter(class_id=class_id)
             day_data_list = []
             for day_ in dls:
@@ -238,10 +231,11 @@ def read_some_data(request):
 def read_filter_data(request):
     money = request.GET.get('money')
     option = request.GET.get('option')
-    themeEng=request.GET.get('theme')
+    theme=request.GET.get('theme')
     incoding_word=request.GET.get('word')
     incoding_field=request.GET.get('searchfield')
-
+    
+    print(theme)
     # # 기본 쿼리셋
     filter_result = Class.objects.all()
    
@@ -251,52 +245,7 @@ def read_filter_data(request):
     if incoding_word is not None and unquote(incoding_field)=="멘토":
         filter_result = Class.objects.filter(Q(id__nickname__contains=unquote(incoding_word)))
     
-    if themeEng =='quiet':
-        theme='# 조용한'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='sports':
-        theme='# 스포츠'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='trip':
-        theme='# 여행'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='healing':
-        theme='# 힐링'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='activity':
-        theme='# 액티비티'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='alon':
-        theme='# 혼자'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='simple':
-        theme='# 간단한'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='music':
-        theme='# 음악'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='craft':
-        theme='# 공예'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='skill':
-        theme='# 기술'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='beauty':
-        theme='# 뷰티'
-        filter_result = filter_result.filter(theme__contains=theme)
-        
-    if themeEng =='cultureArt':
-        theme='# 문화예술'
+    if theme is not None:
         filter_result = filter_result.filter(theme__contains=theme)
         
     if money == "fee":
