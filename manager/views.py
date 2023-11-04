@@ -190,14 +190,31 @@ def get_judge_deadline_count(request):
     notFinish=class_all.exclude(class_id__in=ExamResult.objects.values('class_id'))
     today = timezone.now().date()
 
-    four_days_ago = today - timedelta(days=4)
+    four_days_ago = today - timedelta(days=1)
+    print(four_days_ago)
     notFinish_deadlineCnt = notFinish.filter(date__lt=four_days_ago).count()
 
     notFinish_deadline = notFinish.filter(date__lt=four_days_ago)
     notFinish_deadline_list=[]
     for notFinish in notFinish_deadline:
-        data={
-            'class_id':notFinish.class_id
+        data = {
+            'class_id': notFinish.class_id,
+            'id':{
+                'nickname':notFinish.id.nickname,
+                'profile':notFinish.id.profileimg if notFinish.id.profileimg else None,
+                'updateprofile':notFinish.id.updateprofile.url if notFinish.id.updateprofile else None,
+            },
+            'title': notFinish.title,
+            'info': notFinish.info,
+            'img': notFinish.img.url,
+            'theme': notFinish.theme,
+            'people': notFinish.people,
+            'money': notFinish.money,
+            'type': notFinish.type,
+            'applyend': notFinish.applyend,
+            'activitystart': notFinish.activitystart,
+            'activityend': notFinish.activityend,
+            'goodCount': notFinish.goodcount
         }
         
         notFinish_deadline_list.append(data)
@@ -234,6 +251,22 @@ def read_judge_class(request):
         judge_data_list.append(all_data)
         
     return JsonResponse({'judge_data_list':judge_data_list}, safe=False)
+
+@csrf_exempt
+def create_judge_result(request):
+    if request.method == 'POST':
+        data=json.loads(request.body.decode('utf-8'))
+        result=data.get('result')
+        class_id=data.get('classid')
+        admin=data.get('admin')
+        today=timezone.now().date();
+        print(result)
+        print(class_id)
+        print(admin)
+        judge_result=ExamResult(admin_id=Admin.objects.get(nickname=admin),class_id=Class.objects.get(class_id=class_id),result=result,date=today)
+        judge_result.save();
+    return JsonResponse({'status':"ok"})
+
 
 @csrf_exempt
 def create_board_content(request):
