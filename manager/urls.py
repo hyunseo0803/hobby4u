@@ -14,6 +14,7 @@ urlpatterns = [
     path('get_judge_count/',views.get_judge_count),
     path('get_judge_deadline_count/',views.get_judge_deadline_count),
     path('read_judge_class/',views.read_judge_class),
+    path('create_judge_result/',views.create_judge_result),
    path('create_board_content/',views.create_board_content),
    path('read_board_content/',views.read_board_content),
    path('delete_board_content/',views.delete_board_content)
