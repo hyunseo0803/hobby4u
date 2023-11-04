@@ -4,8 +4,14 @@ import { useEffect } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function ALL_CLASS(props) {
-	const { data, readAll, handleReadDetail, like_status, goodClick, token } =
-		props;
+	const {
+		data,
+		readAll,
+		handleReadDetail,
+		like_status,
+		goodClick,
+		isLoggedIn,
+	} = props;
 
 	function isImage(urlString) {
 		const fileEx = urlString.split(".").pop().toLowerCase();
@@ -68,7 +74,7 @@ export default function ALL_CLASS(props) {
 						>
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
-								{token ? (
+								{isLoggedIn ? (
 									<button
 										className="like_btn"
 										onClick={() => goodClick(classItem.class_id)}

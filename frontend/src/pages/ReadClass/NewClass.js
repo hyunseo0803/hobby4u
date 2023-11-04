@@ -6,8 +6,14 @@ import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function NEW_CLASS(props) {
-	const { newdata, handleReadDetail, like_status, goodClick, readNew, token } =
-		props;
+	const {
+		newdata,
+		handleReadDetail,
+		like_status,
+		goodClick,
+		readNew,
+		isLoggedIn,
+	} = props;
 
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsPerPage = 3;
@@ -37,6 +43,10 @@ export default function NEW_CLASS(props) {
 	useEffect(() => {
 		readNew();
 	}, []);
+
+	// useEffect(() => {
+	// 	console.log(typeof isLoggedIn);
+	// });
 
 	function isImage(urlString) {
 		const fileEx = urlString.split(".").pop().toLowerCase();
@@ -98,7 +108,7 @@ export default function NEW_CLASS(props) {
 						>
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
-								{token ? (
+								{isLoggedIn ? (
 									<button
 										className="like_btn"
 										onClick={() => goodClick(newItem.class_id)}

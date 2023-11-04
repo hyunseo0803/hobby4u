@@ -15,7 +15,7 @@ export default function FILTER_CLASS(props) {
 		like_status,
 		goodClick,
 		readFilter,
-		token,
+		isLoggedIn,
 	} = props;
 
 	function isImage(urlString) {
@@ -87,7 +87,7 @@ export default function FILTER_CLASS(props) {
 									>
 										<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 										<div className="class_GCount">
-											{token ? (
+											{isLoggedIn ? (
 												<button
 													className="like_btn"
 													onClick={() => goodClick(filter.class_id)}

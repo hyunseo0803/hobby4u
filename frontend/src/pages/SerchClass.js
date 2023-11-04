@@ -310,24 +310,13 @@ function SearchClass() {
 					className="search_flex_row"
 					style={{ flexWrap: "wrap", marginTop: 80 }}
 				>
-					{themeArray.map(([key, value]) => (
+					{theme.map((t, index) => (
 						<button
-							key={key}
-							style={{
-								width: 250,
-								height: 200,
-								margin: 20,
-								justifyContent: "center",
-								backgroundImage: `url(${value})`,
-								backgroundSize: "cover",
-								backgroundPosition: "center",
-								border: "none",
-								borderRadius: 5,
-							}}
-							name={key}
+							key={t}
+							name={t}
 							onClick={(e) => handleSelectTheme(e.target.name)}
 						>
-							{key}
+							{t}
 						</button>
 					))}
 				</div>

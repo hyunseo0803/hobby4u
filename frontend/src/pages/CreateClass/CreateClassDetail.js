@@ -543,7 +543,6 @@ function CreateClassDetail(props) {
 			address: address,
 			money: money,
 			theme: selectedTheme,
-			// applyStartDate: moment(applyStartDate).format("YYYY-MM-DD"),
 			applyEndDate: moment(applyEndDate).format("YYYY-MM-DD"),
 			activityStartDate: moment(activityStartDate).format("YYYY-MM-DD"),
 			activityEndDate: moment(activityEndDate).format("YYYY-MM-DD"),
