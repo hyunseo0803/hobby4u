@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'post',
     'user',
+    'manager',
     'rest_framework',
     'corsheaders',
 ]
@@ -105,6 +106,15 @@ TEMPLATES = [
         },
     },
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.naver.com'
+EMAIL_POST = 587
+EMAIL_HOST_USER = 'abcdefghjk5@naver.com'
+EMAIL_HOST_PASSWORD = '7159NNnnaabbcc!@'
+EMAIL_USE_TLS = True
+
+
 
 STATICFILES_DIRS =[os.path.join(BASE_DIR,'frontend','build','static')]
 
