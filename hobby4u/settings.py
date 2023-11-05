@@ -78,6 +78,16 @@ CORS_ORIGIN_WHITELIST=[
 ]
 
 CORS_ORIGIN_ALLOW_ALL=True
+#모든 메서드 허용 CORS 설정
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+)
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
