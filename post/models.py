@@ -270,7 +270,7 @@ class Performance(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id')
     file = models.FileField(max_length=100, upload_to="achive/",blank=True, null=True)
-    link = models.CharField(max_length=100, blank=True, null=True)
+    link = models.CharField(max_length=500, blank=True, null=True)
     file_title = models.CharField(max_length=100, blank=True, null=True)
     link_title = models.CharField(max_length=100, blank=True, null=True)
 
