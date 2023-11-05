@@ -137,6 +137,111 @@ def read_all_data(request):
         
     return JsonResponse({'all_data_list':all_data_list}, safe=False)
 
+@csrf_exempt
+def read_my_data(request):
+    if request.method =="POST":
+        jwt_token = request.headers.get('Authorization').split(' ')[1]
+
+        # print(request.headers.get('Authorization'))
+        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+        user_id=payload['id']
+        class_all = ExamResult.objects.filter(result='P')
+        class_my = class_all.filter(class_id__id=user_id)
+        my_data_list = []
+        for all in class_my:
+            all_data = {
+                'class_id': all.class_id.class_id,
+                'id':{
+                    'nickname':all.class_id.id.nickname,
+                    'profile':all.class_id.id.profileimg if all.class_id.id.profileimg else None,
+                    'updateprofile':all.class_id.id.updateprofile.url if all.class_id.id.updateprofile else None,
+                },
+                'title': all.class_id.title,
+                'info': all.class_id.info,
+                'img': all.class_id.img.url,
+                'theme': all.class_id.theme,
+                'people': all.class_id.people,
+                'money': all.class_id.money,
+                'type': all.class_id.type,
+                'applyend': all.class_id.applyend,
+                'activitystart': all.class_id.activitystart,
+                'activityend': all.class_id.activityend,
+                'goodCount': all.class_id.goodcount
+            }
+            my_data_list.append(all_data)
+            
+    return JsonResponse({'all_data_list':my_data_list})
+
+@csrf_exempt
+def read_judge_my(request):
+    if request.method =="POST":
+        jwt_token = request.headers.get('Authorization').split(' ')[1]
+        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+        user_id=payload['id']
+        class_all = Class.objects.all()
+        judge_class = class_all.exclude(class_id__in=ExamResult.objects.values('class_id'))
+        judge_my=judge_class.filter(id=user_id)
+        judge_data_list = []
+        for judge in judge_my:
+            all_data = {
+                'class_id': judge.class_id,
+                'id':{
+                    'nickname':judge.id.nickname,
+                    'profile':judge.id.profileimg if judge.id.profileimg else None,
+                    'updateprofile':judge.id.updateprofile.url if judge.id.updateprofile else None,
+                },
+                'title': judge.title,
+                'info': judge.info,
+                'img': judge.img.url,
+                'theme': judge.theme,
+                'people': judge.people,
+                'money': judge.money,
+                'type': judge.type,
+                'applyend': judge.applyend,
+                'activitystart': judge.activitystart,
+                'activityend': judge.activityend,
+                'goodCount': judge.goodcount
+            }
+            judge_data_list.append(all_data)
+        
+    return JsonResponse({'judge_data_list':judge_data_list}, safe=False)
+
+@csrf_exempt
+def read_judge_np(request):
+    if request.method =="POST":
+        jwt_token = request.headers.get('Authorization').split(' ')[1]
+        payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+        user_id=payload['id']
+        # class_all = Class.objects.all()
+        judge_class = ExamResult.objects.filter(result='NP')
+        judge_my=judge_class.filter(class_id__id=user_id)
+        judge_np_list = []
+        for judge in judge_my:
+            all_data = {
+                'class_id': judge.class_id.class_id,
+                'id':{
+                    'nickname':judge.class_id.id.nickname,
+                    'profile':judge.class_id.id.profileimg if judge.class_id.id.profileimg else None,
+                    'updateprofile':judge.class_id.id.updateprofile.url if judge.class_id.id.updateprofile else None,
+                },
+                'title': judge.class_id.title,
+                'info': judge.class_id.info,
+                'img': judge.class_id.img.url,
+                'theme': judge.class_id.theme,
+                'people': judge.class_id.people,
+                'money': judge.class_id.money,
+                'type': judge.class_id.type,
+                'applyend': judge.class_id.applyend,
+                'activitystart': judge.class_id.activitystart,
+                'activityend': judge.class_id.activityend,
+                'goodCount': judge.class_id.goodcount
+            }
+            judge_np_list.append(all_data)
+        
+    return JsonResponse({'judge_np_list':judge_np_list})
+
+
+
 
 def read_new_data(request):
     
