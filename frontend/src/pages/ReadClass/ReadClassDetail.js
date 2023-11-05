@@ -54,6 +54,8 @@ function ReadClassDetail() {
 		? decodeURIComponent(file.substring(file.lastIndexOf("/") + 1))
 		: null;
 
+	const today = new Date().toISOString().split("T")[0];
+
 	const { kakao } = window;
 
 	useEffect(() => {
@@ -98,6 +100,11 @@ function ReadClassDetail() {
 	const openPdfPreview = () => {
 		window.open(file, "_blank");
 	};
+
+	useEffect(() => {
+		console.log(today);
+		console.log(ClassDetail["applyend"]);
+	});
 
 	return (
 		<Background>
@@ -162,7 +169,13 @@ function ReadClassDetail() {
 									alignItems: "center",
 								}}
 							>
-								신청 기간이 아닙니다
+								{ClassDetail["activitystart"] <= today &&
+									ClassDetail["activityend"] >= today && (
+										<div>활동 기간입니다. </div>
+									)}
+								{ClassDetail["activityend"] < today && (
+									<div>마감된 활동입니다.</div>
+								)}
 							</div>
 						)}
 					</div>
