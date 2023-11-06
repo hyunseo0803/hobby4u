@@ -30,7 +30,7 @@ function Allclass(props) {
 	const [searchClick, setSearchClick] = useState(false);
 
 	// const [themefKO, setThemefKO] = useState("");
-	const [themef, setThemef] = useState("");
+	const [themef, setThemef] = useState([]);
 
 	const [loading, setLoading] = useState(true);
 
@@ -206,41 +206,20 @@ function Allclass(props) {
 	}, []);
 
 	function handleSelectTheme(themeFilter) {
-		// setThemefKO(themeFilter);
-		// let newTheme = "";
-		// if (themeFilter === "# 조용한") {
-		// 	newTheme = "quiet"; //
-		// } else if (themeFilter === "# 스포츠") {
-		// 	newTheme = "sports";
-		// } else if (themeFilter === "# 여행") {
-		// 	newTheme = "trip";
-		// } else if (themeFilter === "# 힐링") {
-		// 	newTheme = "healing";
-		// } else if (themeFilter === "# 액티비티") {
-		// 	newTheme = "activity";
-		// } else if (themeFilter === "# 혼자") {
-		// 	newTheme = "alon";
-		// } else if (themeFilter === "# 간단한") {
-		// 	newTheme = "simple";
-		// } else if (themeFilter === "# 음악") {
-		// 	newTheme = "music";
-		// } else if (themeFilter === "# 공예") {
-		// 	newTheme = "craft";
-		// } else if (themeFilter === "# 기술") {
-		// 	newTheme = "skill";
-		// } else if (themeFilter === "# 뷰티") {
-		// 	newTheme = "beauty";
-		// } else if (themeFilter === "# 문화예술") {
-		// 	newTheme = "cultureArt";
-		// }
-		// if (newTheme) {
-		// 	setThemef(newTheme);
-		// }
-
 		if (themeFilter) {
-			setThemef(themeFilter);
+			const updatedThemes = [...themef];
+
+			const themeIndex = updatedThemes.indexOf(themeFilter);
+
+			if (themeIndex !== -1) {
+				updatedThemes.splice(themeIndex, 1);
+			} else {
+				updatedThemes.push(themeFilter);
+			}
+			setThemef(updatedThemes);
 		}
 	}
+
 	function readThemeFilter(themef) {
 		setInputValue("");
 		console.log("Reading theme filter...", themef);
@@ -342,12 +321,14 @@ function Allclass(props) {
 				{theme.map((t) => (
 					<button
 						style={{
+							// width: 70,
 							border: "none",
-							backgroundColor: "pink",
-							margin: 13,
-							padding: 10,
-							borderRadius: 50,
-							fontSize: 14,
+							backgroundColor: themef.includes(t) ? "royalblue" : "white",
+							color: themef.includes(t) ? "white" : "royalblue",
+							margin: 10,
+							padding: 6,
+							borderRadius: 10,
+							fontSize: 13,
 						}}
 						key={t}
 						name={t}
@@ -368,13 +349,22 @@ function Allclass(props) {
 						</div>
 						{themef && (
 							<div
-								className="search_flex_row"
 								style={{
-									padding: 40,
-									fontSize: 40,
+									// padding: 40,
+									fontSize: 30,
+									display: "flex",
+									flexDirection: "row",
 								}}
 							>
-								# {themef}
+								{themef.map((tf, index) => (
+									<div
+										key={index}
+										className="search_flex_row"
+										style={{ margin: 10 }}
+									>
+										# {tf}
+									</div>
+								))}
 							</div>
 						)}
 

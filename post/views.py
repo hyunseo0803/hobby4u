@@ -361,8 +361,12 @@ def read_filter_data(request):
     if incoding_word is not None and unquote(incoding_field)=="멘토":
         filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
     
+    # if theme is not None:
+    #     filter_result = filter_result.filter(theme__contains=theme)
+        
     if theme is not None:
-        filter_result = filter_result.filter(theme__contains=theme)
+        for t in theme:
+            filter_result = filter_result.filter(theme__contains=t)
         
     if money == "fee":
         filter_result = filter_result.exclude(money=0)
