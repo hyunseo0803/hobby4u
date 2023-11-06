@@ -108,35 +108,26 @@ function Header(props) {
 	// };
 	return (
 		<div className="header_wrapper">
-			<div className="logo_wrapper">
-				<Link to="/">
-					<img className="logo" alt="logo" src={Logo} />
-				</Link>
-			</div>
-			<div className="menu_wrapper">
-				<div className="menu_item">
-					{/* Mento 및 Metee의 혜택, Mentor가 되는 방법 */}
-					<Link to="intro" className="link">
-						HH 소개
+			<div style={{ display: "flex", flexDirection: "row" }}>
+				<div className="logo_wrapper">
+					<Link to="/">
+						<img className="logo" alt="logo" src={Logo} />
 					</Link>
 				</div>
-				<div className="menu_item">
-					{/* 모든 클래스 보기_ Top 5 멘토, New 클래스, All 및 Best 클래스   */}
-					<Link to="gide" className="link">
-						이용방법
-					</Link>
+				<div className="menu_wrapper">
+					<div className="menu_item">
+						{/* Mento 및 Metee의 혜택, Mentor가 되는 방법 */}
+						<Link to="intro" className="link">
+							HH 소개
+						</Link>
+					</div>
+					<div className="menu_item">
+						{/* 모든 클래스 보기_ Top 5 멘토, New 클래스, All 및 Best 클래스   */}
+						<Link to="gide" className="link">
+							이용방법
+						</Link>
+					</div>
 				</div>
-
-				{/* <div className="menu_item">
-					<Link to="readClass/searchClass" className="link">
-						클래스 찾기
-					</Link>
-				</div>
-				<div className="menu_item">
-					<Link to="createclass" className="link">
-						클래스 만들기
-					</Link>
-				</div> */}
 			</div>
 			<div className="login_wrapper">
 				<div className="login_item">
