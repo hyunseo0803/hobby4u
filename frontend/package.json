@@ -29,6 +29,7 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
 	},
+	"homepage": "https://hivehobby4u.netlify.app/",
 	"eslintConfig": {
 		"extends": [
 			"react-app",
