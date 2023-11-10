@@ -39,7 +39,6 @@ def send_identification_code(request):
         from_email = DEFAULT_EMAIL
         to = [email]					
         EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
-        print('메일 보냄')
         
         
         data = {'email': email, 'verification_code': verification_code}
@@ -156,7 +155,6 @@ def get_admin_data(request):
                         'email':admin.email,
                         
                     }
-            print(response_data)
         except ExpiredSignatureError:
         # 만료된 토큰에 대한 예외 처리
             return Response({'error': 'Token has expired'}, status=401)
@@ -180,8 +178,6 @@ def get_judge_count(request):
     class_all = Class.objects.all()
     notFinshCnt=class_all.exclude(class_id__in=ExamResult.objects.values('class_id')).count()
     finishCnt=class_all.filter(class_id__in=ExamResult.objects.values('class_id')).count()
-    print(notFinshCnt)
-    print(finishCnt)
     return JsonResponse({'finishCnt':finishCnt,'notFinshCnt':notFinshCnt})
 
 
@@ -191,7 +187,6 @@ def get_judge_deadline_count(request):
     today = timezone.now().date()
 
     four_days_ago = today - timedelta(days=1)
-    print(four_days_ago)
     notFinish_deadlineCnt = notFinish.filter(date__lt=four_days_ago).count()
 
     notFinish_deadline = notFinish.filter(date__lt=four_days_ago)
@@ -202,11 +197,11 @@ def get_judge_deadline_count(request):
             'id':{
                 'nickname':notFinish.id.nickname,
                 'profile':notFinish.id.profileimg if notFinish.id.profileimg else None,
-                'updateprofile':notFinish.id.updateprofile.url if notFinish.id.updateprofile else None,
+                'updateprofile':notFinish.id.updateprofile if notFinish.id.updateprofile else None,
             },
             'title': notFinish.title,
             'info': notFinish.info,
-            'img': notFinish.img.url,
+            'img': notFinish.img,
             'theme': notFinish.theme,
             'people': notFinish.people,
             'money': notFinish.money,
@@ -234,11 +229,11 @@ def read_judge_class(request):
             'id':{
                 'nickname':judge.id.nickname,
                 'profile':judge.id.profileimg if judge.id.profileimg else None,
-                'updateprofile':judge.id.updateprofile.url if judge.id.updateprofile else None,
+                'updateprofile':judge.id.updateprofile if judge.id.updateprofile else None,
             },
             'title': judge.title,
             'info': judge.info,
-            'img': judge.img.url,
+            'img': judge.img,
             'theme': judge.theme,
             'people': judge.people,
             'money': judge.money,
@@ -260,9 +255,6 @@ def create_judge_result(request):
         class_id=data.get('classid')
         admin=data.get('admin')
         today=timezone.now().date();
-        print(result)
-        print(class_id)
-        print(admin)
         judge_result=ExamResult(admin_id=Admin.objects.get(nickname=admin),class_id=Class.objects.get(class_id=class_id),result=result,date=today)
         judge_result.save();
     return JsonResponse({'status':"ok"})
@@ -284,7 +276,6 @@ def delete_board_content(request):
     if request.method == 'POST':
         data=json.loads(request.body.decode('utf-8'))
         boardNum=data.get('index')
-        print(boardNum)
         board=AdminMessage(num=boardNum)
         board.delete()
         
