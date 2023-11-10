@@ -13,9 +13,9 @@ import CreateClass from "./pages/CreateClass/CreateClass";
 import CreateClassDetail from "./pages/CreateClass/CreateClassDetail";
 import ReadClass from "./pages/ReadClass/ReadClass";
 import ReadClassDetail from "./pages/ReadClass/ReadClassDetail";
-import SearchClass from "./pages/SerchClass";
-import { IssueClosedIcon } from "@primer/octicons-react";
-import JudgeClass from "./pages/adminPage/JudgeClass";
+// import SearchClass from "./pages/SerchClass";
+// import { IssueClosedIcon } from "@primer/octicons-react";
+// import JudgeClass from "./pages/adminPage/JudgeClass";
 
 class UserApp extends Component {
 	constructor(props) {
