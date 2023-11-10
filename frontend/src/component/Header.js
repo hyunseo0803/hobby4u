@@ -41,6 +41,7 @@ function Header(props) {
 	const loginWithKakao = async () => {
 		try {
 			const currentDomain = window.location.hostname;
+			console.log(currentDomain);
 			let redirectUri;
 
 			if (currentDomain === "localhost") {
