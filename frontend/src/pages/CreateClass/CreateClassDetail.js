@@ -573,11 +573,13 @@ function CreateClassDetail(props) {
 			})
 			.then((response) => {
 				console.log(response.data);
+				if (window.alert("성공적으로 등록했습니다.")) {
+					navigate("/judge");
+				}
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
 			});
-		navigate("/readclass");
 	};
 
 	return (
