@@ -10,9 +10,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function Header(props) {
 	const { getUserData } = props;
-	// 사용자 닉네임 상태 변수
-	// const [userNickname, setUserNickname] = useState("");
-	// 카카오 로그인 코드로 백엔드에 JWT 요청
 	const getCode = async (code) => {
 		try {
 			const response = await fetch(
@@ -49,19 +46,6 @@ function Header(props) {
 			throw new Error(error.message);
 		}
 	};
-
-	// 로그아웃
-	// const logout = () => {
-	// 	try {
-	// 		const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
-	// 		const logout_redirect_uri = process.env.REACT_APP_LOGOUT_REDIRECT_URI;
-	// 		window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${app_key}&logout_redirect_uri=${logout_redirect_uri}`;
-	// 		localStorage.removeItem("token");
-	// 	} catch (error) {
-	// 		throw new Error(error.message);
-	// 	}
-	// };
-
 	// 1. 카카오 로그인 성공 후 , 코드로 GetCode 함수 호출
 	// 2. 중복 호출 방지를 위해 GetCode 함수 호출 이후 주소창에서 CODE 삭제
 	useEffect(() => {
@@ -70,42 +54,8 @@ function Header(props) {
 			getCode(code);
 			window.history.replaceState({}, document.title, window.location.pathname);
 		}
-		// else {
-		// 	getUserData();
-		// }
 	});
 
-	// JWT 검증 후 사용자 정보 가져오기
-	// const getUserData = async () => {
-	// 	try {
-	// 		const token = localStorage.getItem("token");
-
-	// 		if (!token) {
-	// 			throw new Error("Token is not available");
-	// 		}
-
-	// 		const response = await fetch(
-	// 			"http://localhost:8000/api/user/get_user_data/",
-	// 			{
-	// 				method: "POST",
-	// 				headers: {
-	// 					Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-	// 				},
-	// 			}
-	// 		);
-	// 		if (response.ok) {
-	// 			const user = await response.json();
-	// 			const nickname = user.nickname;
-	// 			setUserNickname(nickname);
-	// 		} else {
-	// 			// 예외처리
-	// 			throw new Error("Failed to fetch user data");
-	// 		}
-	// 	} catch (error) {
-	// 		// 예외처리
-	// 		throw new Error("Token is not available");
-	// 	}
-	// };
 	return (
 		<div className="header_wrapper">
 			<div style={{ display: "flex", flexDirection: "row" }}>
