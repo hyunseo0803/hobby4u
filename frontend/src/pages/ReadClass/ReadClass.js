@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 import { IoIosSearch } from "react-icons/io";
-
-import moment from "moment";
 import FILTER_BTN from "../../component/FilterbtnRead";
 
 import NEW_CLASS from "./NewClass";
@@ -14,7 +12,7 @@ import "../../styles/ReadClass.css";
 import ALL_CLASS from "./AllClass";
 
 function Allclass(props) {
-	const { isLoggedIn, userData } = props;
+	const { readFirebasefile, isLoggedIn, userData } = props;
 	const navigate = useNavigate();
 
 	const [data, setData] = useState([]);
@@ -48,21 +46,52 @@ function Allclass(props) {
 		"뷰티",
 		"문화예술",
 	];
+	async function handleReadDetail(value) {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_some_data/?class_id=${value}`
+			);
+			const classdetail = response.data.class_data;
+			const daydetail = response.data.day_data;
+			const updatedClassDetail = { ...classdetail };
+			const classImg = await readFirebasefile("classFile", classdetail.img);
+			const classfile = await readFirebasefile("file", classdetail["file"]);
+			if (classdetail["infoimg1"]) {
+				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
+				updatedClassDetail.infoimg1 = intro1;
+			}
+			if (classdetail["infoimg2"]) {
+				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
+				updatedClassDetail.infoimg2 = intro2;
+			}
+			if (classdetail["infoimg3"]) {
+				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
+				updatedClassDetail.infoimg3 = intro3;
+			}
 
-	function handleReadDetail(value) {
-		axios
-			.get(`http://localhost:8000/api/post/read_some_data/?class_id=${value}`)
-			.then((response) => {
-				navigate("/readClass/classDetail", {
-					state: {
-						ClassDetail: response.data.class_data,
-						DayDetail: response.data.day_data,
-					},
-				});
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
+			updatedClassDetail.img = classImg;
+			updatedClassDetail.file = classfile;
+
+			const updatedDayDetail = await Promise.all(
+				daydetail.map(async (day) => {
+					const updatedDay = { ...day };
+					try {
+						updatedDay.day_file = await readFirebasefile("day", day.day_file);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedDay;
+				})
+			);
+			navigate("/readClass/classDetail", {
+				state: {
+					ClassDetail: updatedClassDetail,
+					DayDetail: updatedDayDetail,
+				},
 			});
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	}
 
 	//필터 적용 및 필터링 기능 함수
@@ -91,54 +120,97 @@ function Allclass(props) {
 		readFilter();
 	};
 
-	function readFilter() {
-		axios
-			.get(
-				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}`
-			)
-			.then((response) => {
-				setFliteredata(response.data.filter_data_list);
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
+	async function readFilter() {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			const fSimple = response.data.filter_data_list;
+			const updatedClass_f = await Promise.all(
+				fSimple.map(async (s) => {
+					const updatedClassf = { ...s };
+					try {
+						updatedClassf.img = await readFirebasefile("classFile", s.img);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedClassf;
+				})
+			);
+			setFliteredata(updatedClass_f);
+			ReadGoodCount();
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	}
 
-	function readAll() {
-		axios
-			.get("http://localhost:8000/api/post/read_all_data/", {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
-			.then((response) => {
-				const classItem = response.data.all_data_list;
-				setData(classItem);
-				ReadGoodCount();
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
+	async function readAll() {
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/post/read_all_data/",
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			const classSimple = response.data.all_data_list;
+			const updatedClass_ = await Promise.all(
+				classSimple.map(async (s) => {
+					const updatedClass = { ...s };
+					try {
+						updatedClass.img = await readFirebasefile("classFile", s.img);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedClass;
+				})
+			);
+			setData(updatedClass_);
+			ReadGoodCount();
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	}
 
-	function readNew() {
-		axios
-			.get("http://localhost:8000/api/post/read_new_data/", {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
-			.then((response) => {
-				const classNewItem = response.data.new_date_list;
-				setNewData(classNewItem);
-				ReadGoodCount();
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
+	async function readNew() {
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/post/read_new_data/",
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			const nSimple = response.data.new_date_list;
+			const updatedClass_n = await Promise.all(
+				nSimple.map(async (s) => {
+					const updatedClassn = { ...s };
+					try {
+						updatedClassn.img = await readFirebasefile("classFile", s.img);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedClassn;
+				})
+			);
+			setNewData(updatedClass_n);
+			ReadGoodCount();
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	}
 
-	function ReadGoodCount() {
+	async function ReadGoodCount() {
 		if (isLoggedIn) {
 			const token = localStorage.getItem("token");
 			const userData = { token: token };
@@ -220,19 +292,36 @@ function Allclass(props) {
 		}
 	}
 
-	function readThemeFilter(themef) {
+	async function readThemeFilter(themef) {
 		setInputValue("");
-		console.log("Reading theme filter...", themef);
 		let theme = encodeURI(themef);
-		axios
-			.get(`http://localhost:8000/api/post/read_filter_data/?theme=${theme}`)
-			.then((response) => {
-				setFliteredata(response.data.filter_data_list);
-				console.log(response.data.filter_data_list);
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-			});
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_filter_data/?theme=${theme}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			const fSimple = response.data.filter_data_list;
+			const updatedClass_f = await Promise.all(
+				fSimple.map(async (s) => {
+					const updatedClassf = { ...s };
+					try {
+						updatedClassf.img = await readFirebasefile("classFile", s.img);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedClassf;
+				})
+			);
+			setFliteredata(updatedClass_f);
+			ReadGoodCount();
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 		setLoading(false);
 	}
 	function handleSelectKeyword(eventKey) {
@@ -246,23 +335,37 @@ function Allclass(props) {
 		setInputValue(e.target.value);
 	};
 
-	const handleWordSearch = () => {
+	const handleWordSearch = async () => {
 		setWord(inputValue);
 		setThemef("");
 		setSearchClick(true);
-		axios
-			.get(
-				`http://localhost:8000/api/post/read_filter_data/?searchfield=${searchfilterField}&word=${word}`
-			)
-			.then((response) => {
-				setFliteredata(response.data.filter_data_list);
-				console.log(response.data.filter_data_list);
-				setLoading(false);
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
-				setLoading(false);
-			});
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_filter_data/?searchfield=${searchfilterField}&word=${word}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			const wordFilter = response.data.filter_data_list;
+			const wordFilter_ = await Promise.all(
+				wordFilter.map(async (s) => {
+					const wordf = { ...s };
+					try {
+						wordf.img = await readFirebasefile("classFile", s.img);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return wordf;
+				})
+			);
+			setFliteredata(wordFilter_);
+			setLoading(false);
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	};
 
 	const handleKeyPress = (e) => {
@@ -279,8 +382,24 @@ function Allclass(props) {
 
 	return (
 		<div className="read_container">
-			<div className="search_wrapper">
-				<div className="search_flex_row" style={{ height: 40 }}>
+			<div
+				className="search_wrapper"
+				style={
+					{
+						// backgroundColor: "red",
+					}
+				}
+			>
+				<div
+					className="search_flex_row"
+					style={{
+						height: 40,
+						// backgroundColor: "yellow",
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "center",
+					}}
+				>
 					<DropdownButton
 						variant="secondary"
 						id="dropdown-basic-button"
@@ -339,7 +458,7 @@ function Allclass(props) {
 				))}
 			</div>
 
-			{themef || searchClick ? (
+			{themef.length > 0 || searchClick ? (
 				loading ? (
 					<div style={{ marginTop: 100 }}>로딩중</div>
 				) : fliteredata.length !== 0 ? (
@@ -415,7 +534,7 @@ function Allclass(props) {
 									isLoggedIn={isLoggedIn}
 									userData={userData}
 								/>
-							) : (
+							) : fliteredata.length > 0 ? (
 								<FILTER_CLASS
 									option={option}
 									money={money}
@@ -430,6 +549,8 @@ function Allclass(props) {
 									isLoggedIn={isLoggedIn}
 									userData={userData}
 								/>
+							) : (
+								<div>필터링 결과가 없습니다. </div>
 							)}
 						</div>
 					</div>

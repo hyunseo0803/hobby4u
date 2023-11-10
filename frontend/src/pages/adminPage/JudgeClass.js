@@ -2,11 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+
 function JudgeClass(props) {
-	const { asapJudgeList } = props;
+	const { asapJudgeList, readFirebasefile } = props;
 	const navigate = useNavigate();
 	const [judgeDATA, setJudgeData] = useState([]);
 	const [clickAsapBtn, setClickAsapBtn] = useState(false);
+	// const [classDetail, setClassDetail] = useState([]);
+	// const [dayDetail, setDayDetail] = useState([]);
 	useEffect(() => {
 		readJudge();
 	}, []);
@@ -26,25 +30,58 @@ function JudgeClass(props) {
 				console.error("Error submitting data:", error);
 			});
 	}
-	function handleReadDetail(value) {
-		axios
-			.get(`http://localhost:8000/api/post/read_some_data/?class_id=${value}`)
-			.then((response) => {
-				navigate("/manager/judge/classdetail", {
-					state: {
-						ClassDetail: response.data.class_data,
-						DayDetail: response.data.day_data,
-					},
-				});
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
+
+	async function handleReadDetail(value) {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_some_data/?class_id=${value}`
+			);
+			const classdetail = response.data.class_data;
+			const daydetail = response.data.day_data;
+			const updatedClassDetail = { ...classdetail };
+			const classImg = await readFirebasefile("classFile", classdetail.img);
+			const classfile = await readFirebasefile("file", classdetail["file"]);
+			if (classdetail["infoimg1"]) {
+				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
+				updatedClassDetail.infoimg1 = intro1;
+			}
+			if (classdetail["infoimg2"]) {
+				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
+				updatedClassDetail.infoimg2 = intro2;
+			}
+			if (classdetail["infoimg3"]) {
+				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
+				updatedClassDetail.infoimg3 = intro3;
+			}
+
+			updatedClassDetail.img = classImg;
+			updatedClassDetail.file = classfile;
+
+			const updatedDayDetail = await Promise.all(
+				daydetail.map(async (day) => {
+					const updatedDay = { ...day };
+					try {
+						updatedDay.day_file = await readFirebasefile("day", day.day_file);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedDay;
+				})
+			);
+			navigate("/manager/judge/classdetail", {
+				state: {
+					ClassDetail: updatedClassDetail,
+					DayDetail: updatedDayDetail,
+				},
 			});
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	}
 
-	useEffect(() => {
-		console.log(judgeDATA);
-	});
+	// useEffect(() => {
+	// 	console.log("classDetail updated:", classDetail);
+	// }, [classDetail]);
 	return (
 		<div
 			style={{

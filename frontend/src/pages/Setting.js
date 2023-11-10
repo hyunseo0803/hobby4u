@@ -3,7 +3,8 @@ import "../styles/Setting.css";
 import { useEffect, useState } from "react";
 import { IoMailOutline, IoCut } from "react-icons/io5";
 import { IoMdRibbon } from "react-icons/io";
-
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { Modal } from "../component/Modal";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -13,17 +14,15 @@ import { BsFillMortarboardFill, BsXCircleFill } from "react-icons/bs";
 import LoginRequired from "../common/LoginRequired";
 
 function Setting(props) {
+	const { readFirebasefile } = props;
 	const navigate = useNavigate();
 
 	const [loginChck, setLoginChck] = useState(false);
 
 	const [achiveLink, setAchiveLink] = useState([]);
-	// const [achiveLinkName, setAchiveLinkName] = useState([]);
 	const [achiveFile, setAchiveFile] = useState([]);
-	// const [achiveFileName, setAchiveFileName] = useState([]);
 
 	const [inputLink, setInputLink] = useState([]);
-
 	const [inputFile, setInputFile] = useState([]);
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +56,6 @@ function Setting(props) {
 
 	useEffect(() => {
 		getUserData();
-		// getUserAchiv();
 	}, []);
 
 	useEffect(() => {
@@ -69,21 +67,8 @@ function Setting(props) {
 	});
 
 	useEffect(() => {
-		// console.log("입력한 파일" + inputFile);
-		// console.log("입력한 링크" + inputLink);
 		getUserAchiv();
-		// console.log("첨-------------------------");
-		// console.log(achiveFile);
 	}, [inputLink, inputFile]);
-
-	useEffect(() => {
-		// console.log("입력한 파일" + inputFile);
-		// console.log("입력한 링크" + inputLink);
-		// getUserAchiv();V
-		console.log("첨-------------------------");
-		console.log(achiveFile);
-		console.log(achiveLink);
-	}, []);
 
 	const getUserData = async () => {
 		try {
@@ -107,14 +92,13 @@ function Setting(props) {
 				const userImgUpdate = user.updateprofile;
 				setInputText({
 					email: user.email,
-					// img: user.profileImg,
 					nickname: user.nickname,
 					info: user.info,
 				});
 				setInputImg(user.profileImg);
-				// setUpdatedImg(user.updateprofile);
 				if (userImgUpdate) {
-					setUpdatedImg(userImgUpdate.replace("/frontend/public/", "/"));
+					const url = await readFirebasefile("userImg", userImgUpdate);
+					setUpdatedImg(url);
 				} else {
 					setInputImg(user.profileImg);
 				}
@@ -125,11 +109,9 @@ function Setting(props) {
 		} catch (error) {
 			// 예외처리
 			if (error.response && error.response.status === 401) {
-				// 만료된 토큰 에러 메시지를 저장
 				console.log("로그인 필요");
 			} else {
-				// 다른 에러 메시지를 저장
-				console.log("서버 오류가 발생했습니다.");
+				console.log("서버 오류가 발생했습니다.", error);
 			}
 		}
 	};
@@ -151,17 +133,19 @@ function Setting(props) {
 					}
 				);
 				if (response.ok) {
-					console.log("성과물 불러옴");
 					const achive = await response.json();
-					// console.log(achive);
 					const linkdata = achive.filter((item) => item.achive_file === null);
 					const filedata = achive.filter((item) => item.achive_file !== null);
-					// console.log("파일파일" + filedata);
-					// console.log("링크링크" + linkdata);
-
-					// console.log(filedata.length);
 					if (filedata.length > 0) {
-						setAchiveFile(filedata);
+						try {
+							const urlArray = await Promise.all(
+								filedata.map((file) => readFirebasefile("userAchiveFile", file))
+							);
+							setAchiveFile(urlArray);
+						} catch (error) {
+							console.error("Error fetching achive files: ", error);
+							// 에러 처리
+						}
 					} else {
 						setAchiveFile([]);
 					}
@@ -201,9 +185,6 @@ function Setting(props) {
 	};
 
 	const achiveLinkDelete = async (type, index) => {
-		// console.log(type, index);
-		// console.log(achiveFile[index]);
-
 		try {
 			const token = localStorage.getItem("token");
 			if (token) {
@@ -212,10 +193,8 @@ function Setting(props) {
 					data:
 						type === "link"
 							? achiveLink[index].achive_link
-							: achiveFile[index].achive_filename,
+							: achiveFile[index].achive_file,
 				};
-				// console.log(achivedata);
-
 				const achive_formdata = new FormData();
 				achive_formdata.append("json", JSON.stringify(achivedata));
 				const response = await fetch(
@@ -223,14 +202,12 @@ function Setting(props) {
 					{
 						method: "POST",
 						headers: {
-							// "Content-Type": "application/json",
 							Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
 						},
 						body: achive_formdata,
 					}
 				);
 				if (response.ok) {
-					console.log("ok");
 					alert("삭제되었습니다.");
 				} else {
 					// 예외처리
@@ -245,15 +222,18 @@ function Setting(props) {
 	};
 
 	const uploadAchive = (e) => {
-		if (inputFile.length === 0) {
-			setInputFile([{ file: e, fileName: e.name }]);
+		if (e) {
+			if (inputFile.length === 0) {
+				setInputFile([{ file: e, fileName: e.name }]);
+			} else {
+				setInputFile([...inputFile, { file: e, fileName: e.name }]); // 입력된 데이터를 부모 페이지의 상태에 추가
+			}
 		} else {
-			setInputFile([...inputFile, { file: e, fileName: e.name }]); // 입력된 데이터를 부모 페이지의 상태에 추가
+			alert("취소되었습니다.");
 		}
 	};
 
 	const handleFilePreview = (file) => {
-		// console.log(file.file);
 		const pdfUrl = URL.createObjectURL(file.file);
 		window.open(
 			pdfUrl,
@@ -264,8 +244,7 @@ function Setting(props) {
 	};
 
 	const handleLocalFilePreview = (file) => {
-		const localpdffile = file.replace("/frontend/public/", "/");
-		window.open(localpdffile, "_blank");
+		window.open(file, "_blank");
 	};
 
 	const openModal = () => {
@@ -283,31 +262,16 @@ function Setting(props) {
 			if (!token) {
 				throw new Error("Token is not available");
 			}
-			// const linkArray = Array.isArray(inputLink) ? inputLink : [inputLink];
-			// const fileArray = Array.isArray(inputFile) ? inputFile : [inputFile];
-
 			const dataToSend = {
 				nickname: inputText.nickname,
 				info: inputText.info,
-				// email: inputText.email,
-
-				// link: linkArray.map((item) => item.link),
-				// linkName: linkArray.map((item) => item.title),
-				// fileName: fileArray.map((item) => item.fileName),
 			};
-			// console.log(dataToSend);
-
 			const formdata = new FormData();
 			formdata.append("json", JSON.stringify(dataToSend));
 			formdata.append("img", inputImg);
-			// formdata.append("file", inputFile);
-			// inputFile.forEach((item, index) => {
-			// 	formdata.append(`file${index}`, item.file);
-			// });
 			if (updatedImg) {
 				formdata.append("updatedimg", updatedImg);
 			}
-
 			const response = await fetch(
 				"http://localhost:8000/api/user/save_user_info/",
 				{
@@ -321,7 +285,6 @@ function Setting(props) {
 
 			if (response.ok) {
 				console.log("Data successfully saved!");
-				// 성공적으로 저장된 경우의 처리
 			} else {
 				// 저장 실패한 경우의 처리
 				console.error("Failed to save data");
@@ -331,7 +294,6 @@ function Setting(props) {
 			console.error("Error while saving data:", error);
 		}
 		getUserData();
-		// window.location.reload();
 	};
 	const handleAchiveSave = async () => {
 		try {
@@ -339,13 +301,8 @@ function Setting(props) {
 			if (!token) {
 				throw new Error("Token is not available");
 			}
-			// console.log(inputLink);
-			// console.log(inputFile);
-
 			const linkArray = Array.isArray(inputLink) ? inputLink : [inputLink];
 			const fileArray = Array.isArray(inputFile) ? inputFile : [inputFile];
-			console.log(linkArray);
-
 			const dataToSend = {
 				link: linkArray.map((item) => item.link),
 				linkName: linkArray.map((item) => item.title),
@@ -369,7 +326,6 @@ function Setting(props) {
 			);
 
 			if (response.ok) {
-				console.log("Data successfully saved!");
 				alert("저장하였습니다.");
 				setInputFile([]);
 				setInputLink([]);
@@ -382,16 +338,10 @@ function Setting(props) {
 			console.error("Error while saving data:", error);
 		}
 		getUserData();
-		// window.location.reload();
 	};
 	const handlechangEdit = () => {
-		// console.log(updatedImg);
-		// setInputFile([]);
-		// setInputLink([]);
-
 		setInputCheck(true);
 	};
-
 	return (
 		<div className="setting_wrap">
 			{loginChck ? (
@@ -426,7 +376,13 @@ function Setting(props) {
 										alt="preview-img"
 									/>
 								) : updatedImg ? (
-									<img src={updatedImg} width="40" height="40" alt="" />
+									<img
+										src={updatedImg}
+										width="40"
+										height="40"
+										alt=""
+										// onError={handleImageError}
+									/>
 								) : (
 									<img src={inputImg} width="40" height="40" alt="" />
 								)}

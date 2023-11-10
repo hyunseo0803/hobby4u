@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useInsertionEffect, useState } from "react";
 import "../styles/Myclass.css";
 import bad_review from "../assets/bad_review.png";
 import good_review from "../assets/good_review.png";
 import LoginRequired from "../common/LoginRequired";
 import ReadClassOptionLB from "../component/AllReadOptionLB";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Myclass(props) {
-	const { userData } = props;
+	const { userData, readFirebasefile } = props;
+
 	const navigate = useNavigate();
 	const [userNickname, setUserNickname] = useState("");
 
 	const [achiveLink, setAchiveLink] = useState([]);
-	// const [achiveLinkName, setAchiveLinkName] = useState([]);
 	const [achiveFile, setAchiveFile] = useState([]);
 
 	const [userImg, setUserImg] = useState("");
@@ -31,10 +30,8 @@ function Myclass(props) {
 	const [myclass, setMyClass] = useState([]);
 
 	const handleLocalFilePreview = (file) => {
-		const localpdffile = file.replace("/frontend/public/", "/");
-		window.open(localpdffile, "_blank");
+		window.open(file, "_blank");
 	};
-
 	const getUserAchiv = async () => {
 		try {
 			const token = localStorage.getItem("token");
@@ -53,17 +50,18 @@ function Myclass(props) {
 					}
 				);
 				if (response.ok) {
-					console.log("성과물 불러옴");
 					const achive = await response.json();
-					// console.log(achive);
 					const linkdata = achive.filter((item) => item.achive_file === null);
 					const filedata = achive.filter((item) => item.achive_file !== null);
-					// console.log("파일파일" + filedata);
-					// console.log("링크링크" + linkdata);
-
-					// console.log(filedata.length);
 					if (filedata.length > 0) {
-						setAchiveFile(filedata);
+						try {
+							const urlArray = await Promise.all(
+								filedata.map((file) => readFirebasefile("userAchiveFile", file))
+							);
+							setAchiveFile(urlArray);
+						} catch (error) {
+							console.error("Error fetching achive files: ", error);
+						}
 					} else {
 						setAchiveFile([]);
 					}
@@ -87,23 +85,31 @@ function Myclass(props) {
 		readMyClass();
 		getUserAchiv();
 	}, []);
+
 	async function readMyClass() {
 		const jwt_token = localStorage.getItem("token");
-		console.log(jwt_token);
 		try {
-			// Axios 요청 시 Authorization 헤더에 JWT 토큰을 포함하여 서버에 전송
-			const response = await axios.post(
+			const response = await axios.get(
 				"http://localhost:8000/api/post/read_my_data/",
-				{},
 				{
 					headers: {
 						Authorization: `Bearer ${jwt_token}`,
 					},
 				}
 			);
-
-			const classItem = response.data.all_data_list;
-			setMyClass(classItem);
+			const classMy = response.data.my_data_list;
+			const updatedClass_M = await Promise.all(
+				classMy.map(async (s) => {
+					const classM = { ...s };
+					try {
+						classM.img = await readFirebasefile("classFile", s.img);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return classM;
+				})
+			);
+			setMyClass(updatedClass_M);
 			ReadGoodCount();
 		} catch (error) {
 			console.error("Error submitting data:", error);
@@ -136,20 +142,52 @@ function Myclass(props) {
 		}
 	}
 
-	function handleReadDetail(value) {
-		axios
-			.get(`http://localhost:8000/api/post/read_some_data/?class_id=${value}`)
-			.then((response) => {
-				navigate("/readClass/classDetail", {
-					state: {
-						ClassDetail: response.data.class_data,
-						DayDetail: response.data.day_data,
-					},
-				});
-			})
-			.catch((error) => {
-				console.error("Error submitting data:", error);
+	async function handleReadDetail(value) {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_some_data/?class_id=${value}`
+			);
+			const classdetail = response.data.class_data;
+			const daydetail = response.data.day_data;
+			const updatedClassDetail = { ...classdetail };
+			const classImg = await readFirebasefile("classFile", classdetail.img);
+			const classfile = await readFirebasefile("file", classdetail["file"]);
+			if (classdetail["infoimg1"]) {
+				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
+				updatedClassDetail.infoimg1 = intro1;
+			}
+			if (classdetail["infoimg2"]) {
+				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
+				updatedClassDetail.infoimg2 = intro2;
+			}
+			if (classdetail["infoimg3"]) {
+				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
+				updatedClassDetail.infoimg3 = intro3;
+			}
+
+			updatedClassDetail.img = classImg;
+			updatedClassDetail.file = classfile;
+
+			const updatedDayDetail = await Promise.all(
+				daydetail.map(async (day) => {
+					const updatedDay = { ...day };
+					try {
+						updatedDay.day_file = await readFirebasefile("day", day.day_file);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedDay;
+				})
+			);
+			navigate("/readClass/classDetail", {
+				state: {
+					ClassDetail: updatedClassDetail,
+					DayDetail: updatedDayDetail,
+				},
 			});
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
 	}
 
 	useEffect(() => {
@@ -203,7 +241,8 @@ function Myclass(props) {
 				setUserInfo(userInfo);
 				setUserEmail(userEmail);
 				if (userImgUpdate) {
-					setUpdatedImg(userImgUpdate.replace("/frontend/public/", "/"));
+					const url = await readFirebasefile("userImg", userImgUpdate);
+					setUpdatedImg(url);
 				} else {
 					setUserImg(userImg);
 				}
@@ -223,11 +262,11 @@ function Myclass(props) {
 		}
 	};
 	function isImage(urlString) {
-		const fileEx = urlString.split(".").pop().toLowerCase();
+		const extension = urlString.split("?")[0].split(".").pop();
 
 		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
 
-		return imageEx.includes(fileEx);
+		return imageEx.includes(extension);
 	}
 
 	return (
@@ -248,7 +287,7 @@ function Myclass(props) {
 								// backgroundColor: "red",
 							}}
 						>
-							<div className="user_img" style={{ backgroundColor: "red" }}>
+							<div className="user_img">
 								{updatedImg ? (
 									<img
 										// style={{ borderRadius: "50%", overflow: "hidden" }}
@@ -383,7 +422,7 @@ function Myclass(props) {
 						</button>
 					</div>
 					{myclass.map((classItem, index) => {
-						const firstimg = classItem.img.replace("/frontend/public/", "/");
+						// const firstimg = classItem.img.replace("/frontend/public/", "/");
 
 						const handleImageClick = (e) => {
 							e.stopPropagation();
@@ -406,14 +445,14 @@ function Myclass(props) {
 									{isImage(classItem.img) ? (
 										<img
 											className="firstimg"
-											src={firstimg}
+											src={classItem.img}
 											alt="gg"
 											onClick={handleImageClick}
 										/>
 									) : (
 										<video
 											className="firstimg"
-											src={firstimg}
+											src={classItem.img}
 											alt="gg"
 											onClick={handleImageClick}
 											controls
