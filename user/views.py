@@ -97,15 +97,16 @@ def KakaoCallbackView(request):
         current_domain=request.get_host()
         # 도메인에 따라 리다이렉션 URI 동적 설정
         if 'localhost' in current_domain:
-            redirectUri = KAKAO_LOCALHOST_REDIRECT_URL  # 로컬 환경일 때
+            redirectUri = "http://localhost:3000/"  # 로컬 환경일 때
         elif 'hivehobby4u' in current_domain:
-            redirectUri = KAKAO_NETLIFY_REDIRECT_URL # Netlify 도메인일 때
+            redirectUri = "https://hivehobby4u.netlify.app/" # Netlify 도메인일 때
         if request.method == "POST":
             body =  json.loads(request.body.decode('utf-8'))
             code= body["code"]
             app_key =KAKAO_APP_KEY
             app_secret = KAKAO_APP_SECRET
             redirect_uri = redirectUri
+            print(redirect_uri)
 
             token_api = 'https://kauth.kakao.com/oauth/token'
             headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
