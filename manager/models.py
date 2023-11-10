@@ -129,17 +129,17 @@ class Class(models.Model):
     title = models.CharField(max_length=100)        
     info = models.CharField(max_length=1000, blank=True, null=True)
     date = models.CharField(max_length=100, blank=True, null=True)
-    img = models.ImageField(db_column='Img',upload_to="firstimg/")  # Field name made lowercase.
-    file = models.FileField(db_column='file',upload_to="firstfile/", blank=True, null=True) 
+    img = models.CharField(max_length=100, blank=True, null=True)  # Field name made lowercase.
+    file = models.CharField(max_length=1000, blank=True, null=True) 
     theme = models.CharField(max_length=100, blank=True, null=True)
     people = models.CharField(max_length=100, blank=True, null=True)
     money = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=100, blank=True, null=True)
-    intro1_file = models.ImageField(upload_to="introimg/", blank=True, null=True)
+    intro1_file = models.CharField(max_length=100, blank=True, null=True)
     intro1_content = models.CharField(max_length=1000, blank=True, null=True)
-    intro2_file = models.ImageField( upload_to="introimg/",blank=True, null=True)
+    intro2_file = models.CharField( max_length=100, blank=True, null=True)
     intro2_content = models.CharField(max_length=1000, blank=True, null=True)
-    intro3_file = models.ImageField(upload_to="introimg/", blank=True, null=True)
+    intro3_file = models.CharField(max_length=100, blank=True, null=True)
     intro3_content = models.CharField(max_length=1000, blank=True, null=True)
     applyend = models.CharField(max_length=100, blank=True, null=True)
     activitystart = models.CharField(max_length=100, blank=True, null=True)
@@ -160,7 +160,7 @@ class DayClassinfo(models.Model):
     date = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
     info = models.CharField(max_length=1000, blank=True, null=True)
-    file = models.ImageField(upload_to="dayimg/", blank=True, null=True)
+    file = models.CharField(max_length=1000, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -257,7 +257,7 @@ class Member(models.Model):
     provider = models.CharField(max_length=100, blank=True, null=True)
     info = models.CharField(max_length=100, blank=True, null=True)
     profileimg = models.CharField(db_column='profileImg',max_length=200, blank=True, null=True)  # Field name made lowercase.
-    updateprofile = models.ImageField(db_column='updateprofile', upload_to="userimg/",max_length=200, blank=True, null=True)  # Field name made lowercase.
+    updateprofile = models.CharField(db_column='updateprofile',max_length=500, blank=True, null=True)  # Field name made lowercase.
     goodcount = models.CharField(db_column='goodCount', max_length=100, blank=True, null=True)  # Field name made lowercase.
     joindate = models.CharField(db_column='joinDate', max_length=100)  # Field name made lowercase.     
 
@@ -269,7 +269,7 @@ class Member(models.Model):
 class Performance(models.Model):
     num = models.AutoField(primary_key=True)        
     id = models.ForeignKey(Member, models.DO_NOTHING, db_column='id')
-    file = models.FileField(max_length=100, upload_to="achive/",blank=True, null=True)
+    file = models.CharField(max_length=1000,blank=True, null=True)
     link = models.CharField(max_length=500, blank=True, null=True)
     file_title = models.CharField(max_length=100, blank=True, null=True)
     link_title = models.CharField(max_length=100, blank=True, null=True)
