@@ -11,7 +11,10 @@ from django.http import HttpResponse, JsonResponse
 import jwt
 import os
 import requests
-
+import hashlib
+import random
+import string
+import urllib
 import json
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -19,6 +22,13 @@ from django.shortcuts import get_object_or_404
 
 from jwt.exceptions import ExpiredSignatureError
 from rest_framework.exceptions import APIException
+import firebase_admin
+from firebase_admin import credentials, storage
+from django.http import JsonResponse
+
+# cred = credentials.Certificate('C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json')
+# firebase_admin.initialize_app(cred, {'storageBucket': 'hivehobby.appspot.com'})
+
 
 
 load_dotenv()
@@ -28,6 +38,38 @@ ALGORITHM = os.getenv('ALGORITHM')
 KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
 KAKAO_APP_SECRET=os.getenv('KAKAO_APP_SECRET')
 KAKAO_REDIRECT_URL=os.getenv('KAKAO_REDIRECT_URL')
+
+def randm_num():
+    num = "0123456789"
+ 
+    result=""
+    for i in range(4):
+        result+=random.choice(num)
+        
+    return result
+    
+
+def generate_random_hash(file_name):
+ 
+    # 임의의 솔트(salt)를 생성
+    file_name_without_extension, file_extension = file_name.split('.')
+
+    # 파일 이름을 해시화
+    hashed_file_name = hashlib.sha256(file_name_without_extension.encode()).hexdigest()
+
+    # 해싱된 파일 이름과 확장자 결합
+    hashed = f"{hashed_file_name}{randm_num()}.{file_extension}"
+    return hashed
+
+def upload_to_firebase(file,folder_name):
+    # Firebase 스토리지에 파일 업로드
+    bucket = storage.bucket()
+    filename=generate_random_hash(file.name)
+    
+    blob = bucket.blob(folder_name+'/'+filename)
+    blob.upload_from_file(file)
+    
+    return filename
 
 
 class MemberList(generics.ListCreateAPIView):
@@ -141,7 +183,7 @@ def get_user_data(request):
                         'info': member.info,
                         'email':member.email,
                         'profileImg':member.profileimg if member.profileimg else None,
-                        'updateprofile':member.updateprofile.url if member.updateprofile else None
+                        'updateprofile':member.updateprofile if member.updateprofile else None
                         
                     }
         return Response(response_data)
@@ -162,44 +204,16 @@ def save_user_info(request):
         json_data = json.loads(request.POST.get('json'))
         nickname = json_data.get('nickname')
         info = json_data.get('info')
-        # email = json_data.get('email')
-        # link=json_data.get('link')
-        # linkName = json_data.get('linkName')
-        # file=request.FILES.get('file')
-        # fileName=json_data.get('fileName')
-        # achive_file_list =[]
-        # for index in range(len(request.FILES)):
-        #     file_key = f'file{index}'
-        #     if file_key in request.FILES:
-        #         achive_file = request.FILES[file_key]
-        #     achive_file_list.append(achive_file)
-            
         updateimg=request.FILES.get('updatedimg')
         
-        member=Member.objects.get(id=user_id) 
         
-        # if len(link)>0:
-        #     print("링크넣엇음 링크을")
-        #     for l, ln in zip(link, linkName):
-        #         achive=Performance(id=Member.objects.get(id=user_id) )
-
-        #         achive.link=l
-        #         achive.link_title=ln
-        #         achive.save()
-                
-        # if len(achive_file_list)>0:
-        #     print("파일 넣어씅ㅁ 파일")
-        #     for f, fn in zip(achive_file_list, fileName):
-        #         achive=Performance(id=Member.objects.get(id=user_id) )
-        #         achive.file=f
-        #         achive.file_title=fn
-        #         achive.save()
-                
+        member=Member.objects.get(id=user_id) 
+    
         if updateimg is not None:
-            member.updateprofile=updateimg
+            member_update_img=upload_to_firebase(updateimg,"userImg")
+            member.updateprofile=member_update_img
             
         member.nickname=nickname
-        # member.email=email
         member.info=info
         member.save()
         
@@ -233,7 +247,8 @@ def save_user_achive(request):
         if len(achive_file_list)>0:
             for f, fn in zip(achive_file_list, fileName):
                 achive=Performance(id=Member.objects.get(id=user_id) )
-                achive.file=f
+                achive_f = upload_to_firebase(f,"userAchiveFile")
+                achive.file=achive_f
                 achive.file_title=fn
                 achive.save()
                 
@@ -251,14 +266,15 @@ def delete_user_achive(request):
         
         data = json_data.get('data')
         
-        # print(type)
-        # print(data)
         if type=='link':
             item = Performance.objects.get(link=data)
             item.delete()
             
         if type=='file':
-            item = Performance.objects.get(file_title=data)
+            url_without_params = data.split('?')[0]
+            decoded_url = urllib.parse.unquote(url_without_params)
+            pdf_path = decoded_url.split("userAchiveFile/")[1]
+            item = Performance.objects.get(file=pdf_path)
             item.delete()
         
     return Response("success")
@@ -274,7 +290,7 @@ def get_user_achive(request):
         achive_list = []
         for achive_data in achive:
             data = {
-                'achive_file': achive_data.file.url if achive_data.file else None,
+                'achive_file': achive_data.file if achive_data.file else None,
                 'achive_filename': achive_data.file_title,
                 'achive_link': achive_data.link,
                 'achive_linkname': achive_data.link_title
