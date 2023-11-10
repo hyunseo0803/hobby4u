@@ -26,8 +26,17 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from django.http import JsonResponse
 
+
+
+
+
 # cred = credentials.Certificate('C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json')
 # firebase_admin.initialize_app(cred, {'storageBucket': 'hivehobby.appspot.com'})
+import selenium
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from time import sleep
+
 
 
 
@@ -85,14 +94,12 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
         
 @api_view(['POST'])
 def KakaoCallbackView(request):
-    
-        current_domain = request.host.split(':')[0]  # 포트를 제외한 도메인 부분만 추출
-
+        current_domain=request.get_host()
         # 도메인에 따라 리다이렉션 URI 동적 설정
-        if current_domain == 'localhost':
-            redirectUri = KAKAO_LOCALHOST_REDIRECT_URI  # 로컬 환경일 때
-        elif current_domain == 'hivehobby4u.netlify.app':
-            redirectUri = KAKAO_NETLIFY_REDIRECT_URI # Netlify 도메인일 때
+        if 'localhost' in current_domain:
+            redirectUri = KAKAO_LOCALHOST_REDIRECT_URL  # 로컬 환경일 때
+        elif 'hivehobby4u' in current_domain:
+            redirectUri = KAKAO_NETLIFY_REDIRECT_URL # Netlify 도메인일 때
         if request.method == "POST":
             body =  json.loads(request.body.decode('utf-8'))
             code= body["code"]

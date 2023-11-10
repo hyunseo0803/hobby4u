@@ -50,10 +50,10 @@ function Header(props) {
 
 			if (currentDomain.includes("localhost")) {
 				// 로컬 환경인 경우
-				redirectUri = process.env.REAT_APP_LOCALHOST_REDIRECT_URI; // 적절한 포트 및 경로로 설정
-			} else if (currentDomain.includes("hivehobby4u.netlify.app")) {
+				redirectUri = "http://localhost:3000/"; // 적절한 포트 및 경로로 설정
+			} else if (currentDomain.includes("hivehobby4u")) {
 				// Netlify 도메인인 경우
-				redirectUri = process.env.REAT_APP_NETLIFY_REDIRECT_URI; // 실제 도메인으로 설정
+				redirectUri = "https://hivehobby4u.netlify.app/"; // 실제 도메인으로 설정
 			} else {
 				console.log("도메인 이상해애애애");
 			}
