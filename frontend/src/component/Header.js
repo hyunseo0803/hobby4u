@@ -37,10 +37,14 @@ function Header(props) {
 		}
 	};
 
+	const currentDomain = window.location.hostname;
+	useEffect(() => {
+		console.log("Domain: " + currentDomain);
+	});
+
 	// 카카오 로그인
 	const loginWithKakao = async () => {
 		try {
-			const currentDomain = window.location.hostname;
 			console.log(currentDomain);
 			let redirectUri;
 
