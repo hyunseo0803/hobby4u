@@ -19,11 +19,11 @@ export default function FILTER_CLASS(props) {
 	} = props;
 
 	function isImage(urlString) {
-		const fileEx = urlString.split(".").pop().toLowerCase();
+		const extension = urlString.split("?")[0].split(".").pop();
 
 		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
 
-		return imageEx.includes(fileEx);
+		return imageEx.includes(extension);
 	}
 
 	useEffect(() => {
@@ -42,7 +42,7 @@ export default function FILTER_CLASS(props) {
 				<div className="row_center_wrap">
 					{fliteredata &&
 						fliteredata.map((filter, index) => {
-							const firstimg = filter.img.replace("/frontend/public/", "/");
+							// const firstimg = filter.img.replace("/frontend/public/", "/");
 
 							const handleImageClick = (e) => {
 								e.stopPropagation();
@@ -64,14 +64,14 @@ export default function FILTER_CLASS(props) {
 										{isImage(filter.img) ? (
 											<img
 												className="firstimg"
-												src={firstimg}
+												src={filter.img}
 												alt="gg"
 												onClick={handleImageClick}
 											/>
 										) : (
 											<video
 												className="firstimg"
-												src={firstimg}
+												src={filter.img}
 												alt="gg"
 												onClick={handleImageClick}
 												controls

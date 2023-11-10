@@ -14,14 +14,6 @@ function JudgeClassDetail(props) {
 	const location = useLocation();
 	const ClassDetail = location.state.ClassDetail;
 	const DayDetail = location.state.DayDetail;
-	const firstimg = ClassDetail["img"].replace("/frontend/public/", "/");
-	const theme = ClassDetail["theme"]
-		.replace("['", "")
-		.replace("']", "")
-		.replace("', '", ",")
-		.replace("', '", ",");
-
-	const theme_div = theme.split(",");
 
 	const type_offline = ClassDetail["type"] === "offline";
 	const money_free = parseInt(ClassDetail["money"]) === 0;
@@ -34,29 +26,12 @@ function JudgeClassDetail(props) {
 	}
 
 	function isImage(urlString) {
-		const fileEx = urlString.split(".").pop().toLowerCase();
+		const extension = urlString.split("?")[0].split(".").pop();
 
 		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
 
-		return imageEx.includes(fileEx);
+		return imageEx.includes(extension);
 	}
-	const infoimg1 = ClassDetail["infoimg1"]
-		? ClassDetail["infoimg1"].replace("/frontend/public/", "/")
-		: null;
-	const infoimg2 = ClassDetail["infoimg2"]
-		? ClassDetail["infoimg2"].replace("/frontend/public/", "/")
-		: null;
-	const infoimg3 = ClassDetail["infoimg3"]
-		? ClassDetail["infoimg3"].replace("/frontend/public/", "/")
-		: null;
-
-	const file = ClassDetail["file"]
-		? ClassDetail["file"].replace("/frontend/public/", "/")
-		: null;
-
-	const pdfFileName = ClassDetail["file"]
-		? decodeURIComponent(file.substring(file.lastIndexOf("/") + 1))
-		: null;
 
 	const startDate = new Date(ClassDetail["date"]);
 	startDate.setDate(startDate.getDate() + 5);
@@ -67,11 +42,7 @@ function JudgeClassDetail(props) {
 	const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
 	const ApplyStartdate = daysDifference;
-	useEffect(() => {
-		console.log(startDate);
 
-		console.log(ClassDetail["date"]);
-	});
 	const { kakao } = window;
 
 	const criteriaList = [
@@ -137,7 +108,7 @@ function JudgeClassDetail(props) {
 	});
 
 	const openPdfPreview = () => {
-		window.open(file, "_blank");
+		window.open(ClassDetail["file"], "_blank");
 	};
 
 	const clickJudgeBtn = async (value) => {
@@ -184,11 +155,11 @@ function JudgeClassDetail(props) {
 							<div>{ClassDetail["title"]}</div>
 
 							{isImage(ClassDetail["img"]) ? (
-								<img src={firstimg} alt="gg" width={500} />
+								<img src={ClassDetail["img"]} alt="gg" width={500} />
 							) : (
 								<video
 									className="firstimg"
-									src={firstimg}
+									src={ClassDetail["img"]}
 									alt="gg"
 									width={500}
 									controls
@@ -240,11 +211,11 @@ function JudgeClassDetail(props) {
 											const imgKey = `infoimg${index}`;
 											const infoText = ClassDetail[infoKey];
 											const imgSrc =
-												ClassDetail[imgKey] === infoimg1
-													? infoimg1
-													: ClassDetail[imgKey] === infoimg2
-													? infoimg2
-													: infoimg3;
+												ClassDetail[imgKey] === ClassDetail["infoimg1"]
+													? ClassDetail["infoimg1"]
+													: ClassDetail[imgKey] === ClassDetail["infoimg2"]
+													? ClassDetail["infoimg2"]
+													: ClassDetail["infoimg3"];
 
 											return (
 												<>
@@ -284,10 +255,10 @@ function JudgeClassDetail(props) {
 							<Accordion.Body>
 								{/* <div style={{ backgroundColor: "red" }}> */}
 								{DayDetail.map((Item, index) => {
-									const day_img = Item["day_file"].replace(
-										"/frontend/public/",
-										"/"
-									);
+									// const day_img = Item["day_file"].replace(
+									// 	"/frontend/public/",
+									// 	"/"
+									// );
 
 									return (
 										<div
@@ -310,14 +281,14 @@ function JudgeClassDetail(props) {
 												{isImage(Item["day_file"]) ? (
 													<img
 														className="infoimg_img"
-														src={day_img}
+														src={Item["day_file"]}
 														alt="gg"
 														width={100}
 													/>
 												) : (
 													<video
 														className="infoimg_img"
-														src={day_img}
+														src={Item["day_file"]}
 														alt="gg"
 														width={100}
 														controls
@@ -413,7 +384,7 @@ function JudgeClassDetail(props) {
 													// borderRadius: 50,
 												}}
 											>
-												{pdfFileName}
+												활동 파일 다운 받기
 											</button>
 										</div>
 									</>

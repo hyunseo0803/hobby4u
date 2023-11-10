@@ -2,6 +2,7 @@ import "../../styles/ReadClass.css";
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
 import { useEffect } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 export default function ALL_CLASS(props) {
 	const {
@@ -14,11 +15,10 @@ export default function ALL_CLASS(props) {
 	} = props;
 
 	function isImage(urlString) {
-		const fileEx = urlString.split(".").pop().toLowerCase();
-
+		const extension = urlString.split("?")[0].split(".").pop();
 		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
 
-		return imageEx.includes(fileEx);
+		return imageEx.includes(extension);
 	}
 
 	useEffect(() => {
@@ -27,38 +27,36 @@ export default function ALL_CLASS(props) {
 
 	return (
 		<div className="row_center_wrap">
-			{data.map((classItem, index) => {
-				const firstimg = classItem.img.replace("/frontend/public/", "/");
-
+			{data.map((d, index) => {
 				const handleImageClick = (e) => {
 					e.stopPropagation();
-					handleReadDetail(classItem.class_id);
+					handleReadDetail(d.class_id);
 				};
 
 				const handleButtonClick = () => {
-					handleReadDetail(classItem.class_id);
+					handleReadDetail(d.class_id);
 				};
-				const isFree = classItem.money === "0";
-				const isOnline = classItem.type === "online";
+				const isFree = d.money === "0";
+				const isOnline = d.type === "online";
 
 				const likeStatusItem = like_status
-					? like_status.find((item) => item.class_id === classItem.class_id)
+					? like_status.find((item) => item.class_id === d.class_id)
 					: null;
 
 				return (
 					<div key={index} className="class_div_btn">
 						<div className="firstimg_container">
-							{isImage(classItem.img) ? (
+							{isImage(d.img) ? (
 								<img
 									className="firstimg"
-									src={firstimg}
+									src={d.img}
 									alt="gg"
 									onClick={handleImageClick}
 								/>
 							) : (
 								<video
 									className="firstimg"
-									src={firstimg}
+									src={d.img}
 									alt="gg"
 									onClick={handleImageClick}
 									controls
@@ -77,7 +75,7 @@ export default function ALL_CLASS(props) {
 								{isLoggedIn ? (
 									<button
 										className="like_btn"
-										onClick={() => goodClick(classItem.class_id)}
+										onClick={() => goodClick(d.class_id)}
 									>
 										{likeStatusItem ? (
 											<AiFillHeart size={20} color="#EC3535" />
@@ -89,15 +87,15 @@ export default function ALL_CLASS(props) {
 									<div className="like">좋아요</div>
 								)}
 
-								<div className="like_text">{classItem.goodCount}</div>
+								<div className="like_text">{d.goodCount}</div>
 							</div>
 						</div>
 						<button
-							value={classItem.class_id}
+							value={d.class_id}
 							onClick={handleButtonClick}
 							className="class_title_btn"
 						>
-							{classItem.title}
+							{d.title}
 						</button>
 					</div>
 				);

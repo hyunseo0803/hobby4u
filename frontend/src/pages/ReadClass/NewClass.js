@@ -49,11 +49,11 @@ export default function NEW_CLASS(props) {
 	// });
 
 	function isImage(urlString) {
-		const fileEx = urlString.split(".").pop().toLowerCase();
+		const extension = urlString.split("?")[0].split(".").pop();
 
 		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
 
-		return imageEx.includes(fileEx);
+		return imageEx.includes(extension);
 	}
 
 	return (
@@ -64,7 +64,7 @@ export default function NEW_CLASS(props) {
 				</button>
 			</div>
 			{paginateData().map((newItem, index) => {
-				const firstimg = newItem.img.replace("/frontend/public/", "/");
+				// const firstimg = newItem.img.replace("/frontend/public/", "/");
 
 				const handleImageClick = (e) => {
 					e.stopPropagation();
@@ -86,7 +86,7 @@ export default function NEW_CLASS(props) {
 							{isImage(newItem.img) ? (
 								<img
 									className="firstimg"
-									src={firstimg}
+									src={newItem.img}
 									alt="gg"
 									width={100}
 									onClick={handleImageClick}
@@ -94,7 +94,7 @@ export default function NEW_CLASS(props) {
 							) : (
 								<video
 									className="firstimg"
-									src={firstimg}
+									src={newItem.img}
 									alt="gg"
 									width={100}
 									onClick={handleImageClick}

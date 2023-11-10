@@ -82,7 +82,7 @@ function Exam(props) {
 					style={{ display: "flex", flexDirection: "row", overflowX: "auto" }}
 				>
 					{judgeMy.map((j, index) => {
-						const firstimg = j.img.replace("/frontend/public/", "/");
+						// const firstimg = j.img.replace("/frontend/public/", "/");
 
 						const handleImageClick = (e) => {
 							e.stopPropagation();
@@ -105,14 +105,14 @@ function Exam(props) {
 									{isImage(j.img) ? (
 										<img
 											className="firstimg"
-											src={firstimg}
+											src={j.img}
 											alt="gg"
 											onClick={handleImageClick}
 										/>
 									) : (
 										<video
 											className="firstimg"
-											src={firstimg}
+											src={j.img}
 											alt="gg"
 											onClick={handleImageClick}
 											controls
@@ -152,7 +152,7 @@ function Exam(props) {
 					style={{ display: "flex", flexDirection: "row", overflowX: "auto" }}
 				>
 					{judgeNP.map((j, index) => {
-						const firstimg = j.img.replace("/frontend/public/", "/");
+						// const firstimg = j.img.replace("/frontend/public/", "/");
 
 						const handleImageClick = (e) => {
 							e.stopPropagation();
@@ -175,14 +175,14 @@ function Exam(props) {
 									{isImage(j.img) ? (
 										<img
 											className="firstimg"
-											src={firstimg}
+											src={j.img}
 											alt="gg"
 											onClick={handleImageClick}
 										/>
 									) : (
 										<video
 											className="firstimg"
-											src={firstimg}
+											src={j.img}
 											alt="gg"
 											onClick={handleImageClick}
 											controls
