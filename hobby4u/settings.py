@@ -13,6 +13,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 # from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials
+
+cred = credentials.Certificate("C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json")
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'hivehobby.appspot.com'
+})
+
 
 # load_dotenv()
 
@@ -89,11 +97,11 @@ CORS_ALLOW_METHODS = (
     'OPTIONS'
 )
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    # ... 등등 필요한 도메인들을 추가해줍니다.
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+#     # ... 등등 필요한 도메인들을 추가해줍니다.
+# ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend/public/media/')
 MEDIA_URL = 'frontend/public/media/'
