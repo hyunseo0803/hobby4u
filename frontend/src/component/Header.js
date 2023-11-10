@@ -37,7 +37,7 @@ function Header(props) {
 		}
 	};
 
-	const currentDomain = window.location.hostname;
+	const currentDomain = window.location.href;
 	useEffect(() => {
 		console.log("Domain: " + currentDomain);
 	});
@@ -45,13 +45,13 @@ function Header(props) {
 	// 카카오 로그인
 	const loginWithKakao = async () => {
 		try {
-			console.log(currentDomain);
+			// console.log(currentDomain);
 			let redirectUri;
 
-			if (currentDomain === "localhost") {
+			if (currentDomain.includes("localhost")) {
 				// 로컬 환경인 경우
 				redirectUri = process.env.REAT_APP_LOCALHOST_REDIRECT_URI; // 적절한 포트 및 경로로 설정
-			} else if (currentDomain === "hivehobby4u.netlify.app") {
+			} else if (currentDomain.includes("hivehobby4u.netlify.app")) {
 				// Netlify 도메인인 경우
 				redirectUri = process.env.REAT_APP_NETLIFY_REDIRECT_URI; // 실제 도메인으로 설정
 			} else {
@@ -59,7 +59,16 @@ function Header(props) {
 			}
 			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
 			const redirect_uri = redirectUri;
-			window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${app_key}&redirect_uri=${redirect_uri}`;
+			const kakaologin_href =
+				(window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${app_key}&redirect_uri=${redirect_uri}`);
+			const response = await fetch(kakaologin_href, { method: "HEAD" });
+
+			if (response.ok) {
+				// URL이 유효하면 페이지 이동
+				window.location.replace(kakaologin_href);
+			} else {
+				console.error("Authorization URL 확인 실패");
+			}
 		} catch (error) {
 			throw new Error(error.message);
 		}
