@@ -53,7 +53,6 @@ class ManagerApp extends Component {
 			const notFinishCnt = response.data.notFinshCnt;
 			const FinishCnt = response.data.finishCnt;
 			this.setState({ notJudgeFinish: notFinishCnt, isJudgeFinish: FinishCnt });
-			console.log(this.state);
 		} catch (error) {
 			console.error(error);
 		}
@@ -121,6 +120,7 @@ class ManagerApp extends Component {
 			asapJudge,
 			asapJudgeList,
 		} = this.state;
+		const { readFirebasefile } = this.props;
 
 		return (
 			<>
@@ -151,6 +151,7 @@ class ManagerApp extends Component {
 									<JudgeClass
 										adminData={adminData}
 										asapJudgeList={asapJudgeList}
+										readFirebasefile={readFirebasefile}
 									/>
 								}
 							/>

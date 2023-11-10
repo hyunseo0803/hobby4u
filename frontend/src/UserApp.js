@@ -72,6 +72,7 @@ class UserApp extends Component {
 
 	render() {
 		const { isLoggedIn, userData } = this.state;
+		const { readFirebasefile } = this.props;
 		return (
 			// <BrowserRouter>
 			<div className="Container">
@@ -83,7 +84,13 @@ class UserApp extends Component {
 				<Routes>
 					<Route
 						path="/"
-						element={<ReadClass isLoggedIn={isLoggedIn} userData={userData} />}
+						element={
+							<ReadClass
+								isLoggedIn={isLoggedIn}
+								userData={userData}
+								readFirebasefile={readFirebasefile}
+							/>
+						}
 					/>
 					<Route path="intro" element={<Intro />} />
 					<Route path="gide" element={<Intro />} />
@@ -93,22 +100,51 @@ class UserApp extends Component {
 					/>
 					{isLoggedIn && (
 						<>
-							<Route path="myclass" element={<Myclass userData={userData} />} />
+							<Route
+								path="myclass"
+								element={
+									<Myclass
+										userData={userData}
+										readFirebasefile={readFirebasefile}
+									/>
+								}
+							/>
 							<Route
 								path="takingclass"
-								element={<Myclass userData={userData} />}
+								element={
+									<Myclass
+										userData={userData}
+										readFirebasefile={readFirebasefile}
+									/>
+								}
 							/>
-							<Route path="judge" element={<Judge userData={userData} />} />
+							<Route
+								path="judge"
+								element={
+									<Judge
+										userData={userData}
+										readFirebasefile={readFirebasefile}
+									/>
+								}
+							/>
 							<Route
 								path="likeclass"
-								element={<Likeclass userData={userData} />}
+								element={
+									<Likeclass
+										userData={userData}
+										readFirebasefile={readFirebasefile}
+									/>
+								}
 							/>
 							<Route path="createclass" element={<CreateClass />} />
 							<Route
 								path="createClass/detail"
 								element={<CreateClassDetail />}
 							/>
-							<Route path="setting" element={<Setting />} />
+							<Route
+								path="setting"
+								element={<Setting readFirebasefile={readFirebasefile} />}
+							/>
 						</>
 					)}
 				</Routes>
