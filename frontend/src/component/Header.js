@@ -10,6 +10,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function Header(props) {
 	const { getUserData } = props;
+
+	const currentDomain = window.location.hostname;
+	let redirectUri;
+
+	if (currentDomain === "localhost") {
+		// 로컬 환경인 경우
+		redirectUri = process.env.REAT_APP_LOCALHOST_REDIRECT_URI; // 적절한 포트 및 경로로 설정
+	} else if (currentDomain === "hivehobby4u.netlify.app") {
+		// Netlify 도메인인 경우
+		redirectUri = process.env.REAT_APP_NETLIFY_REDIRECT_URI; // 실제 도메인으로 설정
+	}
+
 	const getCode = async (code) => {
 		try {
 			const response = await fetch(
@@ -40,7 +52,7 @@ function Header(props) {
 	const loginWithKakao = async () => {
 		try {
 			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
-			const redirect_uri = process.env.REACT_APP_REDIRECT_URI;
+			const redirect_uri = redirectUri;
 			window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${app_key}&redirect_uri=${redirect_uri}`;
 		} catch (error) {
 			throw new Error(error.message);

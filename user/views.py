@@ -37,7 +37,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
 KAKAO_APP_SECRET=os.getenv('KAKAO_APP_SECRET')
-KAKAO_REDIRECT_URL=os.getenv('KAKAO_REDIRECT_URL')
+KAKAO_LOCALHOST_REDIRECT_URL=os.getenv('KAKAO_LOCALHOST_REDIRECT_URL')
+KAKAO_NETLIFY_REDIRECT_URL=os.getenv('KAKAO_NETLIFY_REDIRECT_URL')
+
 
 def randm_num():
     num = "0123456789"
@@ -83,12 +85,20 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
         
 @api_view(['POST'])
 def KakaoCallbackView(request):
+    
+        current_domain = request.host.split(':')[0]  # 포트를 제외한 도메인 부분만 추출
+
+        # 도메인에 따라 리다이렉션 URI 동적 설정
+        if current_domain == 'localhost':
+            redirectUri = KAKAO_LOCALHOST_REDIRECT_URI  # 로컬 환경일 때
+        elif current_domain == 'hivehobby4u.netlify.app':
+            redirectUri = KAKAO_NETLIFY_REDIRECT_URI # Netlify 도메인일 때
         if request.method == "POST":
             body =  json.loads(request.body.decode('utf-8'))
             code= body["code"]
             app_key =KAKAO_APP_KEY
             app_secret = KAKAO_APP_SECRET
-            redirect_uri = KAKAO_REDIRECT_URL
+            redirect_uri = redirectUri
 
             token_api = 'https://kauth.kakao.com/oauth/token'
             headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
