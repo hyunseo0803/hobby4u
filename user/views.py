@@ -42,8 +42,8 @@ from time import sleep
 
 load_dotenv()
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = os.getenv('ALGORITHM')
+DJANGO_SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+DJANGO_ALGORITHM = os.getenv('DJANGO_ALGORITHM')
 KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
 KAKAO_APP_SECRET=os.getenv('KAKAO_APP_SECRET')
 KAKAO_LOCALHOST_REDIRECT_URL=os.getenv('KAKAO_LOCALHOST_REDIRECT_URL')
@@ -143,7 +143,7 @@ def KakaoCallbackView(request):
                     expires_at = datetime.utcnow() + timedelta(hours=2)
                     payload = {'id': member.id, 'exp': expires_at}
 
-                    jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+                    jwt_token = jwt.encode(payload, DJANGO_SECRET_KEY, DJANGO_ALGORITHM)
                     
                     response_data = {
                             'token': jwt_token,
