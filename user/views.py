@@ -50,6 +50,7 @@ KAKAO_LOCALHOST_REDIRECT_URL=os.environ.get('KAKAO_LOCALHOST_REDIRECT_URL')
 KAKAO_NETLIFY_REDIRECT_URL=os.environ.get('KAKAO_NETLIFY_REDIRECT_URL')
 
 
+
 def randm_num():
     num = "0123456789"
  
@@ -95,6 +96,10 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['POST'])
 def KakaoCallbackView(request):
         current_domain=request.get_host()
+        for key, value in os.environ.items():
+            print("--------------ddd------------------")
+            # print(f"{key}: {value}")
+            print(os.environ.get('DJANGO_SECRET_KEY'))
         # 도메인에 따라 리다이렉션 URI 동적 설정
         if 'localhost' in current_domain:
             redirectUri = "http://localhost:3000/"  # 로컬 환경일 때
