@@ -191,7 +191,7 @@ def get_user_data(request):
         if request.method == "POST":
             jwt_token = request.headers.get('Authorization').split(' ')[1]
             
-            payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+            payload = jwt.decode(jwt_token,DJANGO_SECRET_KEY,DJANGO_ALGORITHM)
             user_id=payload['id']
             member=Member.objects.get(id=user_id)
 
