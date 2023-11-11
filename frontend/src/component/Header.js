@@ -24,6 +24,7 @@ function Header(props) {
 				}
 			);
 			const data = await response.json();
+			console.log(data);
 			const token = data.token;
 
 			// 로컬스토리지에 JWT 토큰 저장

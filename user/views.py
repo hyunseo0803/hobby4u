@@ -180,7 +180,9 @@ def KakaoCallbackView(request):
                         'nickname': member.nickname,
                         'access_token': access_token,
                         'token': jwt_token,
-                        'exist': False
+                        'exist': False,
+                        'scr':SECRET_KEY,
+                        'al':ALGORITHM,
                     }
                     return Response(response_data)
 
