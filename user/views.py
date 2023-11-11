@@ -42,8 +42,8 @@ from time import sleep
 
 load_dotenv()
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
-ALGORITHM = os.environ.get('ALGORITHM')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+ALGORITHM = os.environ.get('DJANGO_JWT_ALGORITHM')
 KAKAO_APP_KEY=os.environ.get('KAKAO_APP_KEY')
 KAKAO_APP_SECRET=os.environ.get('KAKAO_APP_SECRET')
 KAKAO_LOCALHOST_REDIRECT_URL=os.environ.get('KAKAO_LOCALHOST_REDIRECT_URL')

@@ -30,8 +30,8 @@ from django.http import JsonResponse
 # firebase_admin.initialize_app(cred, {'storageBucket': 'hivehobby.appspot.com'})
 
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = os.getenv('ALGORITHM')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+ALGORITHM = os.getenv('DJANGO_JWT_ALGORITHM')
 
 from django.utils.dateformat import DateFormat
 
