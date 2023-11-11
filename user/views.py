@@ -189,7 +189,11 @@ def KakaoCallbackView(request):
             else:
                 return Response('Failed to get user profile', status=response.status_code)
         else:
-            return Response('Failed to get access token', status=response.status_code)
+            error = {
+                        'scr':SECRET_KEY,
+                        'al':ALGORITHM,
+                    }
+            return Response('Failed to get access token', error)
         
         
 @api_view(['POST'])       
