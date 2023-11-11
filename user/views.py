@@ -176,11 +176,11 @@ def KakaoCallbackView(request):
                     jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
                     
                     response_data = {
-                        'id': member.id,
-                        'nickname': member.nickname,
-                        'access_token': access_token,
-                        'token': jwt_token,
-                        'exist': False,
+                        # 'id': member.id,
+                        # 'nickname': member.nickname,
+                        # 'access_token': access_token,
+                        # 'token': jwt_token,
+                        # 'exist': False,
                         'scr':SECRET_KEY,
                         'al':ALGORITHM,
                     }
@@ -189,11 +189,8 @@ def KakaoCallbackView(request):
             else:
                 return Response('Failed to get user profile', status=response.status_code)
         else:
-            error = {
-                        'scr':SECRET_KEY,
-                        'al':ALGORITHM,
-                    }
-            return Response('Failed to get access token', error)
+            
+            return Response('Failed to get access token', status=response.status_code)
         
         
 @api_view(['POST'])       
