@@ -180,13 +180,11 @@ def KakaoCallbackView(request):
                     jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
                     
                     response_data = {
-                        # 'id': member.id,
-                        # 'nickname': member.nickname,
-                        # 'access_token': access_token,
-                        # 'token': jwt_token,
-                        # 'exist': False,
-                        'scr':SECRET_KEY,
-                        'al':ALGORITHM,
+                        'id': member.id,
+                        'nickname': member.nickname,
+                        'access_token': access_token,
+                        'token': jwt_token,
+                        'exist': False,
                     }
                     return Response(response_data)
 

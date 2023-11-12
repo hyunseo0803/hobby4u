@@ -14,7 +14,7 @@ function Header(props) {
 	const getCode = async (code) => {
 		try {
 			const response = await fetch(
-				"http://localhost:8000/api/user/kakao/callback/",
+				"https://hivehobby4u.netlify.app/api/user/kakao/callback/",
 				{
 					method: "POST",
 					headers: {
