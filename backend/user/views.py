@@ -112,8 +112,8 @@ def KakaoCallbackView(request):
         if request.method == "POST":
             body =  json.loads(request.body.decode('utf-8'))
             code= body["code"]
-            app_key =KAKAO_APP_KEY
-            app_secret = KAKAO_APP_SECRET
+            app_key =os.environ.get('KAKAO_APP_KEY')
+            app_secret = os.environ.get('KAKAO_APP_SECRET')
             redirect_uri = redirectUri
             print(redirect_uri)
 
