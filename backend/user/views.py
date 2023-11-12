@@ -49,6 +49,10 @@ KAKAO_APP_SECRET=os.environ.get('KAKAO_APP_SECRET')
 KAKAO_LOCALHOST_REDIRECT_URL=os.environ.get('KAKAO_LOCALHOST_REDIRECT_URL')
 KAKAO_NETLIFY_REDIRECT_URL=os.environ.get('KAKAO_NETLIFY_REDIRECT_URL')
 
+print("===================================")
+print(KAKAO_APP_KEY)
+print(KAKAO_APP_SECRET)
+
 
 
 def randm_num():

@@ -40,7 +40,7 @@ function Header(props) {
 
 	const currentDomain = window.location.href;
 	useEffect(() => {
-		console.log("Domain: " + currentDomain);
+		console.log("Domain: " + process.env.REACT_APP_KAKAO_APP_KEY);
 	});
 
 	// 카카오 로그인

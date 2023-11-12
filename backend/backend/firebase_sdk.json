@@ -1,0 +1,13 @@
+{
+	"type": "service_account",
+	"project_id": "hivehobby",
+	"private_key_id": "cacbd000845400033ee0552441fe7d24129e0c13",
+	"private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC+htXQP4ylNfcO\nzFiDZ/20fbcFC+OewVNYANHCmgifUmSpVY8Q2kG0sDsRowezQRNWLBoQEnVOBbJ1\n7O/XLQ1x19NMAmsbvwkP/Jl6cGSZjqHxx4JOY36tJxIuPOWlGPBol6YKapcQByJH\nyxDPRJc+ZIKaxDwDubbKFYcl4aie3k6Cg3wBgMv/iqPzp7ECe5KSwZb137vaRxEI\nHt/DFX/AA9gsurso/u4opVRXb3n5cO0InfjpDVMcAeBPTb6x2XiU40s99I63tgLB\n+FEjBYzJ+/+bNPP6+tGLKJvpN39up1jn+VgAEGfTCLL4T9yLT6gFkaKTUBmYo81S\nMziHju+LAgMBAAECggEAJrG/ruGZMNx65ph9yYJPNl7p0q6NdeqRgKf58enSonjb\nVMC5o5SQD6BS/sv7fl5TDQc769Oz2zqw+d46/5p4xowsr502H5Z2wrZsfT9iTwV2\nwmHghwcR7RyoRpe7lAIyoStbX3YyY+DvB2Gock/d36AOHlyIS8Fl7DjfD8R6uHjX\njnkKgeuzHrkSR3ST9xjNekjTXlqdGA65Xy7sD7j3bRQu5f9d55OLFa5s+MwFFfLH\n4APpj3ECDJs8wMFLxUhOuRc7GC3wq4kTftDhn+VRfJfQgMaiBwxNOsRZKZ4pigG8\nOZbgcL2MnmEqVlRqjiP9rYqSObc1pWnt5bDnzmm/4QKBgQD0xxRDGYGuCflORTsr\n6Qj2s4Utg5e0zZg1k5vF+vdkHnl+j1WqS1oZ86T2bn5tAowSDBuyR4jR9rOd5YNZ\n7v3M70PWf3h1HnDAsalYv7v0fx17KHQ9AuUAwFqvrpa3XyW/1YS9cmR3OyNDh8FQ\nB7UR+aTvKsyxpBCCRgdCN3tpSQKBgQDHQwUwAHUxEcK1G874C8brDikH8pH460wB\n2Of5/sxhmimHO8xQZUpNeI84zc2WBisF8GVRc+Jpuf7gDW38KEt+sLPNOvHykIE/\nS89nd20cstwcf4piJ5/elNfFkexiz7Pye65N22A1wkqXL6Xhq4W9heZR2YCv6m2b\nwmA/uLdGMwKBgQCy61HEOkCwFlpE/BXkYtJKga43NpkNb7pybxLOBEQQyrXD7MGR\nWMLjdVR/TQTcaaA5EOCtz9wSnWFtaPY6Jpcd1Uag40wJT9bbAwHl/UBF1ySVgVx1\nvEfn5LJk+BjysHnHXytHzvXgsTl1gyWqeffAy9njeEVnE6V9k/J6VFPBAQKBgCmF\nNZeDAOhwovnKCZ52FcT09mfJi9EqdnQMFoppJX1Q+kZLl49JC+qIrI9Rkv0n298o\n8HPAifUt5IYbRke8vb5wY4boOXIp2kSuL1GH+Rx5yJPHn7ZEO3PN4AgzF+afEQf9\n7Zwbkjihe5l1PEOB0iRjulJj2ATP/HbwUc31V3sxAoGBAO3zz4e2qIvzo1s6FMvX\nxsc8QlddLhq/KYEqnOyZhWFlWb3NYdKC/4hXi119wmURKCe511DC1GBjzO+NCauI\nQYulVd5DTuFFwqVwy4trIPiEUldktJOui7CyrcNfBovUAqky8ALSgytNSo+9iz2p\nlninGQVgiHXOBtyOkECC7hoZ\n-----END PRIVATE KEY-----\n",
+	"client_email": "firebase-adminsdk-ld6am@hivehobby.iam.gserviceaccount.com",
+	"client_id": "109600085034795461754",
+	"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+	"token_uri": "https://oauth2.googleapis.com/token",
+	"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+	"client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-ld6am%40hivehobby.iam.gserviceaccount.com",
+	"universe_domain": "googleapis.com"
+}

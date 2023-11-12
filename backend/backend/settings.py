@@ -16,11 +16,10 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 
-cred = credentials.Certificate("C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json")
+cred = credentials.Certificate("C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\backend\\backend\\firebase_sdk.json")
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'hivehobby.appspot.com'
 })
-
 
 # load_dotenv()
 
@@ -107,7 +106,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend/public/media/')
 MEDIA_URL = 'frontend/public/media/'
 
 
-ROOT_URLCONF = 'hobby4u.urls'
+ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
@@ -136,7 +135,7 @@ EMAIL_USE_TLS = True
 
 STATICFILES_DIRS =[os.path.join(BASE_DIR,'frontend','build','static')]
 
-WSGI_APPLICATION = 'hobby4u.wsgi.application'
+WSGI_APPLICATION = 'backend.wsgi.application'
 
 APPEND_SLASH = False
 
