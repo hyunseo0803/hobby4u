@@ -132,7 +132,14 @@ function Judge(props) {
 	}
 
 	return (
-		<div style={{ margin: "8%" }}>
+		<div
+			style={{
+				marginLeft: "10%",
+				marginRight: "10%",
+				marginTop: "8%",
+				marginBottom: "2%",
+			}}
+		>
 			<div style={{ fontSize: 20, fontWeight: "bolder" }}>심사 중</div>
 			{judgeMy.length > 0 ? (
 				<div
@@ -240,10 +247,6 @@ function Judge(props) {
 									}}
 								>
 									<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
-									<div className="class_GCount">
-										<div className="like">좋아요</div>
-										<div className="like_text">{j.goodCount}</div>
-									</div>
 								</div>
 								<button
 									value={j.class_id}
