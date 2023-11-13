@@ -26,7 +26,7 @@ function AdminLogin(props) {
 				if (response.data.jwt_token) {
 					localStorage.setItem("manager", response.data.jwt_token);
 					await getAdminData();
-					navigate("/manager");
+					navigate("/manager/dash");
 				} else {
 					setErrorMessage(response.data.message);
 				}

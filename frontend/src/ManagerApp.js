@@ -26,8 +26,30 @@ class ManagerApp extends Component {
 			isJudgeFinish: "",
 			asapJudge: 0,
 			asapJudgeList: "",
+			getUserInfoData: [],
+			getAdminInfoData: [],
+			getUserList: [],
+			getAdminList: [],
+			getNotAdminList: [],
 		};
 	}
+
+	handleLogout = async () => {
+		// 토큰 삭제
+		const confirmDelete = window.confirm("정말로 로그아웃 하시겠습니까?");
+		if (confirmDelete) {
+			localStorage.removeItem("manager");
+
+			// 로그인 상태 초기화
+			this.setState({
+				isLoginAdmin: false,
+				adminData: null,
+			});
+		}
+
+		// 홈 화면으로 이동
+		// window.location.href = "/manager";
+	};
 	async componentDidMount() {
 		const manager = localStorage.getItem("manager");
 
@@ -35,6 +57,8 @@ class ManagerApp extends Component {
 			await this.getAdminData();
 			await this.finishJudgeCnt();
 			await this.deadlineJudge();
+			await this.getUserAdminlist();
+			await this.getNotApproveAdmin();
 		}
 		if (!manager) {
 			this.setState({
@@ -44,6 +68,7 @@ class ManagerApp extends Component {
 			return;
 		}
 	}
+
 	finishJudgeCnt = async () => {
 		try {
 			const response = await axios.get(
@@ -110,6 +135,55 @@ class ManagerApp extends Component {
 			return;
 		}
 	};
+	getUserAdminlist = async () => {
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/manager/get_UserOrAdmin_list/"
+			);
+			console.log(response.data.adminlist);
+			console.log(response.data.userlist);
+			this.setState({
+				getAdminList: response.data.adminlist,
+				getUserInfoData: response.data.userlist,
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
+	getNotApproveAdmin = async () => {
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/manager/get_notApprove_list/"
+			);
+
+			this.setState({
+				getNotAdminList: response.data.notAdminList,
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	getDetailInfo = async (userOrAdmin) => {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/manager/get_UserOrAdmin_some_detail/?userOradmin=${userOrAdmin}`
+			);
+			if (response.ok) {
+				console.log("회원 디테일정보:");
+				console.log(response.data.userData);
+				console.log("매니저 디테일정보:");
+				console.log(response.data.adminData);
+				this.setState({
+					getAdminInfoData: response.data.adminData,
+					getUserInfoData: response.data.userData,
+				});
+			}
+		} catch (error) {
+			// 예외처리
+			console.error(error);
+		}
+	};
 
 	render() {
 		const {
@@ -119,6 +193,11 @@ class ManagerApp extends Component {
 			notJudgeFinish,
 			asapJudge,
 			asapJudgeList,
+			getAdminInfoData,
+			getUserInfoData,
+			getAdminList,
+			getUserList,
+			getNotAdminList,
 		} = this.state;
 		const { readFirebasefile } = this.props;
 
@@ -129,11 +208,15 @@ class ManagerApp extends Component {
 						className="Container"
 						style={{ display: "flex", flexDirection: "row" }}
 					>
-						<SlideBar isLoginAdmin={isLoginAdmin} adminData={adminData} />
+						<SlideBar
+							isLoginAdmin={isLoginAdmin}
+							adminData={adminData}
+							handleLogout={this.handleLogout}
+						/>
 
 						<Routes>
 							<Route
-								path="/"
+								path="/dash"
 								element={
 									<Dash
 										adminData={adminData}
@@ -161,7 +244,16 @@ class ManagerApp extends Component {
 							/>
 							<Route
 								path="memberAndadmin/wjdqh"
-								element={<MAmanage adminData={adminData} />}
+								element={
+									<MAmanage
+										adminData={adminData}
+										getAdminlist={getAdminList}
+										getUserlist={getUserList}
+										getDetailInfo={this.getDetailInfo}
+										getUserInfoData={getUserInfoData}
+										getAdminInfoData={getAdminInfoData}
+									/>
+								}
 							/>
 							<Route
 								path="judge/classdetail"
@@ -179,11 +271,28 @@ class ManagerApp extends Component {
 								<>
 									<Route
 										path="member/ghldnjs"
-										element={<MemberManage adminData={adminData} />}
+										element={
+											<MemberManage
+												adminData={adminData}
+												getUserList={getUserList}
+												getDetailInfo={this.getDetailInfo}
+												getUserInfoData={getUserInfoData}
+											/>
+										}
 									/>
 									<Route
 										path="manager/wjdqh"
-										element={<AdminInfo adminData={adminData} />}
+										element={
+											<AdminInfo
+												adminData={adminData}
+												getAdminList={getAdminList}
+												getNotAdminList={getNotAdminList}
+												getDetailInfo={this.getDetailInfo}
+												getAdminInfoData={getAdminInfoData}
+												getUserAdminlist={this.getUserAdminlist}
+												getNotApproveAdmin={this.getNotApproveAdmin}
+											/>
+										}
 									/>
 								</>
 							)}

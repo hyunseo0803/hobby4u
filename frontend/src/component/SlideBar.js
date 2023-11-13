@@ -14,10 +14,11 @@ import {
 	RiEmotionHappyLine,
 	RiLogoutBoxRLine,
 } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SlideBar = (props) => {
-	const { adminData, isLoginAdmin } = props;
+	const { adminData, handleLogout } = props;
+
 	return (
 		<div
 			style={{
@@ -40,12 +41,12 @@ const SlideBar = (props) => {
 				<RiStackLine size={30} style={{ margin: 30 }} />
 			</Link>
 
-			{isLoginAdmin && (
+			{adminData.nickname !== "메인 관리자" && (
 				<Link to="memberAndadmin/wjdqh">
-					<RiAdminLine size={30} style={{ margin: 30 }} />
+					<AiOutlineUser size={30} style={{ margin: 30 }} />
 				</Link>
 			)}
-			{adminData && (
+			{adminData.nickname === "메인 관리자" && (
 				<>
 					<Link to="member/ghldnjs">
 						<RiGroupLine size={30} style={{ margin: 30 }} />
@@ -61,10 +62,14 @@ const SlideBar = (props) => {
 					style={{ marginTop: 60, marginBottom: 30 }}
 				/>
 			</Link>
-
-			<div>
-				<RiLogoutBoxRLine size={30} />
-			</div>
+			<Link to="/manager">
+				<button
+					style={{ border: "none", backgroundColor: "white" }}
+					onClick={handleLogout}
+				>
+					<RiLogoutBoxRLine size={30} />
+				</button>
+			</Link>
 		</div>
 	);
 };
