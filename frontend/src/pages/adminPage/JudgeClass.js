@@ -38,24 +38,29 @@ function JudgeClass(props) {
 			);
 			const classdetail = response.data.class_data;
 			const daydetail = response.data.day_data;
+			console.log(classdetail);
+
 			const updatedClassDetail = { ...classdetail };
+
 			const classImg = await readFirebasefile("classFile", classdetail.img);
-			const classfile = await readFirebasefile("file", classdetail["file"]);
+			if (classdetail.file) {
+				const classfile = await readFirebasefile("file", classdetail.file);
+				updatedClassDetail.file = classfile;
+			}
 			if (classdetail["infoimg1"]) {
-				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
+				const intro1 = await readFirebasefile("intro", classdetail.infoimg1);
 				updatedClassDetail.infoimg1 = intro1;
 			}
 			if (classdetail["infoimg2"]) {
-				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
+				const intro2 = await readFirebasefile("intro", classdetail.infoimg2);
 				updatedClassDetail.infoimg2 = intro2;
 			}
 			if (classdetail["infoimg3"]) {
-				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
+				const intro3 = await readFirebasefile("intro", classdetail.infoimg3);
 				updatedClassDetail.infoimg3 = intro3;
 			}
 
 			updatedClassDetail.img = classImg;
-			updatedClassDetail.file = classfile;
 
 			const updatedDayDetail = await Promise.all(
 				daydetail.map(async (day) => {

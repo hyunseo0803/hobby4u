@@ -55,7 +55,10 @@ function Allclass(props) {
 			const daydetail = response.data.day_data;
 			const updatedClassDetail = { ...classdetail };
 			const classImg = await readFirebasefile("classFile", classdetail.img);
-			const classfile = await readFirebasefile("file", classdetail["file"]);
+			if (classdetail.file) {
+				const classfile = await readFirebasefile("file", classdetail["file"]);
+				updatedClassDetail.file = classfile;
+			}
 			if (classdetail["infoimg1"]) {
 				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
 				updatedClassDetail.infoimg1 = intro1;
@@ -70,7 +73,6 @@ function Allclass(props) {
 			}
 
 			updatedClassDetail.img = classImg;
-			updatedClassDetail.file = classfile;
 
 			const updatedDayDetail = await Promise.all(
 				daydetail.map(async (day) => {

@@ -331,7 +331,7 @@ function JudgeClassDetail(props) {
 								{/* </div> */}
 							</Accordion.Body>
 						</Accordion.Item>
-						{ClassDetail["address"] !== null && (
+						{type_offline && (
 							<Accordion.Item eventKey="3">
 								<Accordion.Header>활동 장소</Accordion.Header>
 								<Accordion.Body>
