@@ -17,5 +17,10 @@ urlpatterns = [
     path('create_judge_result/',views.create_judge_result),
    path('create_board_content/',views.create_board_content),
    path('read_board_content/',views.read_board_content),
-   path('delete_board_content/',views.delete_board_content)
+   path('delete_board_content/',views.delete_board_content),
+   path('get_UserOrAdmin_list/',views.get_UserOrAdmin_list),
+   path('get_notApprove_list/',views.get_notApprove_list),
+   path('change_approve/',views.change_approve)
+   
+#    path('get_UserOrAdmin_some_detail/',views.get_UserOrAdmin_some_detail),
 ]

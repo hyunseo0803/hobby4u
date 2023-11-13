@@ -22,8 +22,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DEFAULT_EMAIL = os.getenv('DEFAULT_EMAIL')
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = os.getenv('ALGORITHM')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+ALGORITHM = os.getenv('DJANGO_JWT_ALGORITHM')
 SUPER_ADMIN_ID=os.getenv('SUPER_ADMIN_ID')
 SUPER_ADMIN_PW=os.getenv('SUPER_ADMIN_PW')
 
@@ -295,3 +295,45 @@ def read_board_content(request):
         }
         boardList.append(data)
     return JsonResponse({'boardList':boardList})
+
+
+def get_UserOrAdmin_list(request):
+    adminlist=[]
+    adminl=Admin.objects.filter(is_approve=1)
+    for a in adminl:
+        alist={'nickname':a.nickname,
+                    'email':a.email,
+                    'phone':a.contact,
+                    'date':a.date}
+        adminlist.append(alist)
+    
+    userlist=[]
+    userl=Member.objects.all()
+    for u in userl:
+        ulist={'nickname':u.nickname,'email':u.email}
+        userlist.append(ulist)
+            
+            
+    return JsonResponse({'adminlist':adminlist,'userlist':userlist})
+    
+def get_notApprove_list(request):
+    notAdminlist=[]
+    notA=Admin.objects.filter(is_approve=0)
+    for na in notA:
+        naList={'nickname':na.nickname,
+                    'email':na.email,
+                    'phone':na.contact}
+        notAdminlist.append(naList)
+    return JsonResponse({'notAdminList':notAdminlist})
+
+
+@csrf_exempt
+def change_approve(request):
+    if request.method=="POST":
+        data=json.loads(request.body.decode("utf-8"))
+        admin_nickname=data.get('ApproveNickname')
+        approve=Admin.objects.get(nickname=admin_nickname)
+        approve.is_approve=1
+        approve.date=datetime.now().date()
+        approve.save()
+    return JsonResponse({'message':data})
