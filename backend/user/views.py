@@ -325,12 +325,5 @@ def get_user_achive(request):
             }
             achive_list.append(data)
         return Response(achive_list)
-    #     except jwt.ExpiredSignatureError:
-    #         return Response({'error': 'Expired token'}, status=status.HTTP_401_UNAUTHORIZED)
-    #     except jwt.InvalidTokenError:
-    #         return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-    #     except Exception as e:
-    #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    # else:
-    #     return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST)
+
 
