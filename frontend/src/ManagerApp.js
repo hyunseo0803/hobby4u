@@ -31,6 +31,8 @@ class ManagerApp extends Component {
 			getUserList: [],
 			getAdminList: [],
 			getNotAdminList: [],
+			getPclass: [],
+			getNpclass: [],
 		};
 	}
 
@@ -59,6 +61,8 @@ class ManagerApp extends Component {
 			await this.deadlineJudge();
 			await this.getUserAdminlist();
 			await this.getNotApproveAdmin();
+			await this.getNpClass();
+			await this.getPClass();
 		}
 		if (!manager) {
 			this.setState({
@@ -144,7 +148,7 @@ class ManagerApp extends Component {
 			console.log(response.data.userlist);
 			this.setState({
 				getAdminList: response.data.adminlist,
-				getUserInfoData: response.data.userlist,
+				getUserList: response.data.userlist,
 			});
 		} catch (error) {
 			console.error(error);
@@ -184,6 +188,32 @@ class ManagerApp extends Component {
 			console.error(error);
 		}
 	};
+	getNpClass = async () => {
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/manager/get_np_class/"
+			);
+
+			this.setState({
+				getNpclass: response.data.npclass,
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
+	getPClass = async () => {
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/manager/get_p_class/"
+			);
+
+			this.setState({
+				getPclass: response.data.pclass,
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	render() {
 		const {
@@ -198,6 +228,8 @@ class ManagerApp extends Component {
 			getAdminList,
 			getUserList,
 			getNotAdminList,
+			getNpclass,
+			getPclass,
 		} = this.state;
 		const { readFirebasefile } = this.props;
 
@@ -240,7 +272,16 @@ class ManagerApp extends Component {
 							/>
 							<Route
 								path="judge/result/tlatkrufrhk"
-								element={<JudgeResult adminData={adminData} />}
+								element={
+									<JudgeResult
+										adminData={adminData}
+										readFirebasefile={readFirebasefile}
+										getNpList={getNpclass}
+										getPList={getPclass}
+										getNpClass={this.getNpClass}
+										getPClass={this.getPClass}
+									/>
+								}
 							/>
 							<Route
 								path="memberAndadmin/wjdqh"

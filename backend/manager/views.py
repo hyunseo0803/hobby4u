@@ -46,6 +46,25 @@ def send_identification_code(request):
 
     return JsonResponse({'message':jwt_email_code})
 
+
+@csrf_exempt
+def send_user_email(request):
+    if request.method == 'POST':
+        data=json.loads(request.body.decode('utf-8'))
+        email = data.get('selectedEmail')
+        sendText = data.get('sendText')
+        subject = 'HiveHobby에서 메일이 도착했습니다.'
+        message = sendText
+        from_email = DEFAULT_EMAIL
+        to = email					
+        EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
+        
+
+        
+    return JsonResponse({'message':"ok"})
+
+
+
 @csrf_exempt
 def check_identification_code(request):
     if request.method=="POST":
@@ -253,9 +272,10 @@ def create_judge_result(request):
         data=json.loads(request.body.decode('utf-8'))
         result=data.get('result')
         class_id=data.get('classid')
+        coment=data.get('coment')
         admin=data.get('admin')
         today=timezone.now().date();
-        judge_result=ExamResult(admin_id=Admin.objects.get(nickname=admin),class_id=Class.objects.get(class_id=class_id),result=result,date=today)
+        judge_result=ExamResult(admin_id=Admin.objects.get(nickname=admin),class_id=Class.objects.get(class_id=class_id),result=result,coment=coment,date=today)
         judge_result.save();
     return JsonResponse({'status':"ok"})
 
@@ -309,9 +329,14 @@ def get_UserOrAdmin_list(request):
     
     userlist=[]
     userl=Member.objects.all()
+    print(userl.count())
+    
     for u in userl:
-        ulist={'nickname':u.nickname,'email':u.email}
+        ulist={'nickname':u.nickname,'email':u.email,'date':u.joindate,'provider':u.provider}
         userlist.append(ulist)
+        
+    print(userlist)
+        
             
             
     return JsonResponse({'adminlist':adminlist,'userlist':userlist})
@@ -337,3 +362,44 @@ def change_approve(request):
         approve.date=datetime.now().date()
         approve.save()
     return JsonResponse({'message':data})
+
+
+@csrf_exempt
+def delete_admin(request):
+    if request.method=="POST":
+        data=json.loads(request.body.decode("utf-8"))
+        admin_nickname=data.get('deleteNickname')
+        print(admin_nickname)
+        delete_nick=Admin.objects.get(nickname=admin_nickname)
+        print(delete_nick)
+        delete_nick.is_approve=0
+        delete_nick.date=None
+        delete_nick.save()
+    return JsonResponse({"message":"ok"})
+
+def get_np_class(request):
+    result=ExamResult.objects.filter(result="NP")
+    npclass=[]
+    for r in result:
+        data={'class_title':r.class_id.title,
+            'class_id':r.class_id.class_id
+              ,'admin':r.admin_id.nickname,
+              'coment':r.coment,
+              'date':r.date}
+        
+        npclass.append(data)
+        
+    return JsonResponse({'npclass':npclass})
+
+def get_p_class(request):
+    result=ExamResult.objects.filter(result="P")
+    pclass=[]
+    for r in result:
+        data={'class_title':r.class_id.title,
+              'class_id':r.class_id.class_id
+              ,'admin':r.admin_id.nickname,
+              'date':r.date}
+        
+        pclass.append(data)
+        
+    return JsonResponse({'pclass':pclass})

@@ -44,6 +44,26 @@ function AdminInfo(props) {
 			console.error(err);
 		}
 	};
+	const handleDelete = async (approveNickname) => {
+		try {
+			const confirmApprove = window.confirm(
+				`${approveNickname.nickname}의 계정을 비승인 처리 하시겠습니까?`
+			);
+			if (confirmApprove) {
+				const response = await axios.post(
+					"http://localhost:8000/api/manager/delete_admin/",
+					{
+						deleteNickname: approveNickname.nickname,
+					}
+				);
+				alert("비승인 처리 되었습니다.");
+				await getUserAdminlist();
+				await getNotApproveAdmin();
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	};
 
 	const [searchText, setSearchText] = useState("");
 	const [searchedColumn, setSearchedColumn] = useState("");
@@ -199,7 +219,7 @@ function AdminInfo(props) {
 			key: "action",
 			render: (text, record) => (
 				<Space size="middle">
-					<Button>Delete</Button>
+					<Button onClick={() => handleDelete(record)}>Revoke</Button>
 				</Space>
 			),
 		},

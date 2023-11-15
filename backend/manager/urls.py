@@ -20,7 +20,11 @@ urlpatterns = [
    path('delete_board_content/',views.delete_board_content),
    path('get_UserOrAdmin_list/',views.get_UserOrAdmin_list),
    path('get_notApprove_list/',views.get_notApprove_list),
-   path('change_approve/',views.change_approve)
+   path('change_approve/',views.change_approve),
+   path('delete_admin/',views.delete_admin),
+   path('send_user_email/',views.send_user_email),
+   path('get_np_class/',views.get_np_class),
+   path('get_p_class/',views.get_p_class),
    
 #    path('get_UserOrAdmin_some_detail/',views.get_UserOrAdmin_some_detail),
 ]
