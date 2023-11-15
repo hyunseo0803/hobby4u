@@ -31,7 +31,7 @@ const SlideBar = (props) => {
 				flexDirection: "column",
 			}}
 		>
-			<Link to="/manager">
+			<Link to="/manager/dash">
 				<AiOutlineNotification size={30} style={{ margin: 30 }} />
 			</Link>
 			<Link to="judge/ing/tlatkwnd">
