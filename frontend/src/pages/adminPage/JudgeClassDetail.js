@@ -8,7 +8,11 @@ import moment from "moment";
 import Accordion from "react-bootstrap/Accordion";
 import axios from "axios";
 
-import { Modal, Input } from "antd";
+// import { Modal } from "antd";
+
+import Modal from "antd/lib/modal";
+
+import Input from "antd/lib/input";
 
 function JudgeClassDetail(props) {
 	const { adminData } = props;

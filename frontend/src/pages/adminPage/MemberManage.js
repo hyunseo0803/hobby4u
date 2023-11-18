@@ -2,7 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
-import { Button, Input, Space, Table } from "antd";
+// import { Button, Space, Table } from "antd";
+import Space from "antd/lib/space";
+import Button from "antd/lib/button";
+import Table from "antd/lib/table";
+
+import Input from "antd/lib/input";
 import moment from "moment";
 
 function MemberManage(props) {
