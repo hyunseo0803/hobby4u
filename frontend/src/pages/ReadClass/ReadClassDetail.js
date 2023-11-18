@@ -1,20 +1,32 @@
 // import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../../styles/ReadClassDetail.css";
 import Background from "../../component/Background";
 import React from "react";
 import moment from "moment";
+import PaymentButton from "../../component/tossPgBTN";
 
 function ReadClassDetail() {
 	const location = useLocation();
 	const ClassDetail = location.state.ClassDetail;
 	const DayDetail = location.state.DayDetail;
+	const [randomOrederid, setRandomOrederid] = useState("");
 	const theme = ClassDetail["theme"]
+
 		.replace("['", "")
 		.replace("']", "")
 		.replace("', '", ",")
 		.replace("', '", ",");
+
+	useEffect(() => {
+		let random = Math.random().toString(36).substr(2, 11);
+		setRandomOrederid(random);
+	}, []);
+
+	useEffect(() => {
+		console.log(randomOrederid);
+	});
 
 	const theme_div = theme.split(",");
 
@@ -22,9 +34,10 @@ function ReadClassDetail() {
 	const money_free = parseInt(ClassDetail["money"]) === 0;
 
 	function calculateDaysLeft(endDate) {
-		const today = moment();
-		const endDateObj = moment(endDate);
-		const timeRemaining = endDateObj.diff(today, "days");
+		const today = moment().format("YYYY-MM-DD");
+		const diff = moment(endDate).diff(today, "days");
+		const timeRemaining = Math.floor(diff);
+		console.log(timeRemaining);
 		return timeRemaining;
 	}
 
@@ -89,237 +102,270 @@ function ReadClassDetail() {
 	});
 
 	return (
-		<Background>
-			<div
-				style={{
-					marginLeft: "18%",
-					marginRight: "18%",
-					backgroundColor: "white",
-				}}
-			>
-				<div className="large_coment">{ClassDetail["title"]}</div>
-				<div
-					className="round_label_container"
-					style={{ justifyContent: "space-between" }}
-				>
-					<div className="round_label_container">
-						{theme_div.map((theme) => (
-							<div className="round_label">{theme}</div>
-						))}
-					</div>
-					<div className="round_label_container">
-						<div className="round_label">
-							{type_offline ? "오프라인" : "온라인"}
-						</div>
-						<div className="round_label">{money_free ? " 무료" : " 유료"}</div>
-					</div>
-				</div>
-				<div className="img">
-					{isImage(ClassDetail["img"]) ? (
-						<img
-							className="firstimg"
-							src={ClassDetail["img"]}
-							alt="gg"
-							width={100}
-						/>
-					) : (
-						<video
-							className="firstimg"
-							src={ClassDetail["img"]}
-							alt="gg"
-							width={100}
-							controls
-						/>
-					)}
-				</div>
-				<div
-					className="row_container"
-					style={{ justifyContent: "space-between" }}
-				>
-					<div className="row_container">
-						<div className="info_div">모집 인원 {ClassDetail["people"]}명</div>
-						<div className="info_div">수강료 {ClassDetail["money"]}</div>
-					</div>
+		// <Background>
+		<div
+			style={{
+				marginLeft: "18%",
+				marginRight: "18%",
+				backgroundColor: "white",
+				marginTop: 80,
+				textAlign: "center",
+			}}
+		>
+			<div className="large_coment">{ClassDetail["title"]}</div>
+			<div className="info_div">{ClassDetail["info"]}</div>
 
+			<div
+				className="round_label_container"
+				style={{ justifyContent: "space-between" }}
+			>
+				<div className="round_label_container">
+					{theme_div.map((theme) => (
+						<div className="round_label">{theme}</div>
+					))}
+				</div>
+				<div className="round_label_container">
+					<div className="round_label">
+						{type_offline ? "오프라인" : "온라인"}
+					</div>
+					<div className="round_label">{money_free ? " 무료" : " 유료"}</div>
+				</div>
+			</div>
+			<div className="img">
+				{isImage(ClassDetail["img"]) ? (
+					<img
+						className="firstimg"
+						src={ClassDetail["img"]}
+						alt="gg"
+						width={100}
+					/>
+				) : (
+					<video
+						className="firstimg"
+						src={ClassDetail["img"]}
+						alt="gg"
+						width={100}
+						controls
+					/>
+				)}
+			</div>
+			<div
+				className="row_container"
+				style={{ justifyContent: "space-between" }}
+			>
+				<div
+					style={{
+						justifyContent: "space-between",
+						// backgroundColor: "red",
+						display: "flex",
+						flexDirection: "row",
+						width: "100%",
+					}}
+				>
 					<div className="row_container">
-						{calculateDaysLeft(ClassDetail["applyend"]) > 0 ? (
-							<div className="info_div">
-								D - {calculateDaysLeft(ClassDetail["applyend"])} 일 남음
-							</div>
-						) : (
+						<div className="info_div">
+							모집 인원 <div>{ClassDetail["people"]}명</div>
+						</div>
+						<div className="info_div">
+							수강료 <div>{ClassDetail["money"]}</div>
+						</div>
+						<div className="info_div">
+							{calculateDaysLeft(ClassDetail["applyend"]) > 0 ? (
+								<div className="info_div">
+									신청 마감
+									<div>D - {calculateDaysLeft(ClassDetail["applyend"])}</div>
+								</div>
+							) : (
+								<div
+									className="info_div"
+									style={{
+										width: 200,
+										justifyContent: "center",
+										display: "flex",
+										alignItems: "center",
+									}}
+								>
+									{ClassDetail["activitystart"] <= today &&
+										ClassDetail["activityend"] >= today && (
+											<div>활동 기간입니다. </div>
+										)}
+									{ClassDetail["activityend"] < today && (
+										<div>마감된 활동입니다.</div>
+									)}
+								</div>
+							)}
+						</div>
+					</div>
+					<div
+						style={{
+							justifyContent: "center",
+							alignItems: "center",
+							margin: 10,
+							marginTop: "auto",
+							marginBottom: "auto",
+						}}
+					>
+						<PaymentButton
+							money={ClassDetail["money"]}
+							orderid={randomOrederid}
+							ordername={ClassDetail["title"]}
+							customername={ClassDetail.id.nickname}
+						/>
+					</div>
+				</div>
+			</div>
+			{Object.values(ClassDetail).some((value) => value !== null) && (
+				<div
+					style={{
+						backgroundColor: "rgb(62, 63, 74)",
+						color: "white",
+						padding: 30,
+					}}
+				>
+					<div className="large_coment" style={{ padding: 50 }}>
+						우리 클래스를 소개할게요
+					</div>
+					{[1, 2, 3].map((index) => {
+						const infoKey = `info${index}`;
+						const imgKey = `infoimg${index}`;
+						const infoText = ClassDetail[infoKey];
+						const imgSrc =
+							ClassDetail[imgKey] === ClassDetail["infoimg1"]
+								? ClassDetail["infoimg1"]
+								: ClassDetail[imgKey] === ClassDetail["infoimg2"]
+								? ClassDetail["infoimg2"]
+								: ClassDetail["infoimg3"];
+
+						return (
+							<>
+								{imgSrc && (
+									<div className="infoimg_container">
+										<img className="infoimg_img" src={imgSrc} alt="gg" />
+									</div>
+								)}
+								{infoText && <div className="info_div">{infoText}</div>}
+							</>
+						);
+					})}
+				</div>
+			)}
+			<div className="info_div">
+				<div className="large_coment" style={{ padding: 70 }}>
+					어떤 활동을 하나요?
+				</div>
+				{DayDetail.map((Item, index) => {
+					// const day_img = Item["day_file"].replace("/frontend/public/", "/");
+
+					return (
+						<div key={index} className="row_container">
 							<div
-								className="info_div"
 								style={{
-									width: 200,
-									justifyContent: "center",
-									display: "flex",
-									alignItems: "center",
+									width: "80%",
+									height: 300,
 								}}
 							>
-								{ClassDetail["activitystart"] <= today &&
-									ClassDetail["activityend"] >= today && (
-										<div>활동 기간입니다. </div>
-									)}
-								{ClassDetail["activityend"] < today && (
-									<div>마감된 활동입니다.</div>
+								{isImage(Item["day_file"]) ? (
+									<img
+										className="infoimg_img"
+										src={Item["day_file"]}
+										alt="gg"
+										width={100}
+									/>
+								) : (
+									<video
+										className="infoimg_img"
+										src={Item["day_file"]}
+										alt="gg"
+										width={100}
+										controls
+									/>
 								)}
 							</div>
-						)}
-					</div>
-				</div>
-				<div className="info_div">{ClassDetail["info"]}</div>
-				{Object.values(ClassDetail).some((value) => value !== null) && (
+							<div
+								style={{
+									width: "90%",
+									justifyContent: "center",
+									flexDirection: "column",
+									display: "flex",
+									margin: 20,
+									textAlign: "left",
+									left: 0,
+									padding: 10,
+								}}
+							>
+								<div
+									style={{
+										fontFamily: "omyu_pretty",
+										fontSize: 30,
+									}}
+								>
+									{Item["day_sequence"]}
+								</div>
+								<div
+									style={{
+										fontFamily: "omyu_pretty",
+										fontSize: 20,
+									}}
+								>
+									{Item["day_title"]}
+								</div>
+								<div> {Item["day_info"]}</div>
+							</div>
+						</div>
+					);
+				})}
+			</div>
+			{ClassDetail["type"] === "offline" && (
+				<>
 					<div
 						style={{
 							backgroundColor: "rgb(62, 63, 74)",
 							color: "white",
-							padding: 30,
+							height: 400,
 						}}
 					>
-						<div className="large_coment" style={{ padding: 50 }}>
-							우리 클래스를 소개할게요
-						</div>
-						{[1, 2, 3].map((index) => {
-							const infoKey = `info${index}`;
-							const imgKey = `infoimg${index}`;
-							const infoText = ClassDetail[infoKey];
-							const imgSrc =
-								ClassDetail[imgKey] === ClassDetail["infoimg1"]
-									? ClassDetail["infoimg1"]
-									: ClassDetail[imgKey] === ClassDetail["infoimg2"]
-									? ClassDetail["infoimg2"]
-									: ClassDetail["infoimg3"];
+						<div className="large_coment">어디서? where?</div>
 
-							return (
-								<>
-									{imgSrc && (
-										<div className="infoimg_container">
-											<img className="infoimg_img" src={imgSrc} alt="gg" />
-										</div>
-									)}
-									{infoText && <div className="info_div">{infoText}</div>}
-								</>
-							);
-						})}
-					</div>
-				)}
-				<div className="info_div">
-					<div className="large_coment" style={{ padding: 70 }}>
-						어떤 활동을 하나요?
-					</div>
-					{DayDetail.map((Item, index) => {
-						// const day_img = Item["day_file"].replace("/frontend/public/", "/");
-
-						return (
-							<div key={index} className="row_container">
-								<div
-									style={{
-										width: "80%",
-										height: 300,
-									}}
-								>
-									{isImage(Item["day_file"]) ? (
-										<img
-											className="infoimg_img"
-											src={Item["day_file"]}
-											alt="gg"
-											width={100}
-										/>
-									) : (
-										<video
-											className="infoimg_img"
-											src={Item["day_file"]}
-											alt="gg"
-											width={100}
-											controls
-										/>
-									)}
-								</div>
-								<div
-									style={{
-										width: "90%",
-										justifyContent: "center",
-										flexDirection: "column",
-										display: "flex",
-										margin: 20,
-										textAlign: "left",
-										left: 0,
-										padding: 10,
-									}}
-								>
-									<div
-										style={{
-											fontFamily: "omyu_pretty",
-											fontSize: 30,
-										}}
-									>
-										{Item["day_sequence"]}
-									</div>
-									<div
-										style={{
-											fontFamily: "omyu_pretty",
-											fontSize: 20,
-										}}
-									>
-										{Item["day_title"]}
-									</div>
-									<div> {Item["day_info"]}</div>
-								</div>
-							</div>
-						);
-					})}
-				</div>
-				{ClassDetail["address"] !== null && (
-					<>
+						<div
+							className="map"
+							style={{
+								justifyContent: "center",
+								width: "90%",
+								height: 250,
+								margin: "auto",
+							}}
+						></div>
 						<div
 							style={{
-								backgroundColor: "rgb(62, 63, 74)",
-								color: "white",
-								height: 400,
+								fontFamily: "omyu_pretty",
+								fontSize: 30,
+								letterSpacing: 3,
+								margin: 10,
 							}}
 						>
-							<div className="large_coment">어디서? where?</div>
-
-							<div
-								className="map"
-								style={{
-									justifyContent: "center",
-									width: "90%",
-									height: 250,
-									margin: "auto",
-								}}
-							></div>
-							<div
-								style={{
-									fontFamily: "omyu_pretty",
-									fontSize: 30,
-									letterSpacing: 3,
-									margin: 10,
-								}}
-							>
-								{ClassDetail["address"]}
-							</div>
+							{ClassDetail["address"]}
 						</div>
-					</>
-				)}
-				{ClassDetail["file"] !== null && (
-					<div style={{ margin: 30 }}>
-						<button
-							onClick={openPdfPreview}
-							style={{
-								border: "none",
-								backgroundColor: "black",
-								color: "white",
-								padding: 20,
-								borderRadius: 50,
-							}}
-						>
-							활동 파일 다운 받기
-						</button>
 					</div>
-				)}
-			</div>
-		</Background>
+				</>
+			)}
+			{ClassDetail["file"] !== null && (
+				<div style={{ margin: 30 }}>
+					<button
+						onClick={openPdfPreview}
+						style={{
+							border: "none",
+							backgroundColor: "black",
+							color: "white",
+							padding: 20,
+							borderRadius: 50,
+						}}
+					>
+						활동 파일 다운 받기
+					</button>
+				</div>
+			)}
+		</div>
+		// </Background>
 	);
 }
 

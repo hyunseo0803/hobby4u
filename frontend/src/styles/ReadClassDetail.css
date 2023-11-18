@@ -31,9 +31,16 @@
 }
 
 .info_div {
-	padding-left: 5%;
-	padding-right: 5%;
-	padding-bottom: 5%;
+	/* padding-left: 5%; */
+	/* padding-right: 5%; */
+	/* padding-bottom: 5%; */
+	text-align: center;
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin: 10px;
+	/* background-color: yellow; */
 }
 
 .infoimg_container {
