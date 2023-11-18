@@ -9,6 +9,7 @@ import random
 import json
 import jwt
 import os
+import requests
 from .models import *
 from django.core.files import File
 from django.http import JsonResponse
@@ -16,6 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Class, DayClassinfo
 from datetime import datetime
 from datetime import timedelta
+import base64
+import uuid
 
 from django.core import serializers
 
@@ -32,6 +35,7 @@ from django.http import JsonResponse
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 ALGORITHM = os.getenv('DJANGO_JWT_ALGORITHM')
+toss_payments_api_key=os.getenv('toss_payments_api_key')
 
 from django.utils.dateformat import DateFormat
 
@@ -490,3 +494,32 @@ def read_goodCount_data(request):
         return JsonResponse({'like_data_list': like_data_list}, safe=False)
 
     return JsonResponse({'message': 'Data received and processed successfully!'})
+
+
+@csrf_exempt
+def process_payment(request):
+    if request.method=="POST":
+        data=json.loads(request.body.decode('utf-8'))
+        
+        print(request.body)
+
+        toss_payments_api_key_bytes = f"{toss_payments_api_key}:".encode('utf-8')
+        encoded_api_key = base64.b64encode(toss_payments_api_key_bytes).decode('utf-8')
+
+        # toss_api_key = encoded_api_key
+        toss_api_url = 'https://api.tosspayments.com/v1/payments/confirm'
+
+        # 토스 페이먼츠 API 호출
+        response = requests.post(
+        toss_api_url,
+        headers={
+            'Authorization':  f'Basic {encoded_api_key}',
+            'Content-Type': 'application/json',
+            'idempotency_key' : str(uuid.uuid4())
+        },
+        json=data,
+        )
+        
+        print(response.status_code)
+
+    return JsonResponse(response.json(), status=response.status_code)

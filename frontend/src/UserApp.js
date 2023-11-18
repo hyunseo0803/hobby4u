@@ -13,6 +13,9 @@ import CreateClass from "./pages/CreateClass/CreateClass";
 import CreateClassDetail from "./pages/CreateClass/CreateClassDetail";
 import ReadClass from "./pages/ReadClass/ReadClass";
 import ReadClassDetail from "./pages/ReadClass/ReadClassDetail";
+import TossSuccess from "./pages/TossSuccess.tsx";
+import TossFail from "./pages/TossFail.tsx";
+import CompletePayment from "./common/CompletePayment.js";
 
 class UserApp extends Component {
 	constructor(props) {
@@ -145,6 +148,9 @@ class UserApp extends Component {
 								path="setting"
 								element={<Setting readFirebasefile={readFirebasefile} />}
 							/>
+							<Route path="toss/success" element={<TossSuccess />} />
+							<Route path="toss/fail" element={<TossFail />} />
+							<Route path="complete/payment" element={<CompletePayment />} />
 						</>
 					)}
 				</Routes>
