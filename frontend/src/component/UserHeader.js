@@ -25,7 +25,7 @@ function Header(props) {
 	const logout = () => {
 		try {
 			const app_key = process.env.REACT_APP_KAKAO_APP_KEY;
-			const logout_redirect_uri = logout_redirectUri;
+			const logout_redirect_uri = "http://localhost:3000/";
 			window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${app_key}&logout_redirect_uri=${logout_redirect_uri}`;
 			localStorage.removeItem("token");
 		} catch (error) {
@@ -47,12 +47,7 @@ function Header(props) {
 						내 클래스
 					</Link>
 				</div>
-				<div className="menu_item">
-					{/* 모든 클래스 보기_ Top 5 멘토, New 클래스, All 및 Best 클래스   */}
-					<Link to="takingclass" className="link">
-						수강 중인 클래스
-					</Link>
-				</div>
+
 				<div className="menu_item">
 					{/* 제목 및 소개로 검색, 태그별 검색  */}
 					<Link to="judge" className="link">
@@ -90,6 +85,9 @@ function Header(props) {
 						<Dropdown.Menu>
 							<Link to="setting" className="dropdown-link ">
 								<Dropdown.Item href="/intro">프로필 수정</Dropdown.Item>
+							</Link>
+							<Link to="my/cashback" className="dropdown-link ">
+								<Dropdown.Item href="/intro">나의 환급금</Dropdown.Item>
 							</Link>
 							<Dropdown.Item href="#/logout" onClick={logout}>
 								로그아웃
