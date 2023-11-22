@@ -6,11 +6,14 @@ import Background from "../../component/Background";
 import React from "react";
 import moment from "moment";
 import PaymentButton from "../../component/tossPgBTN";
+import axios from "axios";
 
 function ReadClassDetail() {
 	const location = useLocation();
 	const ClassDetail = location.state.ClassDetail;
 	const DayDetail = location.state.DayDetail;
+	const userData = location.state.userData;
+	const [cashBackList, SetCashBackList] = useState([]);
 	const [randomOrederid, setRandomOrederid] = useState("");
 	const theme = ClassDetail["theme"]
 
@@ -20,12 +23,28 @@ function ReadClassDetail() {
 		.replace("', '", ",");
 
 	useEffect(() => {
-		let random = Math.random().toString(36).substr(2, 11);
-		setRandomOrederid(random);
+		let random = (
+			Math.floor(Math.random() * 10000000000) + ClassDetail.class_id
+		)
+			.toString(36)
+			.substr(1, 10);
+		while (random.length < 8) {
+			random += Math.floor(Math.random() * 10).toString(36);
+		}
+
+		let result_random = `${random}_${ClassDetail.class_id}`;
+
+		setRandomOrederid(result_random);
+		// const decodedClassid = parseInt(random, 36) % 10000000000;
 	}, []);
 
 	useEffect(() => {
-		console.log(randomOrederid);
+		getCashbackList();
+	}, []);
+
+	useEffect(() => {
+		console.log(cashBackList);
+		console.log(ClassDetail.class_id);
 	});
 
 	const theme_div = theme.split(",");
@@ -50,6 +69,24 @@ function ReadClassDetail() {
 	}
 
 	const today = new Date().toISOString().split("T")[0];
+
+	const getCashbackList = async () => {
+		const jwt_token = localStorage.getItem("token");
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/user/get_cashback_list/",
+				{
+					headers: {
+						Authorization: `Bearer ${jwt_token}`,
+					},
+				}
+			);
+			console.log(response.data.cashlist);
+			SetCashBackList(response.data.cashlist);
+		} catch (err) {
+			console.error(err);
+		}
+	};
 
 	const { kakao } = window;
 
@@ -203,14 +240,39 @@ function ReadClassDetail() {
 							margin: 10,
 							marginTop: "auto",
 							marginBottom: "auto",
+							display: "flex",
+							flexDirection: "row",
 						}}
 					>
-						<PaymentButton
-							money={ClassDetail["money"]}
-							orderid={randomOrederid}
-							ordername={ClassDetail["title"]}
-							customername={ClassDetail.id.nickname}
-						/>
+						{/* <div style={{ fontSize: 25, marginRight: 15 }}>
+							{ClassDetail.applycnt}/{ClassDetail.people}
+						</div> */}
+						{userData &&
+						userData.nickname !== ClassDetail.id.nickname &&
+						cashBackList.some(
+							(obj) => obj.class_num !== ClassDetail.class_id
+						) ? (
+							<PaymentButton
+								money={ClassDetail["money"]}
+								orderid={randomOrederid}
+								ordername={ClassDetail["title"]}
+								customername={ClassDetail.id.nickname}
+								applycnt={ClassDetail.applycnt}
+								applypeople={ClassDetail.people}
+							/>
+						) : (
+							<div>
+								<div style={{ fontSize: 12, color: "gray" }}>신청 현황</div>
+								<div
+									style={{
+										color: "red",
+										fontSize: 20,
+									}}
+								>
+									{ClassDetail.applycnt}/{ClassDetail.people}
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
