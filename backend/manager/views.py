@@ -329,13 +329,11 @@ def get_UserOrAdmin_list(request):
     
     userlist=[]
     userl=Member.objects.all()
-    print(userl.count())
     
     for u in userl:
         ulist={'nickname':u.nickname,'email':u.email,'date':u.joindate,'provider':u.provider}
         userlist.append(ulist)
         
-    print(userlist)
         
             
             
@@ -369,9 +367,7 @@ def delete_admin(request):
     if request.method=="POST":
         data=json.loads(request.body.decode("utf-8"))
         admin_nickname=data.get('deleteNickname')
-        print(admin_nickname)
         delete_nick=Admin.objects.get(nickname=admin_nickname)
-        print(delete_nick)
         delete_nick.is_approve=0
         delete_nick.date=None
         delete_nick.save()
