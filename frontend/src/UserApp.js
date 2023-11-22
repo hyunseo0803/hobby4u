@@ -16,6 +16,7 @@ import ReadClassDetail from "./pages/ReadClass/ReadClassDetail";
 import TossSuccess from "./pages/TossSuccess.tsx";
 import TossFail from "./pages/TossFail.tsx";
 import CompletePayment from "./common/CompletePayment.js";
+import CashBack from "./pages/CashBack.js";
 
 class UserApp extends Component {
 	constructor(props) {
@@ -151,6 +152,15 @@ class UserApp extends Component {
 							<Route path="toss/success" element={<TossSuccess />} />
 							<Route path="toss/fail" element={<TossFail />} />
 							<Route path="complete/payment" element={<CompletePayment />} />
+							<Route
+								path="my/cashback"
+								element={
+									<CashBack
+										userData={userData}
+										getUserData={this.getUserData}
+									/>
+								}
+							/>
 						</>
 					)}
 				</Routes>
