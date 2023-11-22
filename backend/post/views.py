@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Class, DayClassinfo
 from datetime import datetime
+from django.utils import timezone
 from datetime import timedelta
 import base64
 import uuid
@@ -28,6 +29,8 @@ load_dotenv()
 import firebase_admin
 from firebase_admin import credentials, storage
 from django.http import JsonResponse
+from apscheduler.schedulers.background import BackgroundScheduler
+sched = BackgroundScheduler()
 
 # cred = credentials.Certificate('C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json')
 # firebase_admin.initialize_app(cred, {'storageBucket': 'hivehobby.appspot.com'})
@@ -38,6 +41,34 @@ ALGORITHM = os.getenv('DJANGO_JWT_ALGORITHM')
 toss_payments_api_key=os.getenv('toss_payments_api_key')
 
 from django.utils.dateformat import DateFormat
+
+@sched.scheduled_job('cron',minute= '*',name = 'schedulerF')
+def schedulerF():   
+    print("task 체크중...")
+    target_results = ExamResult.objects.filter(result='P',class_id__applyend__lt=timezone.now())
+    if target_results:
+        for result in target_results:
+            # 수강하는 수강생 수
+            refund_cnt=result.class_id
+            if refund_cnt.applycnt > 0:
+                
+                # 해당 클래스의 (원금 - 원금 / 수강자 수) 만큼 돈을 반환
+                refund_amount = float(refund_cnt.money) -( float(refund_cnt.money) /refund_cnt.applycnt)
+                refund_member=Apply.objects.filter(class_id=refund_cnt.class_id)
+                
+                
+                for m_refund in refund_member:
+                    m_re = Member.objects.get(id=m_refund.id.id)
+                    if Cashback.objects.filter(id=m_re.id,class_id=refund_cnt.class_id,cash=refund_amount).count()==0:
+                        print("반환금 새로 추가할거임")
+                        m_re.receive_cash+=refund_amount
+                        m_re.save()
+                        cash_back=Cashback(id=Member.objects.get(id=m_re.id),class_id=Class.objects.get(class_id=refund_cnt.class_id),cash=refund_amount,status='지급예정')
+                        cash_back.save()
+                    else:
+                        print("이미 반환금으로 추가된거임")
+                        return;
+sched.start()
 
 def randm_num():
     num = "0123456789"
@@ -50,9 +81,11 @@ def randm_num():
     
 
 def generate_random_hash(file_name):
+    
+    # print(file_name)
  
     # 임의의 솔트(salt)를 생성
-    file_name_without_extension, file_extension = file_name.split('.')
+    file_name_without_extension, file_extension = file_name.rsplit('.', 1)
 
     # 파일 이름을 해시화
     hashed_file_name = hashlib.sha256(file_name_without_extension.encode()).hexdigest()
@@ -78,7 +111,10 @@ def upload_to_firebase(file,folder_name):
 def submit_data(request):
     if request.method == 'POST':
         json_data = request.POST.get('json')  # JSON 데이터 받기
+        
+    
         data = json.loads(json_data)
+        
         token=data.get('token')
         payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
@@ -102,6 +138,10 @@ def submit_data(request):
         inputimage2=request.FILES.get('inputImage2')
         inputimage3=request.FILES.get('inputImage3')
         file=request.FILES.get('file')
+        
+        # print(activityenddate,activitystartdate)
+        
+        
             
             
         days = data.get('days', [])
@@ -129,8 +169,8 @@ def submit_data(request):
                                             intro3_file=inputimg3_file_url,
                                             intro3_content=inputinfo3,
                                             applyend=applyenddate,
-                                            activitystart=activitystartdate,
-                                            activityend=activityenddate,
+                                            activitystart=activitystartdate ,
+                                            activityend=activityenddate ,
                                             adress=address,
                                             file=class_file_url)
         class_obj.save()
@@ -140,7 +180,7 @@ def submit_data(request):
                 day_title = day_data.get('title','')
                 day_info = day_data.get('content','')
                 day_file = request.FILES.get(f'dayImg[{day_sequence}]', None)
-                
+                # print(day_date)
                 day_file_url = upload_to_firebase(day_file,"day")
 
                 day_class_info=DayClassinfo.objects.create(
@@ -160,7 +200,9 @@ def submit_data(request):
 
 
 def read_all_data(request):
-    class_all = ExamResult.objects.filter(result='P')
+    today= datetime.today().strftime('%Y-%m-%d')
+    class_all = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
+    
     
     all_data_list = []
     for all in class_all:
@@ -181,7 +223,8 @@ def read_all_data(request):
             'applyend': all.class_id.applyend,
             'activitystart': all.class_id.activitystart,
             'activityend': all.class_id.activityend,
-            'goodCount': all.class_id.goodcount
+            'goodCount': all.class_id.goodcount,
+            'applycnt': all.class_id.applycnt,
         }
         all_data_list.append(all_data)
         
@@ -192,32 +235,64 @@ def read_my_data(request):
         jwt_token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
+        
+        
         class_all = ExamResult.objects.filter(result='P')
-        class_my = class_all.filter(class_id__id=user_id)
-        my_data_list = []
-        for all in class_my:
-            all_data = {
-                'class_id': all.class_id.class_id,
-                'id':{
-                    'nickname':all.class_id.id.nickname,
-                    'profile':all.class_id.id.profileimg if all.class_id.id.profileimg else None,
-                    'updateprofile':all.class_id.id.updateprofile if all.class_id.id.updateprofile else None,
-                },
-                'title': all.class_id.title,
-                'info': all.class_id.info,
-                'img': all.class_id.img,
-                'theme': all.class_id.theme,
-                'people': all.class_id.people,
-                'money': all.class_id.money,
-                'type': all.class_id.type,
-                'applyend': all.class_id.applyend,
-                'activitystart': all.class_id.activitystart,
-                'activityend': all.class_id.activityend,
-                'goodCount': all.class_id.goodcount
-            }
-            my_data_list.append(all_data)
+        
+        if class_all.count()>0:
+            class_my = class_all.filter(class_id__id=user_id)
             
-        return JsonResponse({'my_data_list':my_data_list})
+            my_data_list = []
+            for all in class_my:
+                all_data = {
+                    'class_id': all.class_id.class_id,
+                    'id':{
+                        'nickname':all.class_id.id.nickname,
+                        'profile':all.class_id.id.profileimg if all.class_id.id.profileimg else None,
+                        'updateprofile':all.class_id.id.updateprofile if all.class_id.id.updateprofile else None,
+                    },
+                    'title': all.class_id.title,
+                    'info': all.class_id.info,
+                    'img': all.class_id.img,
+                    'theme': all.class_id.theme,
+                    'people': all.class_id.people,
+                    'money': all.class_id.money,
+                    'type': all.class_id.type,
+                    'applyend': all.class_id.applyend,
+                    'activitystart': all.class_id.activitystart,
+                    'activityend': all.class_id.activityend,
+                    'goodCount': all.class_id.goodcount
+                }
+                my_data_list.append(all_data)
+                
+        class_apply=Apply.objects.filter(id=user_id)
+        my_apply_list=[]
+        print("내가 신청한거")
+        print(class_apply)
+        if class_apply.count()>0:    
+            for apply in class_apply:
+                all_data = {
+                    'class_id': apply.class_id.class_id,
+                    'id':{
+                        'nickname':apply.class_id.id.nickname,
+                        'profile':apply.class_id.id.profileimg if apply.class_id.id.profileimg else None,
+                        'updateprofile':apply.class_id.id.updateprofile if apply.class_id.id.updateprofile else None,
+                    },
+                    'title': apply.class_id.title,
+                    'info': apply.class_id.info,
+                    'img': apply.class_id.img,
+                    'theme': apply.class_id.theme,
+                    'people': apply.class_id.people,
+                    'money': apply.class_id.money,
+                    'type': apply.class_id.type,
+                    'applyend': apply.class_id.applyend,
+                    'activitystart': apply.class_id.activitystart,
+                    'activityend': apply.class_id.activityend,
+                    'goodCount': apply.class_id.goodcount
+                }
+                my_apply_list.append(all_data)
+            
+        return JsonResponse({'my_data_list':my_data_list,'my_apply_list':my_apply_list})
 
 @csrf_exempt
 def read_judge_my(request):
@@ -292,9 +367,10 @@ def read_judge_np(request):
 def read_new_data(request):
     
     current_date = datetime.now().date()
+    today= datetime.today().strftime('%Y-%m-%d')
 
     one_month_ago = current_date - timedelta(days=15)
-    exam_result=ExamResult.objects.filter(result='P')
+    exam_result=ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
     
     filtered_date = exam_result.filter(date__range=[one_month_ago, current_date])
     new_date_list=[]
@@ -312,6 +388,7 @@ def read_new_data(request):
             'activitystart': date.class_id.activitystart,
             'activityend': date.class_id.activityend,
             'goodCount': date.class_id.goodcount,
+            'applycnt': date.class_id.applycnt,
             'id':{
                 'nickname':date.class_id.id.nickname,
                 'profile':date.class_id.id.profileimg if date.class_id.id.profileimg else None,
@@ -356,7 +433,8 @@ def read_some_data(request):
                 'infoimg3': cls.intro3_file if cls.intro3_file else None, 
                 'info1':cls.intro1_content,
                 'info2':cls.intro2_content,
-                'info3':cls.intro3_content
+                'info3':cls.intro3_content,
+                'applycnt':cls.applycnt
                 
                 
             }
@@ -501,7 +579,7 @@ def process_payment(request):
     if request.method=="POST":
         data=json.loads(request.body.decode('utf-8'))
         
-        print(request.body)
+        # print(request.body)
 
         toss_payments_api_key_bytes = f"{toss_payments_api_key}:".encode('utf-8')
         encoded_api_key = base64.b64encode(toss_payments_api_key_bytes).decode('utf-8')
@@ -520,6 +598,24 @@ def process_payment(request):
         json=data,
         )
         
-        print(response.status_code)
+        # print(response.status_code)
 
     return JsonResponse(response.json(), status=response.status_code)
+
+@csrf_exempt
+def apply_class(request):
+    if request.method =="POST":
+        data = json.loads(request.body.decode("utf-8"))
+        token = data.get('token')
+        classid=data.get('classid')
+        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        user = payload['id']
+        
+        apply=Apply(id=Member.objects.get(id=user),class_id=Class.objects.get(class_id=classid))
+        apply.save()
+        
+        apply_up_cnt=Class.objects.get(class_id=classid)
+        apply_up_cnt.applycnt += 1
+        apply_up_cnt.save()
+
+    return JsonResponse({'message': 'data saved successfully'})        

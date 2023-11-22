@@ -49,9 +49,9 @@ KAKAO_APP_SECRET=os.environ.get('KAKAO_APP_SECRET')
 KAKAO_LOCALHOST_REDIRECT_URL=os.environ.get('KAKAO_LOCALHOST_REDIRECT_URL')
 KAKAO_NETLIFY_REDIRECT_URL=os.environ.get('KAKAO_NETLIFY_REDIRECT_URL')
 
-print("===================================")
-print(KAKAO_APP_KEY)
-print(KAKAO_APP_SECRET)
+# print("===================================")
+# print(KAKAO_APP_KEY)
+# print(KAKAO_APP_SECRET)
 
 
 
@@ -101,33 +101,29 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
 def KakaoCallbackView(request):
         current_domain=request.get_host()
         for key, value in os.environ.items():
-            print("--------------ddd------------------")
-            # print(f"{key}: {value}")
-            print(os.environ.get('DJANGO_SECRET_KEY'))
         # 도메인에 따라 리다이렉션 URI 동적 설정
-        if 'localhost' in current_domain:
-            redirectUri = "http://localhost:3000/"  # 로컬 환경일 때
-        elif 'hivehobby4u' in current_domain:
-            redirectUri = "https://hivehobby4u.netlify.app/" # Netlify 도메인일 때
-        if request.method == "POST":
-            body =  json.loads(request.body.decode('utf-8'))
-            code= body["code"]
-            app_key =os.environ.get('KAKAO_APP_KEY')
-            app_secret = os.environ.get('KAKAO_APP_SECRET')
-            redirect_uri = redirectUri
-            print(redirect_uri)
+            if 'localhost' in current_domain:
+                redirectUri = "http://localhost:3000/"  # 로컬 환경일 때
+            elif 'hivehobby4u' in current_domain:
+                redirectUri = "https://hivehobby4u.netlify.app/" # Netlify 도메인일 때
+            if request.method == "POST":
+                body =  json.loads(request.body.decode('utf-8'))
+                code= body["code"]
+                app_key =os.environ.get('KAKAO_APP_KEY')
+                app_secret = os.environ.get('KAKAO_APP_SECRET')
+                redirect_uri = redirectUri
 
-            token_api = 'https://kauth.kakao.com/oauth/token'
-            headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
+                token_api = 'https://kauth.kakao.com/oauth/token'
+                headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
 
-            data = {
-                'grant_type': 'authorization_code',
-                'client_id': app_key,
-                'client_secret': app_secret,
-                'redirect_uri': redirect_uri,
-                'code': code,
-            }
-        response = requests.post(token_api, headers=headers, data=data) 
+                data = {
+                    'grant_type': 'authorization_code',
+                    'client_id': app_key,
+                    'client_secret': app_secret,
+                    'redirect_uri': redirect_uri,
+                    'code': code,
+                }
+            response = requests.post(token_api, headers=headers, data=data) 
 
         if response.status_code == 200:
             tokens = json.loads(response.text)
@@ -211,7 +207,9 @@ def get_user_data(request):
                         'info': member.info,
                         'email':member.email,
                         'profileImg':member.profileimg if member.profileimg else None,
-                        'updateprofile':member.updateprofile if member.updateprofile else None
+                        'updateprofile':member.updateprofile if member.updateprofile else None,
+                        'receive_cash':member.receive_cash,
+                        'get_cash':member.get_cash
                         
                     }
         return Response(response_data)
@@ -327,3 +325,49 @@ def get_user_achive(request):
         return Response(achive_list)
 
 
+def get_cashback_list(request):
+    jwt_token = request.headers.get('Authorization').split(' ')[1]
+    payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+    user_id=payload['id']
+    
+    cash=Cashback.objects.filter(id=Member.objects.get(id=user_id))
+    if cash.count()>0:
+        cashlist=[]
+        for c in cash:
+            data={
+                'num':c.num,
+                'id':c.id.id,
+                'class_id':c.class_id.title,
+                'class_num':c.class_id.class_id,
+                'money':c.class_id.money,
+                'cashback':c.cash,
+                'status':c.status
+            }
+            cashlist.append(data)
+        return JsonResponse({'cashlist':cashlist})
+    else:
+        return None
+
+@api_view(['POST'])   
+def get_cash_button(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        cash_back_list = data.get('cashBackList',[])
+        if cash_back_list:
+            for cash_back_item in cash_back_list:
+                cash_list=Cashback.objects.filter(id=Member.objects.get(id=cash_back_item['id']))
+                if cash_list.count()>0:
+                    cl_mem=Member.objects.get(id=cash_back_item['id'])
+                    cl_mem.get_cash+=cl_mem.receive_cash
+                    cl_mem.receive_cash=0
+                    cl_mem.save()
+                    for cl in cash_list:
+                        cl.status="지급완료"
+                        cl.save()
+                    else: return None
+        else:
+            return None
+    return JsonResponse({'message':'ok'})        
+        
+    

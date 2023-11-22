@@ -14,6 +14,8 @@ urlpatterns = [
     path('save_user_achive/',views.save_user_achive),
     path('get_user_achive/',views.get_user_achive),
     path('delete_user_achive/',views.delete_user_achive),
+    path('get_cashback_list/',views.get_cashback_list),
+    path('get_cash_button/',views.get_cash_button),
     # path('kakaoLogout/',views.kakao_logout)
     
     # path('/api/check_login_status/',check_login_status),
