@@ -17,4 +17,5 @@ urlpatterns = [
     path('read_goodCount_data/',views.read_goodCount_data),
     path('process_payment/',views.process_payment),
     path('apply_class/',views.apply_class)
+]
 
