@@ -146,6 +146,7 @@ class Class(models.Model):
     activityend = models.CharField(max_length=100, blank=True, null=True)
     adress = models.CharField(max_length=100, blank=True, null=True)
     goodcount = models.IntegerField(blank=True, null=True, default=0)
+    applycnt=models.IntegerField(blank=True,null=False, default=0)
 
     class Meta:
         managed = False
@@ -258,13 +259,26 @@ class Member(models.Model):
     info = models.CharField(max_length=100, blank=True, null=True)
     profileimg = models.CharField(db_column='profileImg',max_length=200, blank=True, null=True)  # Field name made lowercase.
     updateprofile = models.CharField(db_column='updateprofile',max_length=500, blank=True, null=True)  # Field name made lowercase.
-    goodcount = models.CharField(db_column='goodCount', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    receive_cash = models.IntegerField(db_column='receive_cash', default=0)  # Field name made lowercase.
+    get_cash = models.IntegerField(db_column='get_cash', default=0)  # Field name made lowercase.
     joindate = models.CharField(db_column='joinDate', max_length=100)  # Field name made lowercase.     
 
     class Meta:
         managed = False
         db_table = 'member'
         db_table_comment = '일반회원 및 블랙회원 테 이블'
+        
+        
+class Cashback(models.Model):
+    num = models.AutoField(primary_key=True)        
+    id =models.ForeignKey(Member, models.DO_NOTHING, db_column='id')
+    class_id = models.ForeignKey(Class, models.DO_NOTHING, db_column='class_id')
+    cash=models.IntegerField(db_column='cash', null=False )
+    status = models.CharField(max_length=100, null=False)
+
+    class Meta:
+        managed = False
+        db_table = 'cashback'
 
 class Performance(models.Model):
     num = models.AutoField(primary_key=True)        
@@ -273,7 +287,6 @@ class Performance(models.Model):
     link = models.CharField(max_length=500, blank=True, null=True)
     file_title = models.CharField(max_length=100, blank=True, null=True)
     link_title = models.CharField(max_length=100, blank=True, null=True)
-    
 
 
     class Meta:
