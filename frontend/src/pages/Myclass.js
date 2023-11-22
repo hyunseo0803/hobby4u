@@ -4,9 +4,11 @@ import bad_review from "../assets/bad_review.png";
 import good_review from "../assets/good_review.png";
 import LoginRequired from "../common/LoginRequired";
 import ReadClassOptionLB from "../component/AllReadOptionLB";
+// import { IoHappyOutline } from "react-icons/io5";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { StopOutlined } from "@ant-design/icons";
 
 function Myclass(props) {
 	const { userData, readFirebasefile } = props;
@@ -28,6 +30,9 @@ function Myclass(props) {
 	const [like_status, setLikeStatus] = useState([]);
 
 	const [myclass, setMyClass] = useState([]);
+	const [applyClass, setApplyClass] = useState([]);
+
+	const [selectwhat, setSelectWhat] = useState("myclass");
 
 	const handleLocalFilePreview = (file) => {
 		window.open(file, "_blank");
@@ -98,19 +103,37 @@ function Myclass(props) {
 				}
 			);
 			const classMy = response.data.my_data_list;
-			const updatedClass_M = await Promise.all(
-				classMy.map(async (s) => {
-					const classM = { ...s };
-					try {
-						classM.img = await readFirebasefile("classFile", s.img);
-					} catch (error) {
-						console.error("Error getting file URL: ", error);
-					}
-					return classM;
-				})
-			);
-			setMyClass(updatedClass_M);
-			ReadGoodCount();
+			const myApply = response.data.my_apply_list;
+			if (classMy.length > 0) {
+				const updatedClass_M = await Promise.all(
+					classMy.map(async (s) => {
+						const classM = { ...s };
+						try {
+							classM.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return classM;
+					})
+				);
+				setMyClass(updatedClass_M);
+				ReadGoodCount();
+			}
+			if (myApply.length > 0) {
+				const updatedClass_A = await Promise.all(
+					myApply.map(async (s) => {
+						const classA = { ...s };
+						try {
+							classA.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return classA;
+					})
+				);
+				setApplyClass(updatedClass_A);
+				ReadGoodCount();
+			}
 		} catch (error) {
 			console.error("Error submitting data:", error);
 		}
@@ -183,6 +206,7 @@ function Myclass(props) {
 				state: {
 					ClassDetail: updatedClassDetail,
 					DayDetail: updatedDayDetail,
+					userData: userData,
 				},
 			});
 		} catch (error) {
@@ -423,78 +447,249 @@ function Myclass(props) {
 					</div>
 					<div
 						style={{
-							// backgroundColor: "red",
-							justifyContent: "center",
-							width: "100%",
 							display: "flex",
 							flexDirection: "row",
-							flexWrap: "wrap",
+							justifyContent: "center",
+							width: "100%",
+							margin: 10,
 						}}
 					>
-						{myclass.map((classItem, index) => {
-							// const firstimg = classItem.img.replace("/frontend/public/", "/");
-
-							const handleImageClick = (e) => {
-								e.stopPropagation();
-								handleReadDetail(classItem.class_id);
-							};
-
-							const handleButtonClick = () => {
-								handleReadDetail(classItem.class_id);
-							};
-							const isFree = classItem.money === "0";
-							const isOnline = classItem.type === "online";
-
-							const likeStatusItem = like_status
-								? like_status.find(
-										(item) => item.class_id === classItem.class_id
-								  )
-								: null;
-
-							return (
-								<div key={index} className="class_div_btn">
-									<div className="firstimg_container">
-										{isImage(classItem.img) ? (
-											<img
-												className="firstimg"
-												src={classItem.img}
-												alt="gg"
-												onClick={handleImageClick}
-											/>
-										) : (
-											<video
-												className="firstimg"
-												src={classItem.img}
-												alt="gg"
-												onClick={handleImageClick}
-												controls
-											/>
-										)}
-									</div>
-									<div
-										className="class_div_MO"
-										style={{
-											justifyContent: "space-between",
-											alignItems: "center",
-										}}
-									>
-										<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
-										<div className="class_GCount">
-											<div className="like">좋아요</div>
-											<div className="like_text">{classItem.goodCount}</div>
-										</div>
-									</div>
-									<button
-										value={classItem.class_id}
-										onClick={handleButtonClick}
-										className="class_title_btn"
-									>
-										{classItem.title}
-									</button>
-								</div>
-							);
-						})}
+						<button
+							style={{
+								backgroundColor: "transparent",
+								height: 30,
+								marginRight: 10,
+								border: "none",
+								borderBottom:
+									selectwhat === "myclass" ? "1px solid blue" : "none",
+								color: selectwhat === "myclass" ? "royalblue" : "gray",
+							}}
+							name="myclass"
+							onClick={(e) => setSelectWhat(e.target.name)}
+						>
+							내가 만든 클래스
+						</button>
+						<button
+							style={{
+								backgroundColor: "transparent",
+								border: "none",
+								height: 30,
+								borderBottom:
+									selectwhat === "applyclass" ? "1px solid blue" : "none",
+								color: selectwhat === "applyclass" ? "royalblue" : "gray",
+							}}
+							name="applyclass"
+							onClick={(e) => setSelectWhat(e.target.name)}
+						>
+							수강하는 클래스
+						</button>
 					</div>
+					{selectwhat === "myclass" ? (
+						<>
+							{myclass.length > 0 ? (
+								<div
+									style={{
+										// backgroundColor: "red",
+										justifyContent: "center",
+										width: "100%",
+										display: "flex",
+										flexDirection: "row",
+										flexWrap: "wrap",
+										overflowX: "auto",
+									}}
+								>
+									{myclass.map((classItem, index) => {
+										// const firstimg = classItem.img.replace("/frontend/public/", "/");
+
+										const handleImageClick = (e) => {
+											e.stopPropagation();
+											handleReadDetail(classItem.class_id);
+										};
+
+										const handleButtonClick = () => {
+											handleReadDetail(classItem.class_id);
+										};
+										const isFree = classItem.money === "0";
+										const isOnline = classItem.type === "online";
+
+										const likeStatusItem = like_status
+											? like_status.find(
+													(item) => item.class_id === classItem.class_id
+											  )
+											: null;
+
+										return (
+											<div key={index} className="class_div_btn">
+												<div className="firstimg_container">
+													{isImage(classItem.img) ? (
+														<img
+															className="firstimg"
+															src={classItem.img}
+															alt="gg"
+															onClick={handleImageClick}
+														/>
+													) : (
+														<video
+															className="firstimg"
+															src={classItem.img}
+															alt="gg"
+															onClick={handleImageClick}
+															controls
+														/>
+													)}
+												</div>
+												<div
+													className="class_div_MO"
+													style={{
+														justifyContent: "space-between",
+														alignItems: "center",
+													}}
+												>
+													<ReadClassOptionLB
+														isFree={isFree}
+														isOnline={isOnline}
+													/>
+													<div className="class_GCount">
+														<div className="like">좋아요</div>
+														<div className="like_text">
+															{classItem.goodCount}
+														</div>
+													</div>
+												</div>
+												<button
+													value={classItem.class_id}
+													onClick={handleButtonClick}
+													className="class_title_btn"
+												>
+													{classItem.title}
+												</button>
+											</div>
+										);
+									})}
+								</div>
+							) : (
+								<div
+									style={{
+										// backgroundColor: "yellow",
+										width: "100%",
+										height: 200,
+										padding: 10,
+										textAlign: "center",
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+									}}
+								>
+									<div style={{ color: "gray", margin: 10 }}>
+										<StopOutlined />
+									</div>
+									<div style={{ color: "#d3d3d3" }}>No Data </div>
+								</div>
+							)}
+						</>
+					) : (
+						<>
+							{applyClass.length > 0 ? (
+								<div
+									style={{
+										justifyContent: "center",
+										width: "100%",
+										display: "flex",
+										flexDirection: "row",
+										flexWrap: "wrap",
+										overflowX: "auto",
+									}}
+								>
+									{applyClass.map((classItem, index) => {
+										// const firstimg = classItem.img.replace("/frontend/public/", "/");
+
+										const handleImageClick = (e) => {
+											e.stopPropagation();
+											handleReadDetail(classItem.class_id);
+										};
+
+										const handleButtonClick = () => {
+											handleReadDetail(classItem.class_id);
+										};
+										const isFree = classItem.money === "0";
+										const isOnline = classItem.type === "online";
+
+										const likeStatusItem = like_status
+											? like_status.find(
+													(item) => item.class_id === classItem.class_id
+											  )
+											: null;
+
+										return (
+											<div key={index} className="class_div_btn">
+												<div className="firstimg_container">
+													{isImage(classItem.img) ? (
+														<img
+															className="firstimg"
+															src={classItem.img}
+															alt="gg"
+															onClick={handleImageClick}
+														/>
+													) : (
+														<video
+															className="firstimg"
+															src={classItem.img}
+															alt="gg"
+															onClick={handleImageClick}
+															controls
+														/>
+													)}
+												</div>
+												<div
+													className="class_div_MO"
+													style={{
+														justifyContent: "space-between",
+														alignItems: "center",
+													}}
+												>
+													<ReadClassOptionLB
+														isFree={isFree}
+														isOnline={isOnline}
+													/>
+													<div className="class_GCount">
+														<div className="like">좋아요</div>
+														<div className="like_text">
+															{classItem.goodCount}
+														</div>
+													</div>
+												</div>
+												<button
+													value={classItem.class_id}
+													onClick={handleButtonClick}
+													className="class_title_btn"
+												>
+													{classItem.title}
+												</button>
+											</div>
+										);
+									})}
+								</div>
+							) : (
+								<div
+									style={{
+										// backgroundColor: "yellow",
+										width: "100%",
+										height: 200,
+										padding: 10,
+										textAlign: "center",
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+									}}
+								>
+									<div style={{ color: "gray", margin: 10 }}>
+										<StopOutlined />
+									</div>
+									<div style={{ color: "#d3d3d3" }}>No Data </div>
+								</div>
+							)}
+						</>
+					)}
 				</>
 			) : (
 				<LoginRequired />
