@@ -6,11 +6,16 @@ import React from "react";
 
 function CompletePayment() {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const payinfo = location.state.payinfo;
 
 	useEffect(() => {
 		console.log(payinfo);
 	}, []);
+
+	const navigateToMyclass = () => {
+		navigate("/myclass");
+	};
 
 	return (
 		<div style={{ margin: 150 }}>
@@ -30,7 +35,7 @@ function CompletePayment() {
 					</>
 				}
 				extra={[
-					<Button type="primary" key="console">
+					<Button type="primary" key="console" onClick={navigateToMyclass}>
 						수강 중인 클래스
 					</Button>,
 					<Button key="buy">더 구경하기</Button>,
