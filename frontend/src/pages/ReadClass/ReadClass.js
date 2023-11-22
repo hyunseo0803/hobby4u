@@ -89,6 +89,7 @@ function Allclass(props) {
 				state: {
 					ClassDetail: updatedClassDetail,
 					DayDetail: updatedDayDetail,
+					userData: userData,
 				},
 			});
 		} catch (error) {
