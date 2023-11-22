@@ -27,11 +27,22 @@ export default function TossSuccess() {
 			);
 			// 결제 승인이 성공한 경우의 처리
 			console.log("Payment approval success:", response.data);
+			const result = response.data;
+			if (result) {
+				const token = localStorage.getItem("token");
+				const decodedClassid = result.orderId.split("_")[1];
 
-			if (response.data) {
+				console.log("원래 클래스 아이디는 : " + decodedClassid);
+				const response = await axios.post(
+					"http://localhost:8000/api/post/apply_class/",
+					{
+						token: token,
+						classid: decodedClassid,
+					}
+				);
 				navigate("/complete/payment", {
 					state: {
-						payinfo: response.data,
+						payinfo: result,
 					},
 				});
 			} else {
