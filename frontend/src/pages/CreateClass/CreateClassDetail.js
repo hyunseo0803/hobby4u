@@ -12,6 +12,7 @@ import ONLINE_DAY_PLAN from "../CreateClass/OnlineClass";
 import { OfflinFollowbar, OnlineFollowbar } from "../../component/CCFollowbar";
 import axios from "axios";
 import LoginRequired from "../../common/LoginRequired";
+import { SELECT_APPLYEND } from "../../component/SelectApplyend";
 
 function CreateClassDetail(props) {
 	const [selectedTheme, setSelectedTheme] = useState([]);
@@ -44,7 +45,7 @@ function CreateClassDetail(props) {
 			dayImgpreview: "",
 			dayVideopreview: "",
 			title: "",
-			date: new Date(),
+			date: "",
 			content: "",
 		},
 	]);
@@ -73,6 +74,7 @@ function CreateClassDetail(props) {
 	const [fee, setFee] = useState("pay");
 
 	const [All_select_theme, setAllselecttheme] = useState(false);
+	const [All_select_apply, setAllselectapply] = useState(false);
 	const [All_person_money, setAllpersonmoney] = useState(false);
 	const [All_period_place, setAllperiodplace] = useState(false);
 	const [All_day_plan_offline, setAlldayplanoffline] = useState(false);
@@ -89,6 +91,7 @@ function CreateClassDetail(props) {
 	const checkList_online = [
 		All_select_theme,
 		All_person_money,
+		All_select_apply,
 		All_day_plan_online,
 	];
 
@@ -99,7 +102,12 @@ function CreateClassDetail(props) {
 		"Day별 상세 계획",
 		"필수 첨부 파일",
 	];
-	const listContents_online = ["테마선택", "인원 및 수강료", "Day별 상세 계획"];
+	const listContents_online = [
+		"테마선택",
+		"인원 및 수강료",
+		"신청 마감일 선택",
+		"Day별 상세 계획",
+	];
 
 	const theme = [
 		"# 조용한",
@@ -157,7 +165,10 @@ function CreateClassDetail(props) {
 		!All_plan_file;
 
 	const All_submit_Online =
-		!All_select_theme || !All_person_money || !All_day_plan_online;
+		!All_select_theme ||
+		!All_person_money ||
+		!All_day_plan_online ||
+		!All_select_apply;
 
 	const onChangeInput = (e, number) => {
 		const { name, value } = e.target;
@@ -222,7 +233,20 @@ function CreateClassDetail(props) {
 
 	const onChangeApply = (dates) => {
 		setApplyEndDate(dates);
+		setAllselectapply(true);
+		console.log("onChangeApply:", dates ? dates.format("YYYY-MM-DD") : null);
 	};
+	useEffect(() => {
+		if (applyEndDate) {
+			console.log(
+				"Updated applyEndDate in useEffect:",
+				applyEndDate.format("YYYY-MM-DD")
+			);
+		} else {
+			console.log("Updated applyEndDate in useEffect: null");
+		}
+	}, [applyEndDate]);
+
 	const onChangeActivity = (dates) => {
 		const [start, end] = dates;
 
@@ -440,22 +464,10 @@ function CreateClassDetail(props) {
 
 				return;
 			}
+			const formattedDate = value ? value.format("YYYY-MM-DD") : null;
 
-			// 선택한 날짜를 Date 객체로 변환
-			const selectedDate = new Date(value);
-
-			// 활동 기간의 시작일과 종료일을 Date 객체로 변환
-			const startDate = new Date(activityStartDate);
-			const endDate = new Date(activityEndDate);
-
-			// 선택한 날짜가 활동 기간에 속하지 않으면 경고 메시지 표시
-			if (selectedDate < startDate || selectedDate > endDate) {
-				Toast.fire({
-					icon: "error",
-					title: "활동 기간 중 날짜를 선택해주세요",
-				});
-				return;
-			}
+			// 나머지 코드에서 사용되는 formattedDate로 변경
+			value = formattedDate;
 		}
 		//파일 읽기
 		const reader = new FileReader();
@@ -530,10 +542,29 @@ function CreateClassDetail(props) {
 		setFile(e);
 		setFileSrc(e.name);
 	};
+	// const onChange = (date, dateString) => {
+	// 	console.log(date, dateString);
+	// 	setApplyEndDate(date);
+	// };
 
 	const handleSubmit = () => {
 		const token = localStorage.getItem("token");
 		console.log(inputInfo["inputInfo1"]);
+		let activityStartDateFormatted = null;
+		let activityEndDateFormatted = null;
+		let applyEndDateFormatted = null;
+
+		// type이 "offline"일 때만 날짜를 포맷팅
+		if (option === "offline") {
+			activityStartDateFormatted = activityStartDate.format("YYYY-MM-DD");
+			activityEndDateFormatted = activityEndDate.format("YYYY-MM-DD");
+		}
+		if (applyEndDate) {
+			applyEndDateFormatted = applyEndDate.format("YYYY-MM-DD");
+		}
+		console.log(moment(applyEndDate).format("YYYY-MM-DD"));
+		console.log(activityStartDateFormatted);
+		console.log(activityEndDateFormatted);
 
 		const classAllData = {
 			title: title,
@@ -543,9 +574,9 @@ function CreateClassDetail(props) {
 			address: address,
 			money: money,
 			theme: selectedTheme,
-			applyEndDate: moment(applyEndDate).format("YYYY-MM-DD"),
-			activityStartDate: moment(activityStartDate).format("YYYY-MM-DD"),
-			activityEndDate: moment(activityEndDate).format("YYYY-MM-DD"),
+			applyEndDate: applyEndDateFormatted,
+			activityStartDate: activityStartDateFormatted,
+			activityEndDate: activityEndDateFormatted,
 			inputInfo1: inputInfo["inputInfo1"],
 			inputInfo2: inputInfo["inputInfo2"],
 			inputInfo3: inputInfo["inputInfo3"],
@@ -775,7 +806,7 @@ function CreateClassDetail(props) {
 								margin: 30,
 							}}
 						></div>
-						{option === "offline" && (
+						{option === "offline" ? (
 							<PLACE_PERIOD
 								// applyStartDate={applyStartDate}
 								applyEndDate={applyEndDate}
@@ -787,6 +818,11 @@ function CreateClassDetail(props) {
 								handleComplete={handleComplete}
 								address={address}
 								handleModal={handleModal}
+							/>
+						) : (
+							<SELECT_APPLYEND
+								onChange={onChangeApply}
+								applyEndDate={applyEndDate}
 							/>
 						)}
 
