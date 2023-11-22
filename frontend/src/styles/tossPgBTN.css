@@ -1,0 +1,15 @@
+.pay_button {
+	width: 300px;
+	height: 70px;
+	border: 1px solid red;
+	background-color: transparent;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.pay_button:hover {
+	background-color: red;
+	border: none;
+}
