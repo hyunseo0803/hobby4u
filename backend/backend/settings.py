@@ -21,6 +21,14 @@ firebase_admin.initialize_app(cred, {
     'storageBucket': 'hivehobby.appspot.com'
 })
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
+
 # load_dotenv()
 
 # KAKAO_APP_KEY=os.getenv('KAKAO_APP_KEY')
