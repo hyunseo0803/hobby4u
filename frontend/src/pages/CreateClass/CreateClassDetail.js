@@ -234,13 +234,17 @@ function CreateClassDetail(props) {
 	const onChangeApply = (dates) => {
 		setApplyEndDate(dates);
 		setAllselectapply(true);
-		console.log("onChangeApply:", dates ? dates.format("YYYY-MM-DD") : null);
+		if (moment.isMoment(dates)) {
+			console.log("onChangeApply:", dates.format("YYYY-MM-DD"));
+		} else {
+			console.log("onChangeApply:", moment(dates, "YYYY-MM-DD", true));
+		}
 	};
 	useEffect(() => {
 		if (applyEndDate) {
 			console.log(
 				"Updated applyEndDate in useEffect:",
-				applyEndDate.format("YYYY-MM-DD")
+				moment(applyEndDate, "YYYY-MM-DD", true)
 			);
 		} else {
 			console.log("Updated applyEndDate in useEffect: null");
@@ -248,22 +252,24 @@ function CreateClassDetail(props) {
 	}, [applyEndDate]);
 
 	const onChangeActivity = (dates) => {
-		const [start, end] = dates;
+		if (dates) {
+			const [start, end] = dates;
 
-		if (applyEndDate === null) {
-			Toast.fire({
-				icon: "error",
-				title: "신청 기간을 먼저 선택해 주세요",
-			});
-			setActivityStartDate(null);
-			setActivityEndDate(null);
-		} else {
-			setActivityStartDate(start);
-
-			if (end) {
-				setActivityEndDate(end);
-			} else {
+			if (applyEndDate === null) {
+				Toast.fire({
+					icon: "error",
+					title: "신청 기간을 먼저 선택해 주세요",
+				});
+				setActivityStartDate(null);
 				setActivityEndDate(null);
+			} else {
+				setActivityStartDate(start);
+
+				if (end) {
+					setActivityEndDate(end);
+				} else {
+					setActivityEndDate(null);
+				}
 			}
 		}
 	};

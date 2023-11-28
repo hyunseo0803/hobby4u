@@ -26,21 +26,22 @@ export default function FILTER_CLASS(props) {
 		return imageEx.includes(extension);
 	}
 
-	useEffect(() => {
-		if (option !== "" || money !== "") {
-			if (theme !== "") {
-				readFilter(theme);
-			} else if (word !== "") {
-				readWordFilter(word);
-			} else readFilter();
-		}
-	}, [option, money, theme, word]);
+	// useEffect(() => {
+	// 	if (option !== "" || money !== "") {
+	// 		if (theme !== "") {
+	// 			readFilter(theme);
+	// 		} else if (word !== "") {
+	// 			readWordFilter(word);
+	// 		} else readFilter();
+	// 	}
+	// }, [option, money, theme, word]);
 
 	return (
 		<>
 			<div className="row_center_wrap">
 				<div className="row_center_wrap">
 					{fliteredata &&
+						fliteredata !== "none" &&
 						fliteredata.map((filter, index) => {
 							// const firstimg = filter.img.replace("/frontend/public/", "/");
 

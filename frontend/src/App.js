@@ -23,7 +23,6 @@ class App extends Component {
 	render() {
 		const readFirebasefile = async (folder_name, file) => {
 			if (folder_name === "userAchiveFile") {
-				console.log(file);
 				const storage = getStorage(app);
 				const storageRef = ref(storage, folder_name + "/" + file.achive_file);
 
@@ -42,7 +41,6 @@ class App extends Component {
 				try {
 					// 다운로드 URL 가져오기
 					const url = await getDownloadURL(storageRef);
-					console.log(url);
 
 					return url;
 				} catch (error) {
