@@ -1,13 +1,14 @@
 import "../../styles/CreateClassDetail.css";
 import moment from "moment";
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
 import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
 import Place_search_icon from "../../assets/place_search_icon.png";
 import Swal from "sweetalert2";
 import { IoIosSearch } from "react-icons/io";
+import DatePicker from "antd/lib/date-picker";
+import Space from "antd/lib/space";
 
 import minus from "../../assets/day_class_minus.png";
 import add from "../../assets/day_class_add.png";
@@ -16,6 +17,8 @@ import edit from "../../assets/edit.png";
 import remove from "../../assets/remove.png";
 
 export function PLACE_PERIOD(props) {
+	const { RangePicker } = DatePicker;
+
 	const {
 		handleComplete,
 		isOpen,
@@ -31,11 +34,22 @@ export function PLACE_PERIOD(props) {
 	const todaymin = new Date();
 	todaymin.setDate(todaymin.getDate() + 8);
 
-	const activitymin = new Date();
+	// const activitymin = new Date();
 
-	if (applyEndDate) {
-		activitymin.setDate(applyEndDate.getDate() + 1);
-	}
+	// if (applyEndDate) {
+	// 	activitymin.setDate(applyEndDate.getDate() + 1);
+	// }
+	const minDate = moment().add(8, "days");
+	const minDaterange = moment().add(9, "days");
+
+	const disabledDate = (current) => {
+		// 현재 날짜 이후의 날짜는 비활성화
+		return current && current < minDate;
+	};
+	const disabledDateRange = (current) => {
+		// 현재 날짜 이후의 날짜는 비활성화
+		return current && current < minDaterange;
+	};
 
 	return (
 		<div className="mo_flex_row" style={{ justifyContent: "center" }}>
@@ -61,19 +75,19 @@ export function PLACE_PERIOD(props) {
 									height: 300,
 								}}
 							>
-								<DatePicker
-									locale={ko}
-									selected={applyEndDate}
-									onChange={onChangeApply}
-									minDate={todaymin}
-									inline
-								/>
+								<Space direction="vertical">
+									<DatePicker
+										onChange={onChangeApply}
+										disabledDate={disabledDate}
+										value={applyEndDate}
+									/>
+								</Space>
 							</div>
 						</div>
 						<div className="selected_result">
 							{applyEndDate !== null ? (
 								<div className="calender-box">
-									{moment(applyEndDate).format("YYYY-MM-DD")}
+									{applyEndDate.format("YYYY-MM-DD")}
 								</div>
 							) : null}
 						</div>
@@ -100,24 +114,21 @@ export function PLACE_PERIOD(props) {
 								margin: "auto",
 							}}
 						>
-							<DatePicker
-								locale={ko}
-								selected={activityStartDate}
-								onChange={onChangeActivity}
-								startDate={activityStartDate}
-								endDate={activityEndDate}
-								minDate={activitymin}
-								selectsRange
-								inline
-							/>
+							<Space direction="vertical">
+								<RangePicker
+									onChange={onChangeActivity}
+									disabledDate={disabledDateRange}
+									value={[activityStartDate, activityEndDate]}
+								/>
+							</Space>
 						</div>
 					</div>
 				</div>
 				<div className="selected_result">
 					{activityEndDate !== null ? (
 						<div className="calender-box">
-							{moment(activityStartDate).format("YYYY-MM-DD")} -
-							{moment(activityEndDate).format("YYYY-MM-DD")}
+							{activityStartDate.format("YYYY-MM-DD")} -
+							{activityEndDate.format("YYYY-MM-DD")}
 						</div>
 					) : null}
 				</div>
@@ -204,6 +215,13 @@ export function DAY_PLAN(props) {
 		handleRemoveDay,
 		handleAddDay,
 	} = props;
+
+	const disabledDate = (current) => {
+		// 현재 날짜가 activityStartDate와 activityEndDate 사이에 있지 않으면 비활성화
+		return (
+			current && (current < activityStartDate || current > activityEndDate)
+		);
+	};
 
 	const Toast = Swal.mixin({
 		toast: true,
@@ -344,18 +362,14 @@ export function DAY_PLAN(props) {
 										handleChange(day.id, "title", e.target.value)
 									}
 								/>
-								<input
-									className="day_input_text"
-									style={{ width: 250 }}
-									type="date"
-									dateFormat="yyyy-MM-dd"
-									name={`date_${day.id}`}
-									placeholder="날짜"
-									value={day.date}
-									minDate={activityStartDate}
-									maxDate={activityEndDate}
-									onChange={(e) => handleChange(day.id, "date", e.target.value)}
-								/>
+
+								<Space direction="vertical">
+									<DatePicker
+										value={day.date ? moment(day.date) : null}
+										onChange={(date) => handleChange(day.id, "date", date)}
+										disabledDate={disabledDate}
+									/>
+								</Space>
 							</div>
 
 							<div style={{ justifyContent: "flex-start" }}>
