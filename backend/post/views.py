@@ -20,6 +20,10 @@ from django.utils import timezone
 from datetime import timedelta
 import base64
 import uuid
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.core.cache import cache
+
 
 from django.core import serializers
 
@@ -34,6 +38,8 @@ sched = BackgroundScheduler()
 
 # cred = credentials.Certificate('C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json')
 # firebase_admin.initialize_app(cred, {'storageBucket': 'hivehobby.appspot.com'})
+from django.core.cache import cache
+cache.clear()
 
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
@@ -69,6 +75,13 @@ def schedulerF():
                         print("이미 반환금으로 추가된거임")
                         return;
 sched.start()
+
+
+# 모델에서 변경 사항을 감지하여 캐시를 갱신하는 함수
+@receiver(post_save, sender=Class)
+@receiver(post_delete, sender=Class)
+def update_cache_on_data_change(sender, **kwargs):
+    cache.clear()
 
 def randm_num():
     num = "0123456789"
@@ -453,56 +466,251 @@ def read_some_data(request):
             return JsonResponse({'error': 'Class not found'}, status=404)
     else:
         return JsonResponse({'error': 'class_id parameter is required'}, status=400)
-
+# def read_filter_data(request):
+#     money = request.GET.get('money')
+#     option = request.GET.get('option')
+#     theme=request.GET.get('theme')
+#     incoding_word=request.GET.get('word')
+#     incoding_field=request.GET.get('searchfield')
     
-def read_filter_data(request):
-    money = request.GET.get('money')
-    option = request.GET.get('option')
-    theme=request.GET.get('theme')
-    incoding_word=request.GET.get('word')
-    incoding_field=request.GET.get('searchfield')
-    
-    exams_with_result_p = ExamResult.objects.filter(result='P')
+#     exams_with_result_p = ExamResult.objects.filter(result='P')
 
-    class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+#     class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
 
-    filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+#     filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
 
    
         
+#     if incoding_word is not None and unquote(incoding_field)=="제목":
+#         filter_result = filter_result.filter(title__contains=unquote(incoding_word))
+#     if incoding_word is not None and unquote(incoding_field)=="멘토":
+#         filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
+    
+#     if theme is not None:
+#         for t in theme:
+#             filter_result = filter_result.filter(theme__contains=t)
+        
+#     if money == "fee":
+#         filter_result = filter_result.exclude(money=0)
+#     if money == "free":
+#         filter_result = filter_result.filter(money=0)
+        
+#     if option == "online":
+#         filter_result = filter_result.filter(type='online')
+#     if option == "offline":
+#         filter_result = filter_result.filter(type='offline')
+    
+#     # 유료이면서 온라인
+#     if money == "fee" and option == "online":
+#         filter_result = filter_result.exclude(money=0).filter(type='online')
+
+#     # 무료이면서 온라인
+#     if money == "free" and option == "online":
+#         filter_result = filter_result.filter(money=0).filter(type='online')
+
+#     # 유료이면서 오프라인
+#     if money == "fee" and option == "offline":
+#         filter_result = filter_result.exclude(money=0).filter(type='offline')
+
+#     filter_data_list = []
+#     if filter_result.count()>0:
+#         for item in filter_result:
+#             filter_data = {
+#                 'class_id': item.class_id,
+#                 'id': {
+#                     'nickname':item.id.nickname,
+#                     'profile':item.id.profileimg if item.id.profileimg else None,
+#                     'updateprofile':item.id.updateprofile if item.id.updateprofile else None,
+                    
+#                 },
+#                 'title': item.title,
+#                 'info': item.info,
+#                 'img': item.img,
+#                 'theme': item.theme,
+#                 'people': item.people,
+#                 'money': item.money,
+#                 'type': item.type,
+#                 # 'applystart': item.applystart,
+#                 'applyend': item.applyend,
+#                 'activitystart': item.activitystart,
+#                 'activityend': item.activityend,
+#                 'goodCount': item.goodcount
+#             }
+#             filter_data_list.append(filter_data)
+#     return JsonResponse({'filter_data_list': filter_data_list}, safe=False)
+
+    
+def read_filter_data(request):
+    print('필터링 요청됨.')
+    money = request.GET.get('money')
+    option = request.GET.get('option')
+    theme=request.GET.get('theme')
+    
+    incoding_word=request.GET.get('word')
+    incoding_field=request.GET.get('searchfield')
+    
+    print("==========================================")
+    print(f"money: {money}, option: {option}")
+
+    
+    filter_data_list = []
+    
+        
     if incoding_word is not None and unquote(incoding_field)=="제목":
-        filter_result = filter_result.filter(title__contains=unquote(incoding_word))
+        cache_key = f'search_title:{unquote(incoding_word)}'
+        print(cache_key)
+        search_title = cache.get(cache_key)
+        if search_title is not None:
+            print("제목 검색 이미 캐시 있음")
+            return JsonResponse({'filter_data_list': search_title}, safe=False)
+        else:
+            print("제목 검색 캐시 추가함")
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(title__contains=unquote(incoding_word))
+    print("제목 단독 도달확인")             
+            
     if incoding_word is not None and unquote(incoding_field)=="멘토":
-        filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
+        cache_key = f'search_mentor:{unquote(incoding_word)}'
+        search_mentor = cache.get(cache_key)
+        if search_mentor is not None:
+            print("멘토 검색 이미 캐시 있음")
+
+            return JsonResponse({'filter_data_list': search_mentor}, safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
+    print("멘토 단독 도달확인")      
     
     if theme is not None:
-        for t in theme:
-            filter_result = filter_result.filter(theme__contains=t)
+        sorted_theme = ','.join(sorted(theme.split(',')))
+        cache_key = f'theme:{sorted_theme}'
+        search_theme = cache.get(cache_key)
+        print(f'cache:{cache_key}')
+        if search_theme is not None:
+            print('해당 캐시 있음')
+            return JsonResponse({'filter_data_list': search_theme},safe=False)
         
-    if money == "fee":
-        filter_result = filter_result.exclude(money=0)
-    if money == "free":
-        filter_result = filter_result.filter(money=0)
-        
-    if option == "online":
-        filter_result = filter_result.filter(type='online')
-    if option == "offline":
-        filter_result = filter_result.filter(type='offline')
+        else:
+            print(f'theme {theme} 불러올거임')
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            for t in theme:
+                filter_result = filter_result.filter(theme__contains=t)
+                
+    print("테마 단독 도달확인")      
     
+    if money == "fee" and option=="":
+        cache_key='money_fee'
+        money_fee = cache.get(cache_key)
+        if money_fee is not None:
+            return JsonResponse({'filter_data_list': money_fee},safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.exclude(money=0)
+    print("유료 단독 도달확인")             
+    
+    if money == "free" and option=="":
+        cache_key='money_free'
+        money_free = cache.get(cache_key)
+        if money_free is not None:
+            return JsonResponse({'filter_data_list': money_free},safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(money=0)
+    print("무료 단독 도달확인")       
+
+    if option == "online" and money=="":
+        print("온라인 실행된")
+        cache_key='type_online'
+        type_online=cache.get(cache_key)
+        if type_online is not None:
+            return JsonResponse({'filter_data_list':type_online},safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(type='online')
+    print("온라인 단독 도달확인")
+
+            
+    if option == "offline" and money=="":
+        cache_key='type_offline'
+        type_offline = cache.get(cache_key)
+        if type_offline is not None:
+            return JsonResponse({'filter_data_list':type_offline})
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(type='offline')
+            
+    print("오프라인 단독 도달확인")       
     # 유료이면서 온라인
     if money == "fee" and option == "online":
-        filter_result = filter_result.exclude(money=0).filter(type='online')
+        print("유료면서 온라인 선택함")
+        cache_key='fee_online'
+        fee_online=cache.get(cache_key)
+        if fee_online is not None:
+            print("캐시 이미 있음 ")
+            
+            return JsonResponse({'filter_data_list':fee_online},safe=False)
+        else:
+            print("캐시 새로 만들거임 ")
+
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.exclude(money=0).filter(type='online')
 
     # 무료이면서 온라인
     if money == "free" and option == "online":
-        filter_result = filter_result.filter(money=0).filter(type='online')
+        cache_key='free_online'
+        free_online=cache.get(cache_key)
+        if free_online is not None:
+            print("무료면서 온라인 캐시 있음")
+            
+            return JsonResponse({'filter_data_list': free_online},safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(money=0).filter(type='online')
 
     # 유료이면서 오프라인
     if money == "fee" and option == "offline":
-        filter_result = filter_result.exclude(money=0).filter(type='offline')
+        cache_key='fee_offline'
+        fee_offline=cache.get(cache_key)
+        if fee_offline is not None:
+            return JsonResponse({'filter_data_list': fee_offline},safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.exclude(money=0).filter(type='offline')
+            
+    if money == "free" and option == "offline":
+        cache_key='free_offline'
+        free_offline=cache.get(cache_key)
+        if free_offline is not None:
+            return JsonResponse({'filter_data_list': free_offline},safe=False)
+        else:
+            exams_with_result_p = ExamResult.objects.filter(result='P')
+            class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
+            filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
+            filter_result = filter_result.filter(money=0).filter(type='offline')
+            
 
-    filter_data_list = []
-    if filter_result.count()>0:
+    if filter_result.exists():
+        print(filter_result)
         for item in filter_result:
             filter_data = {
                 'class_id': item.class_id,
@@ -526,6 +734,10 @@ def read_filter_data(request):
                 'goodCount': item.goodcount
             }
             filter_data_list.append(filter_data)
+        cache.set(cache_key, filter_data_list, timeout=3600)
+        
+    else:
+        cache.set(cache_key,'none', timeout=3600)
     return JsonResponse({'filter_data_list': filter_data_list}, safe=False)
 
 
