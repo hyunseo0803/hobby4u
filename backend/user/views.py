@@ -99,36 +99,29 @@ class MemberDetail(generics.RetrieveUpdateDestroyAPIView):
         
 @api_view(['POST'])
 def KakaoCallbackView(request):
-        current_domain=request.get_host()
-        for key, value in os.environ.items():
-        # 도메인에 따라 리다이렉션 URI 동적 설정
-            if 'localhost' in current_domain:
-                redirectUri = "http://localhost:3000/"  # 로컬 환경일 때
-            elif 'hivehobby4u' in current_domain:
-                redirectUri = "https://hivehobby4u.netlify.app/" # Netlify 도메인일 때
-            if request.method == "POST":
-                body =  json.loads(request.body.decode('utf-8'))
-                code= body["code"]
-                app_key =os.environ.get('KAKAO_APP_KEY')
-                app_secret = os.environ.get('KAKAO_APP_SECRET')
-                redirect_uri = redirectUri
+    if request.method == "POST":
+        body =  json.loads(request.body.decode('utf-8'))
+        code= body["code"]
+        app_key =os.environ.get('KAKAO_APP_KEY')
+        app_secret = os.environ.get('KAKAO_APP_SECRET')
+        redirect_uri = KAKAO_LOCALHOST_REDIRECT_URL
 
-                token_api = 'https://kauth.kakao.com/oauth/token'
-                headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
+        token_api = 'https://kauth.kakao.com/oauth/token'
+        headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
 
-                data = {
-                    'grant_type': 'authorization_code',
-                    'client_id': app_key,
-                    'client_secret': app_secret,
-                    'redirect_uri': redirect_uri,
-                    'code': code,
-                }
-            response = requests.post(token_api, headers=headers, data=data) 
+        data = {
+            'grant_type': 'authorization_code',
+            'client_id': app_key,
+            'client_secret': app_secret,
+            'redirect_uri': redirect_uri,
+            'code': code,
+        }
+        response = requests.post(token_api, headers=headers, data=data) 
 
         if response.status_code == 200:
             tokens = json.loads(response.text)
             access_token = tokens.get('access_token')
-            
+
             profile_api = 'https://kapi.kakao.com/v2/user/me'
             headers = {'Authorization': f'Bearer {access_token}'}
             response = requests.post(profile_api, headers=headers)
@@ -141,55 +134,55 @@ def KakaoCallbackView(request):
                 email = kakao_account.get('email')
                 nickname = kakao_account.get('profile').get('nickname')
 
-                try:
-                        # 이미 회원 가입되어 있는 사용자인지 확인
-                    member = Member.objects.get(id=id)
-                    
-                    expires_at = datetime.utcnow() + timedelta(hours=2)
-                    payload = {'id': member.id, 'exp': expires_at}
-
-                    jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
-                    
-                    response_data = {
-                            'token': jwt_token,
-                            'access_token':access_token
-                        }
-                    return Response(response_data)
-                        
-                except Member.DoesNotExist:
-                        # 회원 가입되어 있지 않으면 새로 추가
-                    member = Member.objects.create(
-                        id=id,
-                        email=email,
-                        nickname=nickname,
-                        info="안녕하세요. 많은 관심과 사랑 부탁드려요 !",
-                        profileimg=profileimg,
-                        provider="kakao",
-                        joindate=datetime.today().date()
+            try:
+                    # 이미 회원 가입되어 있는 사용자인지 확인
+                member = Member.objects.get(id=id)
+                print("이미 가입된 사용자")
                 
-                        )
-                    member.save()
-                    
-                    expires_at = datetime.utcnow() + timedelta(hours=2)
-                    payload = {'id': member.id, 'exp': expires_at}
+                expires_at = datetime.utcnow() + timedelta(hours=2)
+                payload = {'id': member.id, 'exp': expires_at}
 
-                    jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
-                    
-                    response_data = {
-                        'id': member.id,
-                        'nickname': member.nickname,
-                        'access_token': access_token,
+                jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+                
+                response_data = {
                         'token': jwt_token,
-                        'exist': False,
+                        'access_token':access_token
                     }
-                    return Response(response_data)
-
-            else:
-                return Response('Failed to get user profile', status=response.status_code)
-        else:
+                return Response(response_data)
+                    
+            except Member.DoesNotExist:
+                    # 회원 가입되어 있지 않으면 새로 추가
+                member = Member.objects.create(
+                    id=id,
+                    email=email,
+                    nickname=nickname,
+                    info="안녕하세요. 많은 관심과 사랑 부탁드려요 !",
+                    profileimg=profileimg,
+                    provider="kakao",
+                    joindate=datetime.today().date()
             
+                    )
+                member.save()
+                
+                expires_at = datetime.utcnow() + timedelta(hours=2)
+                payload = {'id': member.id, 'exp': expires_at}
+
+                jwt_token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+                
+                response_data = {
+                    'id': member.id,
+                    'nickname': member.nickname,
+                    'access_token': access_token,
+                    'token': jwt_token,
+                    'exist': False,
+                }
+                return Response(response_data)
+
+        else:
+                return Response('Failed to get user profile', status=response.status_code)
+    else:
             return Response('Failed to get access token', status=response.status_code)
-        
+
         
 @api_view(['POST'])       
 def get_user_data(request):
