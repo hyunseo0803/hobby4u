@@ -104,27 +104,37 @@ function Allclass(props) {
 			setMoney("");
 		} else if (value === "fee") {
 			setMoney("fee");
+			// readFilter();
 		} else if (value === "free") {
 			setMoney("free");
+			// readFilter();
 		}
 
 		if (option === value) {
 			setOption("");
 		} else if (value === "online") {
 			setOption("online");
+			// readFilter();
 		} else if (value === "offline") {
 			setOption("offline");
+			// readFilter();
 		}
 
 		if (value === "reset") {
 			setOption("");
 			setMoney("");
 		}
-		readFilter();
 	};
+
+	useEffect(() => {
+		if (money !== "" || option !== "") {
+			readFilter();
+		}
+	}, [money, option]);
 
 	async function readFilter() {
 		try {
+			console.log(money, option);
 			const response = await axios.get(
 				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}`,
 				{
@@ -135,19 +145,24 @@ function Allclass(props) {
 			);
 
 			const fSimple = response.data.filter_data_list;
-			const updatedClass_f = await Promise.all(
-				fSimple.map(async (s) => {
-					const updatedClassf = { ...s };
-					try {
-						updatedClassf.img = await readFirebasefile("classFile", s.img);
-					} catch (error) {
-						console.error("Error getting file URL: ", error);
-					}
-					return updatedClassf;
-				})
-			);
-			setFliteredata(updatedClass_f);
-			ReadGoodCount();
+			console.log(fSimple);
+			if (fSimple !== "none" && fSimple.length > 0) {
+				const updatedClass_f = await Promise.all(
+					fSimple.map(async (s) => {
+						const updatedClassf = { ...s };
+						try {
+							updatedClassf.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return updatedClassf;
+					})
+				);
+				setFliteredata(updatedClass_f);
+				ReadGoodCount();
+			} else {
+				setFliteredata([]);
+			}
 		} catch (error) {
 			console.error("Error submitting data:", error);
 		}
@@ -268,19 +283,20 @@ function Allclass(props) {
 		}
 	}
 
-	useEffect(() => {
-		if (option === "" && money === "") {
-			readAll();
-		} else {
-			readFilter();
-		}
-	}, [money, option]);
+	// useEffect(() => {
+	// if (option === "" && money === "") {
+	// readAll();
+	// } else {
+	// readFilter();
+	// }
+	// }, []);
 
 	useEffect(() => {
 		readAll();
 	}, []);
 
 	function handleSelectTheme(themeFilter) {
+		console.log(`내가 누른 테마:${themeFilter}`);
 		if (themeFilter) {
 			const updatedThemes = [...themef];
 
@@ -288,40 +304,76 @@ function Allclass(props) {
 
 			if (themeIndex !== -1) {
 				updatedThemes.splice(themeIndex, 1);
+				setThemef(updatedThemes);
+				readThemeFilter(updatedThemes);
 			} else {
+				console.log("테마 추가됨");
 				updatedThemes.push(themeFilter);
+				setThemef(updatedThemes);
+				readThemeFilter(updatedThemes);
 			}
-			setThemef(updatedThemes);
 		}
 	}
+	const instance = axios.create();
+
+	// 요청을 보내기 전에 호출될 함수
+	instance.interceptors.request.use((config) => {
+		config.metadata = { startTime: performance.now() };
+		return config;
+	});
+
+	// 응답을 받은 후에 호출될 함수
+	instance.interceptors.response.use(
+		(response) => {
+			const endTime = performance.now();
+			const elapsedTime = endTime - response.config.metadata.startTime;
+			console.log(`요청-응답 시간: ${elapsedTime} milliseconds`);
+			return response;
+		},
+		(error) => {
+			return Promise.reject(error);
+		}
+	);
 
 	async function readThemeFilter(themef) {
-		setInputValue("");
+		setWord("");
 		let theme = encodeURI(themef);
 		try {
-			const response = await axios.get(
-				`http://localhost:8000/api/post/read_filter_data/?theme=${theme}`,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
-
-			const fSimple = response.data.filter_data_list;
-			const updatedClass_f = await Promise.all(
-				fSimple.map(async (s) => {
-					const updatedClassf = { ...s };
-					try {
-						updatedClassf.img = await readFirebasefile("classFile", s.img);
-					} catch (error) {
-						console.error("Error getting file URL: ", error);
+			setLoading(true);
+			console.log(`요청보낼 검색 테마:${theme}`);
+			if (theme !== "") {
+				const response = await instance.get(
+					`http://localhost:8000/api/post/read_filter_data/?theme=${theme}`,
+					{
+						headers: {
+							"Content-Type": "application/json",
+						},
 					}
-					return updatedClassf;
-				})
-			);
-			setFliteredata(updatedClass_f);
-			ReadGoodCount();
+				);
+
+				const fSimple = response.data.filter_data_list;
+
+				console.log(fSimple);
+				if (fSimple !== "none" && fSimple.length > 0) {
+					const updatedClass_f = await Promise.all(
+						fSimple.map(async (s) => {
+							const updatedClassf = { ...s };
+							try {
+								updatedClassf.img = await readFirebasefile("classFile", s.img);
+							} catch (error) {
+								console.error("Error getting file URL: ", error);
+							}
+							return updatedClassf;
+						})
+					);
+
+					setFliteredata(updatedClass_f);
+					ReadGoodCount();
+				} else {
+					setFliteredata([]);
+					console.log(fliteredata);
+				}
+			}
 		} catch (error) {
 			console.error("Error submitting data:", error);
 		}
@@ -335,14 +387,17 @@ function Allclass(props) {
 		}
 	}
 	const onchangeWord = (e) => {
-		setInputValue(e.target.value);
+		// setInputValue(e.target.value);
+		setWord(e.target.value);
 	};
 
 	const handleWordSearch = async () => {
-		setWord(inputValue);
-		setThemef("");
-		setSearchClick(true);
+		// console.log(
+		// setWord(inputValue);
+		setThemef([]);
 		try {
+			setSearchClick(true);
+
 			const response = await axios.get(
 				`http://localhost:8000/api/post/read_filter_data/?searchfield=${searchfilterField}&word=${word}`,
 				{
@@ -353,35 +408,41 @@ function Allclass(props) {
 			);
 
 			const wordFilter = response.data.filter_data_list;
-			const wordFilter_ = await Promise.all(
-				wordFilter.map(async (s) => {
-					const wordf = { ...s };
-					try {
-						wordf.img = await readFirebasefile("classFile", s.img);
-					} catch (error) {
-						console.error("Error getting file URL: ", error);
-					}
-					return wordf;
-				})
-			);
-			setFliteredata(wordFilter_);
-			setLoading(false);
+			console.log(wordFilter);
+			if (wordFilter !== "none" && wordFilter.length > 0) {
+				const wordFilter_ = await Promise.all(
+					wordFilter.map(async (s) => {
+						const wordf = { ...s };
+						try {
+							wordf.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return wordf;
+					})
+				);
+				setFliteredata(wordFilter_);
+				ReadGoodCount();
+			} else {
+				setFliteredata([]);
+			}
 		} catch (error) {
 			console.error("Error submitting data:", error);
 		}
+		setLoading(false);
 	};
 
 	const handleKeyPress = (e) => {
 		// 엔터 키를 눌렀을 때 검색 수행
-		if (e.key === "Enter" && inputValue.trim() !== "") {
+		if (e.key === "Enter" && word.trim() !== "") {
 			handleWordSearch();
 		}
 	};
-	useEffect(() => {
-		if (themef) {
-			readThemeFilter(themef);
-		}
-	}, [themef, loading]);
+	// useEffect(() => {
+	// 	if (themef) {
+	// 		readThemeFilter(themef);
+	// 	}
+	// }, [themef, loading]);
 
 	return (
 		<div className="read_container">
@@ -431,7 +492,7 @@ function Allclass(props) {
 						spellcheck="false"
 						onChange={onchangeWord}
 						onKeyPress={handleKeyPress}
-						value={inputValue}
+						value={word}
 					/>
 					<button
 						onClick={handleWordSearch}
@@ -464,7 +525,7 @@ function Allclass(props) {
 			{themef.length > 0 || searchClick ? (
 				loading ? (
 					<div style={{ marginTop: 100 }}>로딩중</div>
-				) : fliteredata.length !== 0 ? (
+				) : fliteredata.length > 0 || fliteredata !== "none" ? (
 					<>
 						<div className="result_cnt">
 							검색결과 총 {fliteredata.length}건{" "}
@@ -489,18 +550,21 @@ function Allclass(props) {
 								))}
 							</div>
 						)}
-
-						<FILTER_CLASS
-							theme={themef}
-							word={word}
-							goodClick={goodClick}
-							like_status={like_status}
-							handleReadDetail={handleReadDetail}
-							fliteredata={fliteredata}
-							ReadGoodCount={ReadGoodCount}
-							readFilter={readThemeFilter}
-							readWordFilter={handleWordSearch}
-						/>
+						{fliteredata.length > 0 ? (
+							<FILTER_CLASS
+								theme={themef}
+								word={word}
+								goodClick={goodClick}
+								like_status={like_status}
+								handleReadDetail={handleReadDetail}
+								fliteredata={fliteredata}
+								ReadGoodCount={ReadGoodCount}
+								readFilter={readThemeFilter}
+								readWordFilter={handleWordSearch}
+							/>
+						) : (
+							<div style={{ marginTop: 100 }}>검색결과가 없습니다. </div>
+						)}
 					</>
 				) : (
 					<div style={{ marginTop: 100 }}>검색결과가 없습니다. </div>
