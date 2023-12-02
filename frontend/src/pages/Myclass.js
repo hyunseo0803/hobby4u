@@ -1,19 +1,21 @@
 import React, { useEffect, useInsertionEffect, useState } from "react";
 import "../styles/Myclass.css";
-import bad_review from "../assets/bad_review.png";
-import good_review from "../assets/good_review.png";
 import LoginRequired from "../common/LoginRequired";
-import ReadClassOptionLB from "../component/AllReadOptionLB";
-// import { IoHappyOutline } from "react-icons/io5";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { StopOutlined } from "@ant-design/icons";
+import ClassCard from "../component/classCard";
 
 function Myclass(props) {
 	const { userData, readFirebasefile } = props;
 
-	const navigate = useNavigate();
+	const [filter, setFilter] = useState("");
+	const [myActivityFilter, setMyAcivityFilter] = useState([]);
+	const [applyActivityFilter, setApplyAcivityFilter] = useState([]);
+
+	const [my_delete_ok, setMyDelteOk] = useState([]);
+	const [apply_cancle_ok, setApplyCancleOk] = useState([]);
 	const [userNickname, setUserNickname] = useState("");
 
 	const [achiveLink, setAchiveLink] = useState([]);
@@ -25,18 +27,16 @@ function Myclass(props) {
 	const [userEmail, setUserEmail] = useState("");
 	const [userInfo, setUserInfo] = useState("");
 
-	const [good, setGoodReview] = useState(false);
-	const [bad, setBadReview] = useState(false);
-	const [like_status, setLikeStatus] = useState([]);
-
 	const [myclass, setMyClass] = useState([]);
 	const [applyClass, setApplyClass] = useState([]);
 
 	const [selectwhat, setSelectWhat] = useState("myclass");
 
+	const [loding, setLoding] = useState(false);
 	const handleLocalFilePreview = (file) => {
 		window.open(file, "_blank");
 	};
+
 	const getUserAchiv = async () => {
 		try {
 			const token = localStorage.getItem("token");
@@ -89,13 +89,16 @@ function Myclass(props) {
 	useEffect(() => {
 		readMyClass();
 		getUserAchiv();
+		getUserData();
 	}, []);
 
 	async function readMyClass() {
 		const jwt_token = localStorage.getItem("token");
+		setLoding(true);
+
 		try {
 			const response = await axios.get(
-				"http://localhost:8000/api/post/read_my_data/",
+				`http://localhost:8000/api/post/read_my_data/?filter=${filter}&selectwhat=${selectwhat}`,
 				{
 					headers: {
 						Authorization: `Bearer ${jwt_token}`,
@@ -104,7 +107,11 @@ function Myclass(props) {
 			);
 			const classMy = response.data.my_data_list;
 			const myApply = response.data.my_apply_list;
-			if (classMy.length > 0) {
+			const my_activity_filter = response.data.my_activity_filter;
+			const apply_activity_filter = response.data.apply_activity_filter;
+			const my_delete_ok = response.data.my_delete_ok;
+			const apply_cancle_ok = response.data.apply_cancle_ok;
+			if (classMy && classMy.length > 0) {
 				const updatedClass_M = await Promise.all(
 					classMy.map(async (s) => {
 						const classM = { ...s };
@@ -117,9 +124,10 @@ function Myclass(props) {
 					})
 				);
 				setMyClass(updatedClass_M);
-				ReadGoodCount();
+			} else {
+				setMyClass([]);
 			}
-			if (myApply.length > 0) {
+			if (myApply && myApply.length > 0) {
 				const updatedClass_A = await Promise.all(
 					myApply.map(async (s) => {
 						const classA = { ...s };
@@ -132,109 +140,95 @@ function Myclass(props) {
 					})
 				);
 				setApplyClass(updatedClass_A);
-				ReadGoodCount();
+				// ReadGoodCount();
+			} else {
+				setApplyClass([]);
 			}
-		} catch (error) {
-			console.error("Error submitting data:", error);
-		}
-	}
-
-	function ReadGoodCount() {
-		if (userData) {
-			const token = localStorage.getItem("token");
-			const userData = { token: token };
-			if (token) {
-				axios
-					.post(
-						"http://localhost:8000/api/post/read_goodCount_data/",
-						userData,
-						{
-							headers: {
-								"Content-Type": "application/json",
-							},
+			if (my_activity_filter && my_activity_filter.length > 0) {
+				console.log(" 필터링 결과 있음 내 클래스");
+				const updatedClass_A = await Promise.all(
+					my_activity_filter.map(async (s) => {
+						const classA = { ...s };
+						try {
+							classA.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
 						}
-					)
-					.then((response) => {
-						const likeData = response.data.like_data_list;
-						setLikeStatus(likeData);
+						return classA;
 					})
-					.catch((error) => {
-						console.error("Error submitting data:", error);
-					});
+				);
+				setMyAcivityFilter(updatedClass_A);
+				// ReadGoodCount();
+			} else {
+				setMyAcivityFilter([]);
 			}
-		}
-	}
-
-	async function handleReadDetail(value) {
-		try {
-			const response = await axios.get(
-				`http://localhost:8000/api/post/read_some_data/?class_id=${value}`
-			);
-			const classdetail = response.data.class_data;
-			const daydetail = response.data.day_data;
-			const updatedClassDetail = { ...classdetail };
-			const classImg = await readFirebasefile("classFile", classdetail.img);
-			const classfile = await readFirebasefile("file", classdetail["file"]);
-			if (classdetail["infoimg1"]) {
-				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
-				updatedClassDetail.infoimg1 = intro1;
+			if (apply_activity_filter && apply_activity_filter.length > 0) {
+				const updatedClass_A = await Promise.all(
+					apply_activity_filter.map(async (s) => {
+						const classA = { ...s };
+						try {
+							classA.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return classA;
+					})
+				);
+				setApplyAcivityFilter(updatedClass_A);
+				// ReadGoodCount();
+			} else {
+				setApplyAcivityFilter([]);
 			}
-			if (classdetail["infoimg2"]) {
-				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
-				updatedClassDetail.infoimg2 = intro2;
+			if (my_delete_ok && my_delete_ok.length > 0) {
+				const updatedClass_A = await Promise.all(
+					my_delete_ok.map(async (s) => {
+						const classA = { ...s };
+						try {
+							classA.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return classA;
+					})
+				);
+				setMyDelteOk(updatedClass_A);
+				// ReadGoodCount();
+			} else {
+				setMyDelteOk([]);
 			}
-			if (classdetail["infoimg3"]) {
-				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
-				updatedClassDetail.infoimg3 = intro3;
+			if (apply_cancle_ok && apply_cancle_ok.length > 0) {
+				const updatedClass_A = await Promise.all(
+					apply_cancle_ok.map(async (s) => {
+						const classA = { ...s };
+						try {
+							classA.img = await readFirebasefile("classFile", s.img);
+						} catch (error) {
+							console.error("Error getting file URL: ", error);
+						}
+						return classA;
+					})
+				);
+				setApplyCancleOk(updatedClass_A);
+				// ReadGoodCount();
+			} else {
+				setApplyCancleOk([]);
 			}
-
-			updatedClassDetail.img = classImg;
-			updatedClassDetail.file = classfile;
-
-			const updatedDayDetail = await Promise.all(
-				daydetail.map(async (day) => {
-					const updatedDay = { ...day };
-					try {
-						updatedDay.day_file = await readFirebasefile("day", day.day_file);
-					} catch (error) {
-						console.error("Error getting file URL: ", error);
-					}
-					return updatedDay;
-				})
-			);
-			navigate("/readClass/classDetail", {
-				state: {
-					ClassDetail: updatedClassDetail,
-					DayDetail: updatedDayDetail,
-					userData: userData,
-				},
-			});
+			setLoding(false);
 		} catch (error) {
 			console.error("Error submitting data:", error);
 		}
 	}
 
-	useEffect(() => {
-		if (good) {
-			setBadReview(false);
-		} else if (bad) {
-			setGoodReview(false);
+	const handleMyclassFilter = (f) => {
+		if (filter === f) {
+			setFilter("");
+		} else {
+			setFilter(f);
 		}
-	}, [good, bad]);
-
-	function GoodreviewEvent() {
-		setGoodReview(!good);
-		setBadReview(false);
-	}
-
-	function BadReviewEvent() {
-		setBadReview(!bad);
-		setGoodReview(false);
-	}
-
+	};
 	useEffect(() => {
-		getUserData();
-	});
+		readMyClass();
+	}, [filter, selectwhat]);
 
 	const getUserData = async () => {
 		try {
@@ -285,14 +279,6 @@ function Myclass(props) {
 			}
 		}
 	};
-	function isImage(urlString) {
-		const extension = urlString.split("?")[0].split(".").pop();
-
-		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
-
-		return imageEx.includes(extension);
-	}
-
 	return (
 		<div className="wrap">
 			{userNickname ? (
@@ -305,16 +291,12 @@ function Myclass(props) {
 								justifyContent: "center",
 								textAlign: "center",
 								alignItems: "center",
-								// marginRight: 20,
 								flexDirection: "column",
-								// padding: "
-								// backgroundColor: "red",
 							}}
 						>
 							<div className="user_img">
 								{updatedImg ? (
 									<img
-										// style={{ borderRadius: "50%", overflow: "hidden" }}
 										width="40"
 										height="40"
 										src={updatedImg}
@@ -322,7 +304,6 @@ function Myclass(props) {
 									/>
 								) : (
 									<img
-										// style={{ borderRadius: 40 }}
 										width="40"
 										height="40"
 										src={userImg}
@@ -346,14 +327,11 @@ function Myclass(props) {
 														style={{
 															display: "flex",
 															flexDirection: "row",
-															// width: "90%",
-															// backgroundColor: "red",
 														}}
 													>
 														<div
 															key={index}
 															style={{
-																// width: "100%",
 																marginBottom: 10,
 																wordBreak: "break-all",
 																padding: 5,
@@ -375,7 +353,6 @@ function Myclass(props) {
 																style={{
 																	color: "#1A1A3A",
 																	fontSize: 12,
-																	// backgroundColor: "red",
 																}}
 																rel="noopener noreferrer"
 															>
@@ -429,22 +406,6 @@ function Myclass(props) {
 							</div>
 						</div>
 					</div>
-					<div className="review_wrapper">
-						<button
-							className={bad ? "review_unclick" : "review"}
-							onClick={GoodreviewEvent}
-						>
-							<img width={40} src={good_review} alt="" />{" "}
-							<text>Good_Review</text>
-						</button>
-						<button
-							className={good ? "review_unclick" : "review"}
-							onClick={BadReviewEvent}
-						>
-							<img width={40} src={bad_review} alt="" />
-							<text>Bad_Review</text>
-						</button>
-					</div>
 					<div
 						style={{
 							display: "flex",
@@ -484,12 +445,58 @@ function Myclass(props) {
 							수강하는 클래스
 						</button>
 					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "flex-end",
+							width: "88%",
+						}}
+					>
+						<button
+							style={{
+								border: "none",
+								backgroundColor: "transparent",
+								margin: 3,
+								fontSize: 14,
+								color: filter === "before" ? "royalblue" : "gray",
+							}}
+							onClick={() => handleMyclassFilter("before")}
+						>
+							활동 전
+						</button>
+						<button
+							style={{
+								border: "none",
+								backgroundColor: "transparent",
+								margin: 3,
+								fontSize: 14,
+								color: filter === "ing" ? "royalblue" : "gray",
+							}}
+							onClick={() => handleMyclassFilter("ing")}
+						>
+							활동 중
+						</button>
+						<button
+							style={{
+								border: "none",
+								backgroundColor: "transparent",
+								margin: 3,
+								fontSize: 14,
+								color: filter === "finish" ? "royalblue" : "gray",
+							}}
+							onClick={() => handleMyclassFilter("finish")}
+						>
+							활동 완료
+						</button>
+					</div>
 					{selectwhat === "myclass" ? (
 						<>
-							{myclass.length > 0 ? (
+							{loding ? (
+								<div>로딩중</div>
+							) : myclass.length > 0 ? (
 								<div
 									style={{
-										// backgroundColor: "red",
 										justifyContent: "center",
 										width: "100%",
 										display: "flex",
@@ -498,197 +505,161 @@ function Myclass(props) {
 										overflowX: "auto",
 									}}
 								>
-									{myclass.map((classItem, index) => {
-										// const firstimg = classItem.img.replace("/frontend/public/", "/");
-
-										const handleImageClick = (e) => {
-											e.stopPropagation();
-											handleReadDetail(classItem.class_id);
-										};
-
-										const handleButtonClick = () => {
-											handleReadDetail(classItem.class_id);
-										};
-										const isFree = classItem.money === "0";
-										const isOnline = classItem.type === "online";
-
-										const likeStatusItem = like_status
-											? like_status.find(
-													(item) => item.class_id === classItem.class_id
-											  )
-											: null;
-
-										return (
-											<div key={index} className="class_div_btn">
-												<div className="firstimg_container">
-													{isImage(classItem.img) ? (
-														<img
-															className="firstimg"
-															src={classItem.img}
-															alt="gg"
-															onClick={handleImageClick}
-														/>
-													) : (
-														<video
-															className="firstimg"
-															src={classItem.img}
-															alt="gg"
-															onClick={handleImageClick}
-															controls
-														/>
-													)}
+									{filter === "" && (
+										<ClassCard
+											classDiv={myclass}
+											readFirebasefile={readFirebasefile}
+											userData={userData}
+											delete_or_cancle={my_delete_ok}
+											readMyClass={readMyClass}
+											mypage={true}
+											status="삭제 가능"
+										/>
+									)}
+									{(filter === "before" ||
+										filter === "ing" ||
+										filter === "finish") &&
+									myActivityFilter.length > 0 ? (
+										<ClassCard
+											classDiv={myActivityFilter}
+											readFirebasefile={readFirebasefile}
+											userData={userData}
+											delete_or_cancle={my_delete_ok}
+											mypage={true}
+											readMyClass={readMyClass}
+											status="삭제 가능"
+										/>
+									) : (
+										(filter === "before" ||
+											filter === "ing" ||
+											filter === "finish") &&
+										myActivityFilter.length === 0 && (
+											<div
+												style={{
+													width: "100%",
+													height: 200,
+													padding: 10,
+													textAlign: "center",
+													display: "flex",
+													flexDirection: "column",
+													justifyContent: "center",
+												}}
+											>
+												<div style={{ color: "gray", margin: 10 }}>
+													<StopOutlined />
 												</div>
-												<div
-													className="class_div_MO"
-													style={{
-														justifyContent: "space-between",
-														alignItems: "center",
-													}}
-												>
-													<ReadClassOptionLB
-														isFree={isFree}
-														isOnline={isOnline}
-													/>
-													<div className="class_GCount">
-														<div className="like">좋아요</div>
-														<div className="like_text">
-															{classItem.goodCount}
-														</div>
-													</div>
-												</div>
-												<button
-													value={classItem.class_id}
-													onClick={handleButtonClick}
-													className="class_title_btn"
-												>
-													{classItem.title}
-												</button>
+												<div style={{ color: "#d3d3d3" }}>No Data </div>
 											</div>
-										);
-									})}
+										)
+									)}
 								</div>
 							) : (
-								<div
-									style={{
-										// backgroundColor: "yellow",
-										width: "100%",
-										height: 200,
-										padding: 10,
-										textAlign: "center",
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "center",
-									}}
-								>
-									<div style={{ color: "gray", margin: 10 }}>
-										<StopOutlined />
+								myclass.length === 0 && (
+									<div
+										style={{
+											width: "100%",
+											height: 200,
+											padding: 10,
+											textAlign: "center",
+											display: "flex",
+											flexDirection: "column",
+											justifyContent: "center",
+										}}
+									>
+										<div style={{ color: "gray", margin: 10 }}>
+											<StopOutlined />
+										</div>
+										<div style={{ color: "#d3d3d3" }}>No Data </div>
 									</div>
-									<div style={{ color: "#d3d3d3" }}>No Data </div>
-								</div>
+								)
 							)}
 						</>
 					) : (
-						<>
-							{applyClass.length > 0 ? (
-								<div
-									style={{
-										justifyContent: "center",
-										width: "100%",
-										display: "flex",
-										flexDirection: "row",
-										flexWrap: "wrap",
-										overflowX: "auto",
-									}}
-								>
-									{applyClass.map((classItem, index) => {
-										// const firstimg = classItem.img.replace("/frontend/public/", "/");
-
-										const handleImageClick = (e) => {
-											e.stopPropagation();
-											handleReadDetail(classItem.class_id);
-										};
-
-										const handleButtonClick = () => {
-											handleReadDetail(classItem.class_id);
-										};
-										const isFree = classItem.money === "0";
-										const isOnline = classItem.type === "online";
-
-										const likeStatusItem = like_status
-											? like_status.find(
-													(item) => item.class_id === classItem.class_id
-											  )
-											: null;
-
-										return (
-											<div key={index} className="class_div_btn">
-												<div className="firstimg_container">
-													{isImage(classItem.img) ? (
-														<img
-															className="firstimg"
-															src={classItem.img}
-															alt="gg"
-															onClick={handleImageClick}
-														/>
-													) : (
-														<video
-															className="firstimg"
-															src={classItem.img}
-															alt="gg"
-															onClick={handleImageClick}
-															controls
-														/>
-													)}
-												</div>
+						selectwhat === "applyclass" && (
+							<>
+								{loding ? (
+									<div>로딩중</div>
+								) : applyClass.length > 0 ? (
+									<div
+										style={{
+											justifyContent: "center",
+											width: "100%",
+											display: "flex",
+											flexDirection: "row",
+											flexWrap: "wrap",
+											overflowX: "auto",
+										}}
+									>
+										{filter === "" && (
+											<ClassCard
+												classDiv={applyClass}
+												readFirebasefile={readFirebasefile}
+												userData={userData}
+												readMyClass={readMyClass}
+												delete_or_cancle={apply_cancle_ok}
+												mypage={true}
+												status="취소 가능"
+											/>
+										)}
+										{(filter === "before" ||
+											filter === "ing" ||
+											filter === "finish") &&
+										applyActivityFilter.length > 0 ? (
+											<ClassCard
+												classDiv={applyActivityFilter}
+												readFirebasefile={readFirebasefile}
+												userData={userData}
+												readMyClass={readMyClass}
+												delete_or_cancle={apply_cancle_ok}
+												mypage={true}
+												status="취소 가능"
+											/>
+										) : (
+											(filter === "before" ||
+												filter === "ing" ||
+												filter === "finish") &&
+											applyActivityFilter.length === 0 && (
 												<div
-													className="class_div_MO"
 													style={{
-														justifyContent: "space-between",
-														alignItems: "center",
+														width: "100%",
+														height: 200,
+														padding: 10,
+														textAlign: "center",
+														display: "flex",
+														flexDirection: "column",
+														justifyContent: "center",
 													}}
 												>
-													<ReadClassOptionLB
-														isFree={isFree}
-														isOnline={isOnline}
-													/>
-													<div className="class_GCount">
-														<div className="like">좋아요</div>
-														<div className="like_text">
-															{classItem.goodCount}
-														</div>
+													<div style={{ color: "gray", margin: 10 }}>
+														<StopOutlined />
 													</div>
+													<div style={{ color: "#d3d3d3" }}>No Data </div>
 												</div>
-												<button
-													value={classItem.class_id}
-													onClick={handleButtonClick}
-													className="class_title_btn"
-												>
-													{classItem.title}
-												</button>
-											</div>
-										);
-									})}
-								</div>
-							) : (
-								<div
-									style={{
-										// backgroundColor: "yellow",
-										width: "100%",
-										height: 200,
-										padding: 10,
-										textAlign: "center",
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "center",
-									}}
-								>
-									<div style={{ color: "gray", margin: 10 }}>
-										<StopOutlined />
+											)
+										)}
 									</div>
-									<div style={{ color: "#d3d3d3" }}>No Data </div>
-								</div>
-							)}
-						</>
+								) : (
+									applyClass.length === 0 && (
+										<div
+											style={{
+												width: "100%",
+												height: 200,
+												padding: 10,
+												textAlign: "center",
+												display: "flex",
+												flexDirection: "column",
+												justifyContent: "center",
+											}}
+										>
+											<div style={{ color: "gray", margin: 10 }}>
+												<StopOutlined />
+											</div>
+											<div style={{ color: "#d3d3d3" }}>No Data </div>
+										</div>
+									)
+								)}
+							</>
+						)
 					)}
 				</>
 			) : (
