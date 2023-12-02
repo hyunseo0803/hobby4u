@@ -36,10 +36,7 @@ from django.http import JsonResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 sched = BackgroundScheduler()
 
-# cred = credentials.Certificate('C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\firebase_sdk.json')
-# firebase_admin.initialize_app(cred, {'storageBucket': 'hivehobby.appspot.com'})
 from django.core.cache import cache
-cache.clear()
 
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
@@ -66,13 +63,13 @@ def schedulerF():
                 for m_refund in refund_member:
                     m_re = Member.objects.get(id=m_refund.id.id)
                     if Cashback.objects.filter(id=m_re.id,class_id=refund_cnt.class_id,cash=refund_amount).count()==0:
-                        print("반환금 새로 추가할거임")
+                        print("반환금 새로 추가")
                         m_re.receive_cash+=refund_amount
                         m_re.save()
                         cash_back=Cashback(id=Member.objects.get(id=m_re.id),class_id=Class.objects.get(class_id=refund_cnt.class_id),cash=refund_amount,status='지급예정')
                         cash_back.save()
                     else:
-                        print("이미 반환금으로 추가된거임")
+                        print("이미 반환금으로 추가됨")
                         return;
 sched.start()
 
@@ -85,24 +82,17 @@ def update_cache_on_data_change(sender, **kwargs):
 
 def randm_num():
     num = "0123456789"
- 
     result=""
     for i in range(4):
         result+=random.choice(num)
-        
     return result
     
 
 def generate_random_hash(file_name):
-    
-    # print(file_name)
- 
     # 임의의 솔트(salt)를 생성
     file_name_without_extension, file_extension = file_name.rsplit('.', 1)
-
     # 파일 이름을 해시화
     hashed_file_name = hashlib.sha256(file_name_without_extension.encode()).hexdigest()
-
     # 해싱된 파일 이름과 확장자 결합
     hashed = f"{hashed_file_name}{randm_num()}.{file_extension}"
     return hashed
@@ -112,10 +102,8 @@ def upload_to_firebase(file,folder_name):
     if file is not None:
         bucket = storage.bucket()
         filename=generate_random_hash(file.name)
-        
         blob = bucket.blob(folder_name+'/'+filename)
         blob.upload_from_file(file)
-    
         return filename
     else:
         return None
@@ -123,11 +111,8 @@ def upload_to_firebase(file,folder_name):
 @csrf_exempt
 def submit_data(request):
     if request.method == 'POST':
-        json_data = request.POST.get('json')  # JSON 데이터 받기
-        
-    
+        json_data = request.POST.get('json')  
         data = json.loads(json_data)
-        
         token=data.get('token')
         payload = jwt.decode(token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
@@ -151,11 +136,6 @@ def submit_data(request):
         inputimage2=request.FILES.get('inputImage2')
         inputimage3=request.FILES.get('inputImage3')
         file=request.FILES.get('file')
-        
-        # print(activityenddate,activitystartdate)
-        
-        
-            
             
         days = data.get('days', [])
         
@@ -193,7 +173,6 @@ def submit_data(request):
                 day_title = day_data.get('title','')
                 day_info = day_data.get('content','')
                 day_file = request.FILES.get(f'dayImg[{day_sequence}]', None)
-                # print(day_date)
                 day_file_url = upload_to_firebase(day_file,"day")
 
                 day_class_info=DayClassinfo.objects.create(
@@ -210,102 +189,217 @@ def submit_data(request):
 
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
+def extract_data_from_class(class_instance):
+    data = {
+        'class_id': class_instance.class_id.class_id,
+        'id': {
+            'nickname': class_instance.class_id.id.nickname,
+            'profile': class_instance.class_id.id.profileimg if class_instance.class_id.id.profileimg else None,
+            'updateprofile': class_instance.class_id.id.updateprofile if class_instance.class_id.id.updateprofile else None,
+        },
+        'title': class_instance.class_id.title,
+        'info': class_instance.class_id.info,
+        'img': class_instance.class_id.img,
+        'theme': class_instance.class_id.theme,
+        'people': class_instance.class_id.people,
+        'money': class_instance.class_id.money,
+        'type': class_instance.class_id.type,
+        'applyend': class_instance.class_id.applyend,
+        'activitystart': class_instance.class_id.activitystart,
+        'activityend': class_instance.class_id.activityend,
+        'goodCount': class_instance.class_id.goodcount
+    }
+    return data
+
+
+def extract_data_from_classmodel(class_instance):
+    data = {
+        'class_id': class_instance.class_id,
+        'id': {
+            'nickname': class_instance.id.nickname,
+            'profile': class_instance.id.profileimg if class_instance.id.profileimg else None,
+            'updateprofile': class_instance.id.updateprofile if class_instance.id.updateprofile else None,
+        },
+        'title': class_instance.title,
+        'info': class_instance.info,
+        'img': class_instance.img,
+        'theme': class_instance.theme,
+        'people': class_instance.people,
+        'money': class_instance.money,
+        'type': class_instance.type,
+        'applyend': class_instance.applyend,
+        'activitystart': class_instance.activitystart,
+        'activityend': class_instance.activityend,
+        'goodCount': class_instance.goodcount
+    }
+    return data
 
 
 def read_all_data(request):
     today= datetime.today().strftime('%Y-%m-%d')
     class_all = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
     
-    
-    all_data_list = []
-    for all in class_all:
-        all_data = {
-            'class_id': all.class_id.class_id,
-            'id':{
-                'nickname':all.class_id.id.nickname,
-                'profile':all.class_id.id.profileimg if all.class_id.id.profileimg else None,
-                'updateprofile':all.class_id.id.updateprofile if all.class_id.id.updateprofile else None,
-            },
-            'title': all.class_id.title,
-            'info': all.class_id.info,
-            'img': all.class_id.img,
-            'theme': all.class_id.theme,
-            'people': all.class_id.people,
-            'money': all.class_id.money,
-            'type': all.class_id.type,
-            'applyend': all.class_id.applyend,
-            'activitystart': all.class_id.activitystart,
-            'activityend': all.class_id.activityend,
-            'goodCount': all.class_id.goodcount,
-            'applycnt': all.class_id.applycnt,
-        }
-        all_data_list.append(all_data)
-        
+    all_data_list = [extract_data_from_class(all) for all in class_all]
     return JsonResponse({'all_data_list':all_data_list}, safe=False)
 
-# @csrf_exempt
+def read_my_class(request):
+    jwt_token = request.headers.get('Authorization').split(' ')[1]
+    payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
+    user_id=payload['id']
+    p_class = ExamResult.objects.filter(result='P')
+    my_p_class = p_class.filter(class_id__id=user_id)
+    
+    allclass_my=[]
+    for my in my_p_class:
+        data={
+            'class_id':my.class_id.class_id
+        }
+        allclass_my.append(data)
+    return JsonResponse({'allclass_my': allclass_my})
+
 def read_my_data(request):
         jwt_token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
         
+        filter = request.GET.get('filter')
+        selectwhat=request.GET.get('selectwhat')
+        
+        today = timezone.localdate()
+        thirty_one_days_ago = today - timedelta(days=31)
         
         class_all = ExamResult.objects.filter(result='P')
         
         if class_all.count()>0:
             class_my = class_all.filter(class_id__id=user_id)
+            class_apply=Apply.objects.filter(id=user_id)
             
-            my_data_list = []
-            for all in class_my:
-                all_data = {
-                    'class_id': all.class_id.class_id,
-                    'id':{
-                        'nickname':all.class_id.id.nickname,
-                        'profile':all.class_id.id.profileimg if all.class_id.id.profileimg else None,
-                        'updateprofile':all.class_id.id.updateprofile if all.class_id.id.updateprofile else None,
-                    },
-                    'title': all.class_id.title,
-                    'info': all.class_id.info,
-                    'img': all.class_id.img,
-                    'theme': all.class_id.theme,
-                    'people': all.class_id.people,
-                    'money': all.class_id.money,
-                    'type': all.class_id.type,
-                    'applyend': all.class_id.applyend,
-                    'activitystart': all.class_id.activitystart,
-                    'activityend': all.class_id.activityend,
-                    'goodCount': all.class_id.goodcount
-                }
-                my_data_list.append(all_data)
+            #내 클래스/ 수강중인 클래스 전체
+            my_data_list = [extract_data_from_class(all) for all in class_my]
+            my_apply_list=[extract_data_from_class(apply) for apply in class_apply]
+            
+            #삭제 가능
+            mydeleteok=class_my.filter(class_id__applyend__gte=today)
+            #취소 가능
+            applycancleok=class_apply.filter(class_id__applyend__gte=today)
+            #내 클래스 삭제가능/ 수강중인 클래스 취소 가능
+            my_delete_ok = [extract_data_from_class(befor) for befor in mydeleteok]
+            apply_cancle_ok = [extract_data_from_class(befor) for befor in applycancleok]
+            
+            my_activity_filter = []
+            apply_activity_filter = []
+            c_m_o_list=class_my.none()
+            c_m_v_list=class_my.none()
+            c_p_o_list=class_apply.none()
+            c_p_v_list=class_apply.none()
+            
+            if selectwhat=="myclass":
+                if filter and filter == "before":
+                    #활동 전 
+                    c_m_o= class_my.filter(class_id__type="offline")
+                    if c_m_o:
+                        c_m_o_list=c_m_o.filter(class_id__activitystart__gt=today)
+                    c_m_v= class_my.exclude(class_id__type="offline")
+                    if c_m_v:
+                        c_m_v_list=c_m_v.filter(class_id__applyend__gte=today)
                 
-        class_apply=Apply.objects.filter(id=user_id)
-        my_apply_list=[]
-        print("내가 신청한거")
-        print(class_apply)
-        if class_apply.count()>0:    
-            for apply in class_apply:
-                all_data = {
-                    'class_id': apply.class_id.class_id,
-                    'id':{
-                        'nickname':apply.class_id.id.nickname,
-                        'profile':apply.class_id.id.profileimg if apply.class_id.id.profileimg else None,
-                        'updateprofile':apply.class_id.id.updateprofile if apply.class_id.id.updateprofile else None,
-                    },
-                    'title': apply.class_id.title,
-                    'info': apply.class_id.info,
-                    'img': apply.class_id.img,
-                    'theme': apply.class_id.theme,
-                    'people': apply.class_id.people,
-                    'money': apply.class_id.money,
-                    'type': apply.class_id.type,
-                    'applyend': apply.class_id.applyend,
-                    'activitystart': apply.class_id.activitystart,
-                    'activityend': apply.class_id.activityend,
-                    'goodCount': apply.class_id.goodcount
-                }
-                my_apply_list.append(all_data)
+                    my_activity_before=c_m_o_list.union(c_m_v_list)
+                    my_activity_filter = [extract_data_from_class(befor) for befor in my_activity_before]
+                    
+                if filter and filter == "ing":
+                    c_m_o= class_my.filter(class_id__type="offline")
+                    if c_m_o:
+                        c_m_o_list=c_m_o.filter(class_id__activitystart__lte=today, class_id__activityend__gte=today)
+                    c_m_v= class_my.exclude(class_id__type="offline")
+                    if c_m_v:    
+                        c_m_v_list=c_m_v.filter(class_id__applyend__lt=today,class_id__applyend__gte=thirty_one_days_ago)
+                        
+                    my_activity_ing=c_m_o_list.union(c_m_v_list)
+                    my_activity_filter = [extract_data_from_class(ing) for ing in my_activity_ing]
+                elif filter and filter == "finish":
+                    c_m_o= class_my.filter(class_id__type="offline")
+                    if c_m_o:
+                        c_m_o_list=c_m_o.filter(class_id__activityend__lt=today)
+                    c_m_v= class_my.exclude(class_id__type="offline")
+                    if c_m_v:
+                        c_m_v_list=c_m_v.filter(class_id__applyend__lt=thirty_one_days_ago)
+                    
+                    my_activity_finish=c_m_o_list.union(c_m_v_list)
+                    my_activity_filter = [extract_data_from_class(finish) for finish in my_activity_finish]
+            elif selectwhat=="applyclass":
+                if filter and filter == "before":
+                    #활동 전 
+                    c_p_o= class_apply.filter(class_id__type="offline")
+                    if c_p_o:
+                        c_p_o_list=c_p_o.filter(class_id__activitystart__gt=today)
+                    c_p_v= class_apply.exclude(class_id__type="offline")
+                    if c_p_v:
+                        c_p_v_list=c_p_v.filter(class_id__applyend__gte=today)
+                
+                    apply_activity_before=c_p_o_list.union(c_p_v_list)
+                    apply_activity_filter = [extract_data_from_class(befor) for befor in apply_activity_before]
+                    
+                if filter and filter == "ing":
+                    c_p_o= class_apply.filter(class_id__type="offline")
+                    if c_p_o:
+                        c_p_o_list=c_p_o.filter(class_id__activitystart__lte=today, class_id__activityend__gte=today)
+                    c_p_v= class_apply.exclude(class_id__type="offline")
+                    if c_p_v:
+                        c_p_v_list=c_p_v.filter(class_id__applyend__lt=today,class_id__applyend__gte=thirty_one_days_ago)
+
+                    apply_activity_ing=c_p_o_list.union(c_p_v_list)
+                    apply_activity_filter = [extract_data_from_class(ing) for ing in apply_activity_ing]
+                    
+                elif filter and filter == "finish":
+                    c_p_o= class_apply.filter(class_id__type="offline")
+                    if c_p_o:
+                        c_p_o_list=c_p_o.filter(class_id__activityend__lt=today)
+                    c_p_v= class_apply.exclude(class_id__type="offline")
+                    if c_p_v:
+                        c_p_v_list=c_p_v.filter(class_id__applyend__lt=thirty_one_days_ago)
+                    
+                    apply_activity_finish=c_p_o_list.union(c_p_v_list)
+                    apply_activity_filter = [extract_data_from_class(finish) for finish in apply_activity_finish]
+        return JsonResponse({'my_delete_ok':my_delete_ok,'apply_cancle_ok':apply_cancle_ok,'my_data_list':my_data_list,'my_apply_list':my_apply_list,'my_activity_filter':my_activity_filter,'apply_activity_filter':apply_activity_filter})
+
+@csrf_exempt
+def delete_my_class(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            class_id = data.get('class_id')
+            deletemyclass = Class.objects.get(class_id=class_id)
+            deletemyday=DayClassinfo.objects.filter(class_id=class_id)
+            deleteexam=ExamResult.objects.filter(class_id=class_id)
+            deleteapply=Apply.objects.filter(class_id=class_id)
+            deletemyday.delete()
+            deleteexam.delete()
+            deleteapply.delete()
+            deletemyclass.delete()
+            return JsonResponse({'message': '클래스 삭제에 성공했습니다.'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'POST 메서드만 지원됩니다.'}, status=400)
+
+@csrf_exempt
+def cancle_apply_class(request):
+    if request.method == 'POST':
+        try:
+            data=json.loads(request.body.decode('utf-8'))
+            classid=data.get('class_id')
+            token=data.get('token')
+            payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+            user = payload['id']
             
-        return JsonResponse({'my_data_list':my_data_list,'my_apply_list':my_apply_list})
+            deletemyclass=Apply.objects.get(class_id=classid,id=Member.objects.get(id=user))
+            deletemyclass.delete()
+            deletemyclasscnt=Class.objects.get(class_id=classid)
+            deletemyclasscnt.applycnt-=1
+            deletemyclasscnt.save()
+            return JsonResponse({'message': '수강 취소에 성공했습니다.'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'message':'Delete my class'})
 
 @csrf_exempt
 def read_judge_my(request):
@@ -316,29 +410,7 @@ def read_judge_my(request):
         class_all = Class.objects.all()
         judge_class = class_all.exclude(class_id__in=ExamResult.objects.values('class_id'))
         judge_my=judge_class.filter(id=user_id)
-        judge_data_list = []
-        for judge in judge_my:
-            all_data = {
-                'class_id': judge.class_id,
-                'id':{
-                    'nickname':judge.id.nickname,
-                    'profile':judge.id.profileimg if judge.id.profileimg else None,
-                    'updateprofile':judge.id.updateprofile if judge.id.updateprofile else None,
-                },
-                'title': judge.title,
-                'info': judge.info,
-                'img': judge.img,
-                'theme': judge.theme,
-                'people': judge.people,
-                'money': judge.money,
-                'type': judge.type,
-                'applyend': judge.applyend,
-                'activitystart': judge.activitystart,
-                'activityend': judge.activityend,
-                'goodCount': judge.goodcount
-            }
-            judge_data_list.append(all_data)
-        
+        judge_data_list = [extract_data_from_classmodel(judge) for judge in judge_my]
     return JsonResponse({'judge_data_list':judge_data_list}, safe=False)
 
 @csrf_exempt
@@ -347,38 +419,15 @@ def read_judge_np(request):
         jwt_token = request.headers.get('Authorization').split(' ')[1]
         payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
         user_id=payload['id']
-        judge_class = ExamResult.objects.filter(result='NP')
-        judge_my=judge_class.filter(class_id__id=user_id)
-        judge_np_list = []
-        for judge in judge_my:
-            all_data = {
-                'class_id': judge.class_id.class_id,
-                'id':{
-                    'nickname':judge.class_id.id.nickname,
-                    'profile':judge.class_id.id.profileimg if judge.class_id.id.profileimg else None,
-                    'updateprofile':judge.class_id.id.updateprofile if judge.class_id.id.updateprofile else None,
-                },
-                'title': judge.class_id.title,
-                'info': judge.class_id.info,
-                'img': judge.class_id.img,
-                'theme': judge.class_id.theme,
-                'people': judge.class_id.people,
-                'money': judge.class_id.money,
-                'type': judge.class_id.type,
-                'applyend': judge.class_id.applyend,
-                'activitystart': judge.class_id.activitystart,
-                'activityend': judge.class_id.activityend,
-                'goodCount': judge.class_id.goodcount
-            }
-            judge_np_list.append(all_data)
-        
+        judge_np_class = ExamResult.objects.filter(result='NP')
+        judge_my_np=judge_np_class.filter(class_id__id=user_id)
+        judge_np_list = [extract_data_from_class(mynp) for mynp in judge_my_np]
     return JsonResponse({'judge_np_list':judge_np_list})
 
 
 
 
 def read_new_data(request):
-    
     current_date = datetime.now().date()
     today= datetime.today().strftime('%Y-%m-%d')
 
@@ -386,31 +435,7 @@ def read_new_data(request):
     exam_result=ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
     
     filtered_date = exam_result.filter(date__range=[one_month_ago, current_date])
-    new_date_list=[]
-    for date in filtered_date:
-        date_data={
-            'class_id': date.class_id.class_id,
-            'title': date.class_id.title,
-            'info': date.class_id.info,
-            'img': date.class_id.img,
-            'theme':date.class_id.theme,
-            'people': date.class_id.people,
-            'money': date.class_id.money,
-            'type': date.class_id.type,
-            'applyend': date.class_id.applyend,
-            'activitystart': date.class_id.activitystart,
-            'activityend': date.class_id.activityend,
-            'goodCount': date.class_id.goodcount,
-            'applycnt': date.class_id.applycnt,
-            'id':{
-                'nickname':date.class_id.id.nickname,
-                'profile':date.class_id.id.profileimg if date.class_id.id.profileimg else None,
-                'updateprofile':date.class_id.id.updateprofile if date.class_id.id.updateprofile else None,
-            }
-        }
-        new_date_list.append(date_data)
-        
-
+    new_date_list=[extract_data_from_class(new) for new in filtered_date]
     return JsonResponse( {'new_date_list':new_date_list}, safe=False) 
             
 @csrf_exempt
@@ -418,7 +443,6 @@ def read_some_data(request):
     class_id = request.GET.get('class_id')
     if class_id is not None:
         try:
-            
             cls = Class.objects.get(class_id=class_id)
             class_data = {
                 'class_id': cls.class_id,
@@ -448,8 +472,6 @@ def read_some_data(request):
                 'info2':cls.intro2_content,
                 'info3':cls.intro3_content,
                 'applycnt':cls.applycnt
-                
-                
             }
             dls=DayClassinfo.objects.filter(class_id=class_id)
             day_data_list = []
@@ -466,6 +488,8 @@ def read_some_data(request):
             return JsonResponse({'error': 'Class not found'}, status=404)
     else:
         return JsonResponse({'error': 'class_id parameter is required'}, status=400)
+    
+# 캐시 사용 전 
 # def read_filter_data(request):
 #     money = request.GET.get('money')
 #     option = request.GET.get('option')
@@ -541,7 +565,6 @@ def read_some_data(request):
 
     
 def read_filter_data(request):
-    print('필터링 요청됨.')
     money = request.GET.get('money')
     option = request.GET.get('option')
     theme=request.GET.get('theme')
@@ -549,61 +572,39 @@ def read_filter_data(request):
     incoding_word=request.GET.get('word')
     incoding_field=request.GET.get('searchfield')
     
-    print("==========================================")
-    print(f"money: {money}, option: {option}")
-
-    
-    filter_data_list = []
-    
-        
     if incoding_word is not None and unquote(incoding_field)=="제목":
         cache_key = f'search_title:{unquote(incoding_word)}'
-        print(cache_key)
         search_title = cache.get(cache_key)
         if search_title is not None:
-            print("제목 검색 이미 캐시 있음")
             return JsonResponse({'filter_data_list': search_title}, safe=False)
         else:
-            print("제목 검색 캐시 추가함")
             exams_with_result_p = ExamResult.objects.filter(result='P')
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(title__contains=unquote(incoding_word))
-    print("제목 단독 도달확인")             
-            
     if incoding_word is not None and unquote(incoding_field)=="멘토":
         cache_key = f'search_mentor:{unquote(incoding_word)}'
         search_mentor = cache.get(cache_key)
         if search_mentor is not None:
-            print("멘토 검색 이미 캐시 있음")
-
             return JsonResponse({'filter_data_list': search_mentor}, safe=False)
         else:
             exams_with_result_p = ExamResult.objects.filter(result='P')
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
-    print("멘토 단독 도달확인")      
-    
     if theme is not None:
         sorted_theme = ','.join(sorted(theme.split(',')))
         cache_key = f'theme:{sorted_theme}'
         search_theme = cache.get(cache_key)
-        print(f'cache:{cache_key}')
         if search_theme is not None:
-            print('해당 캐시 있음')
             return JsonResponse({'filter_data_list': search_theme},safe=False)
         
         else:
-            print(f'theme {theme} 불러올거임')
             exams_with_result_p = ExamResult.objects.filter(result='P')
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             for t in theme:
                 filter_result = filter_result.filter(theme__contains=t)
-                
-    print("테마 단독 도달확인")      
-    
     if money == "fee" and option=="":
         cache_key='money_fee'
         money_fee = cache.get(cache_key)
@@ -614,8 +615,6 @@ def read_filter_data(request):
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.exclude(money=0)
-    print("유료 단독 도달확인")             
-    
     if money == "free" and option=="":
         cache_key='money_free'
         money_free = cache.get(cache_key)
@@ -626,10 +625,7 @@ def read_filter_data(request):
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(money=0)
-    print("무료 단독 도달확인")       
-
     if option == "online" and money=="":
-        print("온라인 실행된")
         cache_key='type_online'
         type_online=cache.get(cache_key)
         if type_online is not None:
@@ -639,9 +635,6 @@ def read_filter_data(request):
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(type='online')
-    print("온라인 단독 도달확인")
-
-            
     if option == "offline" and money=="":
         cache_key='type_offline'
         type_offline = cache.get(cache_key)
@@ -652,39 +645,28 @@ def read_filter_data(request):
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(type='offline')
-            
-    print("오프라인 단독 도달확인")       
     # 유료이면서 온라인
     if money == "fee" and option == "online":
-        print("유료면서 온라인 선택함")
         cache_key='fee_online'
         fee_online=cache.get(cache_key)
         if fee_online is not None:
-            print("캐시 이미 있음 ")
-            
             return JsonResponse({'filter_data_list':fee_online},safe=False)
         else:
-            print("캐시 새로 만들거임 ")
-
             exams_with_result_p = ExamResult.objects.filter(result='P')
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.exclude(money=0).filter(type='online')
-
     # 무료이면서 온라인
     if money == "free" and option == "online":
         cache_key='free_online'
         free_online=cache.get(cache_key)
         if free_online is not None:
-            print("무료면서 온라인 캐시 있음")
-            
             return JsonResponse({'filter_data_list': free_online},safe=False)
         else:
             exams_with_result_p = ExamResult.objects.filter(result='P')
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(money=0).filter(type='online')
-
     # 유료이면서 오프라인
     if money == "fee" and option == "offline":
         cache_key='fee_offline'
@@ -696,7 +678,6 @@ def read_filter_data(request):
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.exclude(money=0).filter(type='offline')
-            
     if money == "free" and option == "offline":
         cache_key='free_offline'
         free_offline=cache.get(cache_key)
@@ -707,33 +688,8 @@ def read_filter_data(request):
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(money=0).filter(type='offline')
-            
-
     if filter_result.exists():
-        print(filter_result)
-        for item in filter_result:
-            filter_data = {
-                'class_id': item.class_id,
-                'id': {
-                    'nickname':item.id.nickname,
-                    'profile':item.id.profileimg if item.id.profileimg else None,
-                    'updateprofile':item.id.updateprofile if item.id.updateprofile else None,
-                    
-                },
-                'title': item.title,
-                'info': item.info,
-                'img': item.img,
-                'theme': item.theme,
-                'people': item.people,
-                'money': item.money,
-                'type': item.type,
-                # 'applystart': item.applystart,
-                'applyend': item.applyend,
-                'activitystart': item.activitystart,
-                'activityend': item.activityend,
-                'goodCount': item.goodcount
-            }
-            filter_data_list.append(filter_data)
+        filter_data_list = [extract_data_from_class(item) for item in filter_result]
         cache.set(cache_key, filter_data_list, timeout=3600)
         
     else:
@@ -767,7 +723,6 @@ def create_goodCount_data(request):
                 class_info.save()
                 liked = True
             return JsonResponse({'liked':liked} ,safe=False)
-
         return JsonResponse({'message': 'Data received and processed successfully!'})
 
 @csrf_exempt
@@ -782,7 +737,6 @@ def read_goodCount_data(request):
         like_data_list = list(like_data)
 
         return JsonResponse({'like_data_list': like_data_list}, safe=False)
-
     return JsonResponse({'message': 'Data received and processed successfully!'})
 
 
@@ -790,15 +744,10 @@ def read_goodCount_data(request):
 def process_payment(request):
     if request.method=="POST":
         data=json.loads(request.body.decode('utf-8'))
-        
-        # print(request.body)
-
         toss_payments_api_key_bytes = f"{toss_payments_api_key}:".encode('utf-8')
         encoded_api_key = base64.b64encode(toss_payments_api_key_bytes).decode('utf-8')
-
         # toss_api_key = encoded_api_key
         toss_api_url = 'https://api.tosspayments.com/v1/payments/confirm'
-
         # 토스 페이먼츠 API 호출
         response = requests.post(
         toss_api_url,
@@ -809,9 +758,6 @@ def process_payment(request):
         },
         json=data,
         )
-        
-        # print(response.status_code)
-
     return JsonResponse(response.json(), status=response.status_code)
 
 @csrf_exempt
@@ -829,5 +775,4 @@ def apply_class(request):
         apply_up_cnt=Class.objects.get(class_id=classid)
         apply_up_cnt.applycnt += 1
         apply_up_cnt.save()
-
     return JsonResponse({'message': 'data saved successfully'})        
