@@ -7,7 +7,6 @@ import Intro from "./pages/Intro";
 import "../src/App.css";
 import Setting from "./pages/Setting";
 import Myclass from "./pages/Myclass";
-import Likeclass from "./pages/Likeclass";
 import Judge from "./pages/Judge";
 import CreateClass from "./pages/CreateClass/CreateClass";
 import CreateClassDetail from "./pages/CreateClass/CreateClassDetail";
@@ -126,15 +125,6 @@ class UserApp extends Component {
 								path="judge"
 								element={
 									<Judge
-										userData={userData}
-										readFirebasefile={readFirebasefile}
-									/>
-								}
-							/>
-							<Route
-								path="likeclass"
-								element={
-									<Likeclass
 										userData={userData}
 										readFirebasefile={readFirebasefile}
 									/>

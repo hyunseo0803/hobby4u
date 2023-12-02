@@ -11,16 +11,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function Header(props) {
 	const { userData } = props;
 
-	const currentDomain = window.location.hostname;
-	let logout_redirectUri;
-
-	if (currentDomain === "localhost") {
-		// 로컬 환경인 경우
-		logout_redirectUri = process.env.REACT_APP_LOCALHOST_LOGOUT_REDIRECT_URI; // 적절한 포트 및 경로로 설정
-	} else if (currentDomain === "hivehobby4u.netlify.app") {
-		// Netlify 도메인인 경우
-		logout_redirectUri = process.env.RREACT_APP_NETLIFY_LOGOUT_REDIRECT_URI; // 실제 도메인으로 설정
-	}
 	// 로그아웃
 	const logout = () => {
 		try {
@@ -52,12 +42,6 @@ function Header(props) {
 					{/* 제목 및 소개로 검색, 태그별 검색  */}
 					<Link to="judge" className="link">
 						클래스 심사 현황
-					</Link>
-				</div>
-				<div className="menu_item">
-					{/* 클래스 업로드 화면, 로그인 안되어있을 경우 로그인 화면으로  */}
-					<Link to="likeclass" className="link">
-						좋아요 클래스
 					</Link>
 				</div>
 				<div className="menu_item">
