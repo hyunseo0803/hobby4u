@@ -1,23 +1,80 @@
 import "../../styles/ReadClass.css";
 import React, { useEffect, useState, useCallback } from "react";
-
+import axios from "axios";
 import ReadClassOptionLB from "../../component/AllReadOptionLB";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 export default function NEW_CLASS(props) {
 	const {
 		newdata,
-		handleReadDetail,
+		readFirebasefile,
 		like_status,
 		goodClick,
-		readNew,
 		isLoggedIn,
+		userData,
 	} = props;
-
+	useEffect(() => {
+		readMyClassid();
+	}, []);
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsPerPage = 3;
 	const totalPage = Math.ceil(newdata.length / itemsPerPage);
+	const [myclassid, setMyclassid] = useState([]);
+
+	const navigate = useNavigate();
+
+	async function handleReadDetail(value) {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_some_data/?class_id=${value}`
+			);
+			const classdetail = response.data.class_data;
+			const daydetail = response.data.day_data;
+			const updatedClassDetail = { ...classdetail };
+			const classImg = await readFirebasefile("classFile", classdetail.img);
+			if (classdetail.file) {
+				const classfile = await readFirebasefile("file", classdetail["file"]);
+				updatedClassDetail.file = classfile;
+			}
+			if (classdetail["infoimg1"]) {
+				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
+				updatedClassDetail.infoimg1 = intro1;
+			}
+			if (classdetail["infoimg2"]) {
+				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
+				updatedClassDetail.infoimg2 = intro2;
+			}
+			if (classdetail["infoimg3"]) {
+				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
+				updatedClassDetail.infoimg3 = intro3;
+			}
+
+			updatedClassDetail.img = classImg;
+
+			const updatedDayDetail = await Promise.all(
+				daydetail.map(async (day) => {
+					const updatedDay = { ...day };
+					try {
+						updatedDay.day_file = await readFirebasefile("day", day.day_file);
+					} catch (error) {
+						console.error("Error getting file URL: ", error);
+					}
+					return updatedDay;
+				})
+			);
+			navigate("/readClass/classDetail", {
+				state: {
+					ClassDetail: updatedClassDetail,
+					DayDetail: updatedDayDetail,
+					userData: userData,
+				},
+			});
+		} catch (error) {
+			console.error("Error submitting data:", error);
+		}
+	}
 
 	const paginateData = () => {
 		const startIndex = currentPage * itemsPerPage;
@@ -40,14 +97,23 @@ export default function NEW_CLASS(props) {
 		};
 	}, [nextSlide]);
 
-	useEffect(() => {
-		readNew();
-	}, []);
-
-	// useEffect(() => {
-	// 	console.log(typeof isLoggedIn);
-	// });
-
+	async function readMyClassid() {
+		const jwt_token = localStorage.getItem("token");
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_my_class/`,
+				{
+					headers: {
+						Authorization: `Bearer ${jwt_token}`,
+					},
+				}
+			);
+			const myclassid = response.data.allclass_my;
+			setMyclassid(myclassid);
+		} catch (e) {
+			console.error(e);
+		}
+	}
 	function isImage(urlString) {
 		const extension = urlString.split("?")[0].split(".").pop();
 
@@ -64,8 +130,6 @@ export default function NEW_CLASS(props) {
 				</button>
 			</div>
 			{paginateData().map((newItem, index) => {
-				// const firstimg = newItem.img.replace("/frontend/public/", "/");
-
 				const handleImageClick = (e) => {
 					e.stopPropagation();
 					handleReadDetail(newItem.class_id);
@@ -79,6 +143,10 @@ export default function NEW_CLASS(props) {
 				const likeStatusItem = like_status
 					? like_status.find((item) => item.class_id === newItem.class_id)
 					: null;
+				const notMyClass =
+					myclassid.length > 0
+						? !myclassid.some((item) => item.class_id === newItem.class_id)
+						: true;
 
 				return (
 					<div className="class_div_btn">
@@ -108,7 +176,7 @@ export default function NEW_CLASS(props) {
 						>
 							<ReadClassOptionLB isFree={isFree} isOnline={isOnline} />
 							<div className="class_GCount">
-								{isLoggedIn ? (
+								{isLoggedIn && notMyClass ? (
 									<button
 										className="like_btn"
 										onClick={() => goodClick(newItem.class_id)}

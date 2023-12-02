@@ -31,21 +31,13 @@ function ReadClassDetail() {
 		while (random.length < 8) {
 			random += Math.floor(Math.random() * 10).toString(36);
 		}
-
 		let result_random = `${random}_${ClassDetail.class_id}`;
-
 		setRandomOrederid(result_random);
-		// const decodedClassid = parseInt(random, 36) % 10000000000;
 	}, []);
 
 	useEffect(() => {
 		getCashbackList();
 	}, []);
-
-	useEffect(() => {
-		console.log(cashBackList);
-		console.log(ClassDetail.class_id);
-	});
 
 	const theme_div = theme.split(",");
 
@@ -56,15 +48,12 @@ function ReadClassDetail() {
 		const today = moment().format("YYYY-MM-DD");
 		const diff = moment(endDate).diff(today, "days");
 		const timeRemaining = Math.floor(diff);
-		console.log(timeRemaining);
 		return timeRemaining;
 	}
 
 	function isImage(urlString) {
 		const extension = urlString.split("?")[0].split(".").pop();
-
 		const imageEx = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
-
 		return imageEx.includes(extension);
 	}
 
@@ -105,7 +94,6 @@ function ReadClassDetail() {
 						level: 3,
 					};
 					const map = new kakao.maps.Map(container, options); // 지도 객체 생성
-					console.log("로드됨");
 					if (kakao.maps.services) {
 						const geocoder = new kakao.maps.services.Geocoder();
 						geocoder.addressSearch(ClassDetail["address"], (result, status) => {
@@ -133,13 +121,7 @@ function ReadClassDetail() {
 		window.open(ClassDetail["file"], "_blank");
 	};
 
-	useEffect(() => {
-		console.log(today);
-		console.log(ClassDetail["applyend"]);
-	});
-
 	return (
-		// <Background>
 		<div
 			style={{
 				marginLeft: "18%",
@@ -316,8 +298,6 @@ function ReadClassDetail() {
 					어떤 활동을 하나요?
 				</div>
 				{DayDetail.map((Item, index) => {
-					// const day_img = Item["day_file"].replace("/frontend/public/", "/");
-
 					return (
 						<div key={index} className="row_container">
 							<div
@@ -427,7 +407,6 @@ function ReadClassDetail() {
 				</div>
 			)}
 		</div>
-		// </Background>
 	);
 }
 

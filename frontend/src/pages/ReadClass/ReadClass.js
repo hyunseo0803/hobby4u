@@ -1,19 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 import { IoIosSearch } from "react-icons/io";
 import FILTER_BTN from "../../component/FilterbtnRead";
 
 import NEW_CLASS from "./NewClass";
-import FILTER_CLASS from "./FilterClass";
 
 import "../../styles/ReadClass.css";
-import ALL_CLASS from "./AllClass";
+import ClassCard from "../../component/classCard";
 
 function Allclass(props) {
 	const { readFirebasefile, isLoggedIn, userData } = props;
-	const navigate = useNavigate();
 
 	const [data, setData] = useState([]);
 	const [newdata, setNewData] = useState([]);
@@ -23,13 +20,9 @@ function Allclass(props) {
 	const [money, setMoney] = useState("");
 	const [option, setOption] = useState("");
 	const [searchfilterField, setSearchFilterField] = useState("제목");
-	const [inputValue, setInputValue] = useState("");
 	const [word, setWord] = useState("");
 	const [searchClick, setSearchClick] = useState(false);
-
-	// const [themefKO, setThemefKO] = useState("");
 	const [themef, setThemef] = useState([]);
-
 	const [loading, setLoading] = useState(true);
 
 	const theme = [
@@ -46,56 +39,6 @@ function Allclass(props) {
 		"뷰티",
 		"문화예술",
 	];
-	async function handleReadDetail(value) {
-		try {
-			const response = await axios.get(
-				`http://localhost:8000/api/post/read_some_data/?class_id=${value}`
-			);
-			const classdetail = response.data.class_data;
-			const daydetail = response.data.day_data;
-			const updatedClassDetail = { ...classdetail };
-			const classImg = await readFirebasefile("classFile", classdetail.img);
-			if (classdetail.file) {
-				const classfile = await readFirebasefile("file", classdetail["file"]);
-				updatedClassDetail.file = classfile;
-			}
-			if (classdetail["infoimg1"]) {
-				const intro1 = await readFirebasefile("intro", classdetail["infoimg1"]);
-				updatedClassDetail.infoimg1 = intro1;
-			}
-			if (classdetail["infoimg2"]) {
-				const intro2 = await readFirebasefile("intro", classdetail["infoimg2"]);
-				updatedClassDetail.infoimg2 = intro2;
-			}
-			if (classdetail["infoimg3"]) {
-				const intro3 = await readFirebasefile("intro", classdetail["infoimg3"]);
-				updatedClassDetail.infoimg3 = intro3;
-			}
-
-			updatedClassDetail.img = classImg;
-
-			const updatedDayDetail = await Promise.all(
-				daydetail.map(async (day) => {
-					const updatedDay = { ...day };
-					try {
-						updatedDay.day_file = await readFirebasefile("day", day.day_file);
-					} catch (error) {
-						console.error("Error getting file URL: ", error);
-					}
-					return updatedDay;
-				})
-			);
-			navigate("/readClass/classDetail", {
-				state: {
-					ClassDetail: updatedClassDetail,
-					DayDetail: updatedDayDetail,
-					userData: userData,
-				},
-			});
-		} catch (error) {
-			console.error("Error submitting data:", error);
-		}
-	}
 
 	//필터 적용 및 필터링 기능 함수
 	const addFilter = (e) => {
@@ -104,20 +47,16 @@ function Allclass(props) {
 			setMoney("");
 		} else if (value === "fee") {
 			setMoney("fee");
-			// readFilter();
 		} else if (value === "free") {
 			setMoney("free");
-			// readFilter();
 		}
 
 		if (option === value) {
 			setOption("");
 		} else if (value === "online") {
 			setOption("online");
-			// readFilter();
 		} else if (value === "offline") {
 			setOption("offline");
-			// readFilter();
 		}
 
 		if (value === "reset") {
@@ -134,7 +73,6 @@ function Allclass(props) {
 
 	async function readFilter() {
 		try {
-			console.log(money, option);
 			const response = await axios.get(
 				`http://localhost:8000/api/post/read_filter_data/?money=${money}&option=${option}`,
 				{
@@ -145,7 +83,6 @@ function Allclass(props) {
 			);
 
 			const fSimple = response.data.filter_data_list;
-			console.log(fSimple);
 			if (fSimple !== "none" && fSimple.length > 0) {
 				const updatedClass_f = await Promise.all(
 					fSimple.map(async (s) => {
@@ -268,9 +205,7 @@ function Allclass(props) {
 						},
 					}
 				);
-
 				ReadGoodCount();
-
 				readNew();
 				if (option === "" && money === "") {
 					readAll();
@@ -282,24 +217,14 @@ function Allclass(props) {
 			}
 		}
 	}
-
-	// useEffect(() => {
-	// if (option === "" && money === "") {
-	// readAll();
-	// } else {
-	// readFilter();
-	// }
-	// }, []);
-
 	useEffect(() => {
 		readAll();
+		readNew();
 	}, []);
 
 	function handleSelectTheme(themeFilter) {
-		console.log(`내가 누른 테마:${themeFilter}`);
 		if (themeFilter) {
 			const updatedThemes = [...themef];
-
 			const themeIndex = updatedThemes.indexOf(themeFilter);
 
 			if (themeIndex !== -1) {
@@ -307,7 +232,6 @@ function Allclass(props) {
 				setThemef(updatedThemes);
 				readThemeFilter(updatedThemes);
 			} else {
-				console.log("테마 추가됨");
 				updatedThemes.push(themeFilter);
 				setThemef(updatedThemes);
 				readThemeFilter(updatedThemes);
@@ -315,8 +239,6 @@ function Allclass(props) {
 		}
 	}
 	const instance = axios.create();
-
-	// 요청을 보내기 전에 호출될 함수
 	instance.interceptors.request.use((config) => {
 		config.metadata = { startTime: performance.now() };
 		return config;
@@ -340,7 +262,6 @@ function Allclass(props) {
 		let theme = encodeURI(themef);
 		try {
 			setLoading(true);
-			console.log(`요청보낼 검색 테마:${theme}`);
 			if (theme !== "") {
 				const response = await instance.get(
 					`http://localhost:8000/api/post/read_filter_data/?theme=${theme}`,
@@ -350,10 +271,8 @@ function Allclass(props) {
 						},
 					}
 				);
-
 				const fSimple = response.data.filter_data_list;
 
-				console.log(fSimple);
 				if (fSimple !== "none" && fSimple.length > 0) {
 					const updatedClass_f = await Promise.all(
 						fSimple.map(async (s) => {
@@ -379,6 +298,7 @@ function Allclass(props) {
 		}
 		setLoading(false);
 	}
+
 	function handleSelectKeyword(eventKey) {
 		if (eventKey === "mentor") {
 			setSearchFilterField("멘토");
@@ -387,13 +307,10 @@ function Allclass(props) {
 		}
 	}
 	const onchangeWord = (e) => {
-		// setInputValue(e.target.value);
 		setWord(e.target.value);
 	};
 
 	const handleWordSearch = async () => {
-		// console.log(
-		// setWord(inputValue);
 		setThemef([]);
 		try {
 			setSearchClick(true);
@@ -408,7 +325,6 @@ function Allclass(props) {
 			);
 
 			const wordFilter = response.data.filter_data_list;
-			console.log(wordFilter);
 			if (wordFilter !== "none" && wordFilter.length > 0) {
 				const wordFilter_ = await Promise.all(
 					wordFilter.map(async (s) => {
@@ -438,27 +354,14 @@ function Allclass(props) {
 			handleWordSearch();
 		}
 	};
-	// useEffect(() => {
-	// 	if (themef) {
-	// 		readThemeFilter(themef);
-	// 	}
-	// }, [themef, loading]);
 
 	return (
 		<div className="read_container">
-			<div
-				className="search_wrapper"
-				style={
-					{
-						// backgroundColor: "red",
-					}
-				}
-			>
+			<div className="search_wrapper">
 				<div
 					className="search_flex_row"
 					style={{
 						height: 40,
-						// backgroundColor: "yellow",
 						display: "flex",
 						flexDirection: "row",
 						justifyContent: "center",
@@ -504,7 +407,6 @@ function Allclass(props) {
 				{theme.map((t) => (
 					<button
 						style={{
-							// width: 70,
 							border: "none",
 							backgroundColor: themef.includes(t) ? "royalblue" : "white",
 							color: themef.includes(t) ? "white" : "royalblue",
@@ -533,7 +435,6 @@ function Allclass(props) {
 						{themef && (
 							<div
 								style={{
-									// padding: 40,
 									fontSize: 30,
 									display: "flex",
 									flexDirection: "row",
@@ -551,16 +452,13 @@ function Allclass(props) {
 							</div>
 						)}
 						{fliteredata.length > 0 ? (
-							<FILTER_CLASS
-								theme={themef}
-								word={word}
-								goodClick={goodClick}
+							<ClassCard
+								classDiv={fliteredata}
+								readFirebasefile={readFirebasefile}
+								userData={userData}
 								like_status={like_status}
-								handleReadDetail={handleReadDetail}
-								fliteredata={fliteredata}
-								ReadGoodCount={ReadGoodCount}
-								readFilter={readThemeFilter}
-								readWordFilter={handleWordSearch}
+								isLoggedIn={isLoggedIn}
+								goodClick={goodClick}
 							/>
 						) : (
 							<div style={{ marginTop: 100 }}>검색결과가 없습니다. </div>
@@ -575,10 +473,8 @@ function Allclass(props) {
 					<div className="row_center_wrap">
 						<NEW_CLASS
 							newdata={newdata}
-							readNew={readNew}
-							handleReadDetail={handleReadDetail}
+							readFirebasefile={readFirebasefile}
 							like_status={like_status}
-							ReadGoodCount={ReadGoodCount}
 							goodClick={goodClick}
 							isLoggedIn={isLoggedIn}
 							userData={userData}
@@ -591,30 +487,23 @@ function Allclass(props) {
 						<div className="row_center_wrap">
 							{/* 필터링 했을 경우 */}
 							{option === "" && money === "" ? (
-								<ALL_CLASS
-									data={data}
-									readAll={readAll}
-									goodClick={goodClick}
-									like_status={like_status}
-									handleReadDetail={handleReadDetail}
-									ReadGoodCount={ReadGoodCount}
-									isLoggedIn={isLoggedIn}
+								<ClassCard
+									classDiv={data}
+									readFirebasefile={readFirebasefile}
 									userData={userData}
+									like_status={like_status}
+									mypage={false}
+									isLoggedIn={isLoggedIn}
+									goodClick={goodClick}
 								/>
 							) : fliteredata.length > 0 ? (
-								<FILTER_CLASS
-									option={option}
-									money={money}
-									data={data}
-									readAll={readAll}
-									goodClick={goodClick}
-									like_status={like_status}
-									handleReadDetail={handleReadDetail}
-									fliteredata={fliteredata}
-									ReadGoodCount={ReadGoodCount}
-									readFilter={readFilter}
-									isLoggedIn={isLoggedIn}
+								<ClassCard
+									classDiv={fliteredata}
+									readFirebasefile={readFirebasefile}
 									userData={userData}
+									like_status={like_status}
+									isLoggedIn={isLoggedIn}
+									goodClick={goodClick}
 								/>
 							) : (
 								<div>필터링 결과가 없습니다. </div>
