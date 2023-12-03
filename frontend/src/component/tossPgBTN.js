@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
 import "../styles/tossPgBTN.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const PaymentButton = (props) => {
 	const [isHovered, setIsHovered] = useState(false);
@@ -10,31 +12,50 @@ const PaymentButton = (props) => {
 	useEffect(() => {
 		console.log(applycnt.toString(), applypeople);
 	});
+
+	const navigate = useNavigate();
 	const payment = () => {
-		if (applycnt.toString() === applypeople) {
-			alert("모집 인원이 다 찼습니다.");
-			return;
+		console.log(typeof money);
+
+		if (money === "0") {
+			try {
+				const token = localStorage.getItem("token");
+				const decodedClassid = orderid.split("_")[1];
+				const response = axios.post(
+					"http://localhost:8000/api/post/apply_class/",
+					{ classid: decodedClassid, token: token }
+				);
+				alert("수강 신청이 완료되었습니다. ");
+				navigate("/myclass");
+			} catch (err) {
+				console.error(err);
+			}
 		} else {
-			loadTossPayments(clientKey).then((tossPayments) => {
-				tossPayments
-					.requestPayment("카드", {
-						amount: money,
-						orderId: orderid,
-						orderName: ordername,
-						customerName: customername,
-						successUrl: "http://localhost:3000/toss/success",
-						failUrl: "http://localhost:3000/toss/fail",
-					})
-					.catch(function (error) {
-						if (error.code === "USER_CANCEL") {
-							// 결제 고객이 결제창을 닫았을 때 에러 처리
-						} else if (error.code === "INVALID_CARD_COMPANY") {
-							// 유효하지 않은 카드 코드에 대한 에러 처리
-						} else {
-							console.log(error.code);
-						}
-					});
-			});
+			if (applycnt.toString() === applypeople) {
+				alert("모집 인원이 다 찼습니다.");
+				return;
+			} else {
+				loadTossPayments(clientKey).then((tossPayments) => {
+					tossPayments
+						.requestPayment("카드", {
+							amount: money,
+							orderId: orderid,
+							orderName: ordername,
+							customerName: customername,
+							successUrl: "http://localhost:3000/toss/success",
+							failUrl: "http://localhost:3000/toss/fail",
+						})
+						.catch(function (error) {
+							if (error.code === "USER_CANCEL") {
+								// 결제 고객이 결제창을 닫았을 때 에러 처리
+							} else if (error.code === "INVALID_CARD_COMPANY") {
+								// 유효하지 않은 카드 코드에 대한 에러 처리
+							} else {
+								console.log(error.code);
+							}
+						});
+				});
+			}
 		}
 	};
 
