@@ -182,8 +182,7 @@ def KakaoCallbackView(request):
                 return Response('Failed to get user profile', status=response.status_code)
     else:
             return Response('Failed to get access token', status=response.status_code)
-
-        
+       
 @api_view(['POST'])       
 def get_user_data(request):
     try:
