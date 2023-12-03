@@ -15,6 +15,10 @@ function ReadClassDetail() {
 	const userData = location.state.userData;
 	const [cashBackList, SetCashBackList] = useState([]);
 	const [randomOrederid, setRandomOrederid] = useState("");
+
+	const [activityClassList, setActivityClassList] = useState([]);
+	const [isApplyMember, setIsApplyMember] = useState(false);
+	const [applyokClassList, setapplyokClassList] = useState([]);
 	const theme = ClassDetail["theme"]
 
 		.replace("['", "")
@@ -37,6 +41,15 @@ function ReadClassDetail() {
 
 	useEffect(() => {
 		getCashbackList();
+		check_ApplyMember();
+		read_applyclass_list();
+		if (ClassDetail.type === "online") {
+			read_activityclass_list();
+		}
+	}, []);
+
+	useEffect(() => {
+		console.log(applyokClassList);
 	}, []);
 
 	const theme_div = theme.split(",");
@@ -120,6 +133,58 @@ function ReadClassDetail() {
 	const openPdfPreview = () => {
 		window.open(ClassDetail["file"], "_blank");
 	};
+
+	const read_activityclass_list = () => {
+		//모든 활동중인 클래스id 리스트 가져오기
+		try {
+			const response = axios.get(
+				"http://localhost:8000/api/post/read_activityclass_list/"
+			);
+			console.log(response.data.activityClassList);
+			setActivityClassList(response.data.activityClassList);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+	const read_applyclass_list = async () => {
+		//모든 활동중인 클래스id 리스트 가져오기
+		try {
+			const response = await axios.get(
+				"http://localhost:8000/api/post/read_applyclass_list/"
+			);
+			if (response.status === 200) {
+				console.log(response.data.applyokclassList);
+
+				setapplyokClassList(response.data.applyokclassList);
+			}
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	const check_ApplyMember = async () => {
+		//모든 활동중인 클래스id 리스트 가져오기
+		if (userData) {
+			try {
+				const token = localStorage.getItem("token");
+				const response = await axios.post(
+					`http://localhost:8000/api/post/check_ApplyMember/`,
+					{ token: token, classid: ClassDetail.class_id }
+				);
+				if (response.status === 200) {
+					console.log(response.data.isApplyMember);
+					setIsApplyMember(response.data.isApplyMember);
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	};
+
+	// const isApplyMember =
+	//해당 클래스를 신청한 멤버 id 리스트 가져오기
+	// 가져온 리스트에 userData의 id 가 있는지 확인
+	// 있다면 true 반환
 
 	return (
 		<div
@@ -231,9 +296,10 @@ function ReadClassDetail() {
 						</div> */}
 						{userData &&
 						userData.nickname !== ClassDetail.id.nickname &&
-						cashBackList.some(
-							(obj) => obj.class_num !== ClassDetail.class_id
-						) ? (
+						applyokClassList.some(
+							(obj) => obj.class_id === ClassDetail.class_id
+						) &&
+						!isApplyMember ? (
 							<PaymentButton
 								money={ClassDetail["money"]}
 								orderid={randomOrederid}
@@ -298,6 +364,9 @@ function ReadClassDetail() {
 					어떤 활동을 하나요?
 				</div>
 				{DayDetail.map((Item, index) => {
+					const isActivity = activityClassList.some(
+						(obj) => obj.class_id === ClassDetail.class_id
+					);
 					return (
 						<div key={index} className="row_container">
 							<div
@@ -313,7 +382,10 @@ function ReadClassDetail() {
 										alt="gg"
 										width={100}
 									/>
-								) : (
+								) : ClassDetail.type === "offline" ||
+								  (isActivity && isApplyMember && userData) ||
+								  userData.id === ClassDetail.id.id ? (
+									//재생가능
 									<video
 										className="infoimg_img"
 										src={Item["day_file"]}
@@ -321,6 +393,25 @@ function ReadClassDetail() {
 										width={100}
 										controls
 									/>
+								) : (
+									<div style={{ position: "relative" }}>
+										<video
+											className="infoimg_img"
+											src={Item["day_file"]}
+											alt="gg"
+											width={100}
+										/>
+										<div
+											style={{
+												position: "absolute",
+												top: "45%",
+												left: "25%",
+												color: "white",
+											}}
+										>
+											수강 중의 클래스가 아닙니다.
+										</div>
+									</div>
 								)}
 							</div>
 							<div

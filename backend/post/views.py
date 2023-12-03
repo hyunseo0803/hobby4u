@@ -48,7 +48,7 @@ from django.utils.dateformat import DateFormat
 @sched.scheduled_job('cron',minute= '*',name = 'schedulerF')
 def schedulerF():   
     print("task 체크중...")
-    target_results = ExamResult.objects.filter(result='P',class_id__applyend__lt=timezone.now())
+    target_results = ExamResult.objects.filter(result='P',class_id__applyend__lt=timezone.localdate())
     if target_results:
         for result in target_results:
             # 수강하는 수강생 수
@@ -447,6 +447,7 @@ def read_some_data(request):
             class_data = {
                 'class_id': cls.class_id,
                 'id':{
+                    'id':cls.id.id,
                     'nickname':cls.id.nickname,
                     'profile':cls.id.profileimg if cls.id.profileimg else None,
                     'updateprofile':cls.id.updateprofile if cls.id.updateprofile else None,
@@ -571,6 +572,10 @@ def read_filter_data(request):
     
     incoding_word=request.GET.get('word')
     incoding_field=request.GET.get('searchfield')
+    today = timezone.localdate()
+    
+    filter_data_list=[]
+
     
     if incoding_word is not None and unquote(incoding_field)=="제목":
         cache_key = f'search_title:{unquote(incoding_word)}'
@@ -578,7 +583,7 @@ def read_filter_data(request):
         if search_title is not None:
             return JsonResponse({'filter_data_list': search_title}, safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(title__contains=unquote(incoding_word))
@@ -588,7 +593,7 @@ def read_filter_data(request):
         if search_mentor is not None:
             return JsonResponse({'filter_data_list': search_mentor}, safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(Q(id__nickname__contains=unquote(incoding_word)))
@@ -600,7 +605,7 @@ def read_filter_data(request):
             return JsonResponse({'filter_data_list': search_theme},safe=False)
         
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             for t in theme:
@@ -611,7 +616,7 @@ def read_filter_data(request):
         if money_fee is not None:
             return JsonResponse({'filter_data_list': money_fee},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.exclude(money=0)
@@ -621,7 +626,7 @@ def read_filter_data(request):
         if money_free is not None:
             return JsonResponse({'filter_data_list': money_free},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(money=0)
@@ -631,7 +636,7 @@ def read_filter_data(request):
         if type_online is not None:
             return JsonResponse({'filter_data_list':type_online},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(type='online')
@@ -641,7 +646,7 @@ def read_filter_data(request):
         if type_offline is not None:
             return JsonResponse({'filter_data_list':type_offline})
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(type='offline')
@@ -652,7 +657,7 @@ def read_filter_data(request):
         if fee_online is not None:
             return JsonResponse({'filter_data_list':fee_online},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.exclude(money=0).filter(type='online')
@@ -663,7 +668,7 @@ def read_filter_data(request):
         if free_online is not None:
             return JsonResponse({'filter_data_list': free_online},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(money=0).filter(type='online')
@@ -674,7 +679,7 @@ def read_filter_data(request):
         if fee_offline is not None:
             return JsonResponse({'filter_data_list': fee_offline},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.exclude(money=0).filter(type='offline')
@@ -684,12 +689,13 @@ def read_filter_data(request):
         if free_offline is not None:
             return JsonResponse({'filter_data_list': free_offline},safe=False)
         else:
-            exams_with_result_p = ExamResult.objects.filter(result='P')
+            exams_with_result_p = ExamResult.objects.filter(result='P',class_id__applyend__gte=today)
             class_ids_with_result_p = exams_with_result_p.values_list('class_id', flat=True)
             filter_result = Class.objects.filter(class_id__in=class_ids_with_result_p)
             filter_result = filter_result.filter(money=0).filter(type='offline')
     if filter_result.exists():
-        filter_data_list = [extract_data_from_class(item) for item in filter_result]
+        print("필터링 결과 있음")
+        filter_data_list = [extract_data_from_classmodel(item) for item in filter_result]
         cache.set(cache_key, filter_data_list, timeout=3600)
         
     else:
@@ -775,4 +781,49 @@ def apply_class(request):
         apply_up_cnt=Class.objects.get(class_id=classid)
         apply_up_cnt.applycnt += 1
         apply_up_cnt.save()
-    return JsonResponse({'message': 'data saved successfully'})        
+    return JsonResponse({'message': 'data saved successfully'})
+
+
+def read_activityclass_list(request):
+    today = timezone.localdate()
+    thirty_one_days_ago = today - timedelta(days=31)
+    activityclass=Class.objects.filter(applyend__lt=today,applyend__gte=thirty_one_days_ago)
+    activityclass_classid=[]
+    for ac in activityclass:
+        data={
+            'class_id':ac.class_id
+        }
+        activityclass_classid.append(data)
+    return JsonResponse({'activityClassList': activityclass_classid})  
+
+def read_applyclass_list(request):
+    today = timezone.localdate()
+    print(today)
+    applyokclass=Class.objects.filter(applyend__gte=today)
+    print(applyokclass)
+    applyokclass_list=[]
+    for ac in applyokclass:
+        data={
+            'class_id':ac.class_id
+        }
+        applyokclass_list.append(data)
+    print(applyokclass_list)
+    return JsonResponse({'applyokclassList': applyokclass_list})  
+
+
+@csrf_exempt
+def check_ApplyMember(request):
+    data=json.loads(request.body.decode('utf-8'))
+    token=data.get('token')
+    classid=data.get('classid')
+    payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    user = payload['id']
+    class_apply=Apply.objects.filter(id=user,class_id=classid)
+    if class_apply.count()>0:
+        isApplyMember = True
+    else:
+        isApplyMember = False
+    return JsonResponse({'isApplyMember': isApplyMember})  
+
+  
+  

@@ -19,6 +19,10 @@ urlpatterns = [
     path('create_goodCount_data/',views.create_goodCount_data),
     path('read_goodCount_data/',views.read_goodCount_data),
     path('process_payment/',views.process_payment),
-    path('apply_class/',views.apply_class)
+    path('apply_class/',views.apply_class),
+    path('read_activityclass_list/',views.read_activityclass_list),
+    path('check_ApplyMember/',views.check_ApplyMember),
+    path('read_applyclass_list/',views.read_applyclass_list),
+    
 ]
 
