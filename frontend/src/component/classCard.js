@@ -16,31 +16,9 @@ function ClassCard(props) {
 		isLoggedIn,
 		readMyClass,
 		// myclass,
+		myclassid,
 		goodClick,
 	} = props;
-	const [myclassid, setMyclassid] = useState([]);
-
-	useEffect(() => {
-		readMyClassid();
-	}, []);
-
-	async function readMyClassid() {
-		const jwt_token = localStorage.getItem("token");
-		try {
-			const response = await axios.get(
-				`http://localhost:8000/api/post/read_my_class/`,
-				{
-					headers: {
-						Authorization: `Bearer ${jwt_token}`,
-					},
-				}
-			);
-			const myclassid = response.data.allclass_my;
-			setMyclassid(myclassid);
-		} catch (e) {
-			console.error(e);
-		}
-	}
 
 	const navigate = useNavigate();
 
@@ -153,13 +131,13 @@ function ClassCard(props) {
 				: null;
 
 		const notMyClass =
-			myclassid.length > 0
+			myclassid && myclassid.length > 0
 				? !myclassid.some((item) => item.class_id === classItem.class_id)
 				: true;
 
 		return (
 			<div key={index} className="class_div_btn">
-				<div className="firstimg_container">
+				<div style={{ position: "relative" }} className="firstimg_container">
 					{isImage(classItem.img) ? (
 						<img
 							className="firstimg"
@@ -176,7 +154,35 @@ function ClassCard(props) {
 							controls
 						/>
 					)}
+
+					{deleteOk && mypage && (
+						<button
+							style={{
+								position: "absolute",
+								top: 0,
+								right: 0,
+								backgroundColor: "white",
+								color: "red", // 텍스트 색상 추가
+								border: "none", // 테두리 추가
+								fontSize: 13,
+								borderRadius: 5,
+								padding: "4px", // 내부 여백 추가
+								zIndex: 1,
+							}}
+							onClick={() => {
+								console.log("classItem.class_id:", typeof classItem.class_id);
+								if (status === "삭제") {
+									deletemyclass(classItem.class_id);
+								} else {
+									cancleapplyclass(classItem.class_id);
+								}
+							}}
+						>
+							{status}
+						</button>
+					)}
 				</div>
+
 				<div
 					className="class_div_MO"
 					style={{
@@ -203,20 +209,6 @@ function ClassCard(props) {
 
 						<div className="like_text">{classItem.goodCount}</div>
 					</div>
-					{deleteOk && mypage && (
-						<button
-							onClick={() => {
-								console.log("classItem.class_id:", typeof classItem.class_id);
-								if (status === "삭제 가능") {
-									deletemyclass(classItem.class_id);
-								} else {
-									cancleapplyclass(classItem.class_id);
-								}
-							}}
-						>
-							{status}
-						</button>
-					)}
 				</div>
 				<button
 					value={classItem.class_id}
