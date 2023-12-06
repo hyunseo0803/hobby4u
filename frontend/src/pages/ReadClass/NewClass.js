@@ -14,14 +14,11 @@ export default function NEW_CLASS(props) {
 		goodClick,
 		isLoggedIn,
 		userData,
+		myclassid,
 	} = props;
-	useEffect(() => {
-		readMyClassid();
-	}, []);
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsPerPage = 3;
 	const totalPage = Math.ceil(newdata.length / itemsPerPage);
-	const [myclassid, setMyclassid] = useState([]);
 
 	const navigate = useNavigate();
 
@@ -97,23 +94,6 @@ export default function NEW_CLASS(props) {
 		};
 	}, [nextSlide]);
 
-	async function readMyClassid() {
-		const jwt_token = localStorage.getItem("token");
-		try {
-			const response = await axios.get(
-				`http://localhost:8000/api/post/read_my_class/`,
-				{
-					headers: {
-						Authorization: `Bearer ${jwt_token}`,
-					},
-				}
-			);
-			const myclassid = response.data.allclass_my;
-			setMyclassid(myclassid);
-		} catch (e) {
-			console.error(e);
-		}
-	}
 	function isImage(urlString) {
 		const extension = urlString.split("?")[0].split(".").pop();
 
