@@ -1,3 +1,37 @@
+.loading span {
+	display: inline-block;
+	width: 20px;
+	margin: 0 -0.05em;
+	animation: loading 0.7s infinite;
+}
+.loading span:nth-child(2) {
+	animation-delay: 0.1s;
+}
+.loading span:nth-child(3) {
+	animation-delay: 0.2s;
+}
+.loading span:nth-child(4) {
+	animation-delay: 0.3s;
+}
+.loading span:nth-child(5) {
+	animation-delay: 0.4s;
+}
+.loading span:nth-child(6) {
+	animation-delay: 0.5s;
+}
+.loading span:nth-child(7) {
+	animation-delay: 0.6s;
+}
+@keyframes loading {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(15px);
+	}
+}
+
 .wrap {
 	margin-top: 100px;
 	margin-left: 7%;
@@ -11,7 +45,7 @@
 
 .user_info_box {
 	padding: 15px;
-	width: 65%;
+	width: 50%;
 	margin-top: 30px;
 	display: flex;
 	flex-direction: row;
@@ -27,7 +61,7 @@
 	border-radius: 50%;
 	overflow: hidden;
 	margin-left: 2vh;
-	margin-right: 2vh;
+	margin-right: 3vh;
 }
 
 .user_img img {
@@ -37,23 +71,27 @@
 }
 
 .user_info {
-	margin: 10px;
+	/* width: 100%; */
+	margin: 20px;
 	align-self: flex-start;
 }
 
 .user_nickname {
-	font-size: 20px;
+	font-family: "Pretendard-Regular";
+	font-size: 25px;
 	margin-bottom: 10px;
 }
 
 .user_info_text {
+	font-family: "Pretendard";
 	max-height: 200px;
 	word-wrap: break-word;
-	width: 80vh;
+	/* width: 80vh; */
 	margin-bottom: 10px;
 }
 
 .user_email {
+	font-family: "Pretendard";
 	font-size: 15px;
 }
 
@@ -76,4 +114,18 @@
 	margin-right: 10px;
 	border: none;
 	background-color: white;
+}
+@font-face {
+	font-family: "Pretendard-Regular";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+	font-weight: 900;
+	font-style: normal;
+}
+@font-face {
+	font-family: "Pretendard";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+	font-weight: 100;
+	font-style: normal;
 }

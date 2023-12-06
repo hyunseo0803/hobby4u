@@ -55,6 +55,10 @@
 	font-family: "SUITE-BORDER";
 }
 
+.judge_label {
+	font-family: "omyu_pretty";
+}
+
 @font-face {
 	font-family: "SUITE-Regular";
 	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/SUITE-Regular.woff2")
@@ -68,5 +72,28 @@
 	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/SUITE-Regular.woff2")
 		format("woff2");
 	font-weight: 900;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "omyu_pretty";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2")
+		format("woff2");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Pretendard-Regular";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+	font-weight: 900;
+	font-style: normal;
+}
+@font-face {
+	font-family: "Pretendard";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+	font-weight: 100;
 	font-style: normal;
 }

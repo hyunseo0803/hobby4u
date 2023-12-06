@@ -22,7 +22,7 @@ const SlideBar = (props) => {
 	return (
 		<div
 			style={{
-				width: 80,
+				width: 90,
 				height: "100vh",
 				marginTop: 10,
 				// justifyContent: "center",
@@ -31,14 +31,47 @@ const SlideBar = (props) => {
 				flexDirection: "column",
 			}}
 		>
-			<Link to="/manager/dash">
-				<AiOutlineNotification size={30} style={{ margin: 30 }} />
+			<Link
+				to="/manager/dash"
+				style={{ margin: 15, textDecorationLine: "none" }}
+			>
+				<AiOutlineNotification size={30} style={{ margin: 5 }} />
+				<div
+					style={{
+						color: "royalblue",
+						textAlign: "center",
+					}}
+				>
+					대시
+				</div>
 			</Link>
-			<Link to="judge/ing/tlatkwnd">
-				<AiOutlineClockCircle size={30} style={{ margin: 30 }} />
+			<Link
+				to="judge/ing/tlatkwnd"
+				style={{ margin: 15, textDecorationLine: "none" }}
+			>
+				<AiOutlineClockCircle size={30} style={{ margin: 5 }} />
+				<div
+					style={{
+						color: "royalblue",
+						textAlign: "center",
+					}}
+				>
+					심사
+				</div>
 			</Link>
-			<Link to="judge/result/tlatkrufrhk">
-				<RiStackLine size={30} style={{ margin: 30 }} />
+			<Link
+				to="judge/result/tlatkrufrhk"
+				style={{ margin: 15, textDecorationLine: "none" }}
+			>
+				<RiStackLine size={30} style={{ margin: 5 }} />
+				<div
+					style={{
+						color: "royalblue",
+						textAlign: "center",
+					}}
+				>
+					결과
+				</div>
 			</Link>
 
 			{adminData.nickname !== "메인 관리자" && (
@@ -48,23 +81,50 @@ const SlideBar = (props) => {
 			)}
 			{adminData.nickname === "메인 관리자" && (
 				<>
-					<Link to="member/ghldnjs">
-						<RiGroupLine size={30} style={{ margin: 30 }} />
+					<Link
+						to="member/ghldnjs"
+						style={{ margin: 15, textDecorationLine: "none" }}
+					>
+						<RiGroupLine size={30} style={{ margin: 5 }} />
+						<div
+							style={{
+								color: "royalblue",
+								textAlign: "center",
+							}}
+						>
+							회원
+						</div>
 					</Link>
-					<Link to="manager/wjdqh">
-						<RiAdminLine size={30} style={{ margin: 30 }} />
+					<Link
+						to="manager/wjdqh"
+						style={{ margin: 15, textDecorationLine: "none" }}
+					>
+						<RiAdminLine size={30} style={{ margin: 5 }} />
+						<div
+							style={{
+								color: "royalblue",
+								textAlign: "center",
+							}}
+						>
+							관리자
+						</div>
 					</Link>
 				</>
 			)}
-			<Link to="my/wjdqh">
+			{/* <Link to="my/wjdqh">
 				<RiEmotionHappyLine
 					size={30}
 					style={{ marginTop: 60, marginBottom: 30 }}
 				/>
-			</Link>
+			</Link> */}
 			<Link to="/manager">
 				<button
-					style={{ border: "none", backgroundColor: "white" }}
+					style={{
+						marginTop: 70,
+						marginBottom: 30,
+						border: "none",
+						backgroundColor: "white",
+					}}
 					onClick={handleLogout}
 				>
 					<RiLogoutBoxRLine size={30} />

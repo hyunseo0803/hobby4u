@@ -83,7 +83,9 @@ function Judge(props) {
 				marginBottom: "2%",
 			}}
 		>
-			<div style={{ fontSize: 20, fontWeight: "bolder" }}>심사 중</div>
+			<div className="judge_label" style={{ fontSize: 30 }}>
+				심사 중
+			</div>
 			{judgeMy.length > 0 ? (
 				<div
 					style={{ display: "flex", flexDirection: "row", overflowX: "auto" }}
@@ -97,7 +99,9 @@ function Judge(props) {
 			) : (
 				<div>심사중인 클래스가 없습니다.</div>
 			)}
-			<div style={{ fontSize: 20, fontWeight: "bolder" }}>Npass 클래스</div>
+			<div className="judge_label" style={{ fontSize: 30, marginTop: 20 }}>
+				Npass 클래스
+			</div>
 			{judgeNP.length > 0 ? (
 				<div
 					style={{ display: "flex", flexDirection: "row", overflowX: "auto" }}

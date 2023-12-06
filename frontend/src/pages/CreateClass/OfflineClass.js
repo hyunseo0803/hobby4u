@@ -1,6 +1,6 @@
 import "../../styles/CreateClassDetail.css";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import DaumPostCode from "react-daum-postcode";
@@ -30,27 +30,18 @@ export function PLACE_PERIOD(props) {
 		address,
 		handleModal,
 	} = props;
-
-	const todaymin = new Date();
-	todaymin.setDate(todaymin.getDate() + 8);
-
-	// const activitymin = new Date();
-
-	// if (applyEndDate) {
-	// 	activitymin.setDate(applyEndDate.getDate() + 1);
-	// }
 	const minDate = moment().add(8, "days");
-	const minDaterange = moment().add(9, "days");
 
 	const disabledDate = (current) => {
-		// 현재 날짜 이후의 날짜는 비활성화
-		return current && current < minDate;
-	};
-	const disabledDateRange = (current) => {
-		// 현재 날짜 이후의 날짜는 비활성화
-		return current && current < minDaterange;
+		return current && current < moment(minDate).endOf("day");
 	};
 
+	const disabledDateRange = (current) => {
+		return (
+			current &&
+			current < moment(applyEndDate.add(1, "days").format("YYYY-MM-DD"))
+		);
+	};
 	return (
 		<div className="mo_flex_row" style={{ justifyContent: "center" }}>
 			<div className="period_place">
@@ -84,13 +75,13 @@ export function PLACE_PERIOD(props) {
 								</Space>
 							</div>
 						</div>
-						<div className="selected_result">
+						{/* <div className="selected_result">
 							{applyEndDate !== null ? (
 								<div className="calender-box">
 									{applyEndDate.format("YYYY-MM-DD")}
 								</div>
 							) : null}
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</div>
@@ -124,14 +115,14 @@ export function PLACE_PERIOD(props) {
 						</div>
 					</div>
 				</div>
-				<div className="selected_result">
+				{/* <div className="selected_result">
 					{activityEndDate !== null ? (
 						<div className="calender-box">
 							{activityStartDate.format("YYYY-MM-DD")} -
 							{activityEndDate.format("YYYY-MM-DD")}
 						</div>
 					) : null}
-				</div>
+				</div> */}
 			</div>
 			<div className="period_place">
 				<div style={{ marginBottom: 10 }}>
@@ -157,13 +148,15 @@ export function PLACE_PERIOD(props) {
 						) : null}
 					</div>
 					{address ? (
-						<>
+						<div
+							style={{ width: 250, display: "flex", flexDirection: "column" }}
+						>
 							<div
 								className="map"
 								style={{
 									justifyContent: "center",
 									width: "100%",
-									height: 245,
+									height: 205,
 									margin: "auto",
 								}}
 							></div>
@@ -172,7 +165,7 @@ export function PLACE_PERIOD(props) {
 									<div className="calender-box">{address}</div>
 								) : null}
 							</div>
-						</>
+						</div>
 					) : (
 						<div
 							className="flex_center"

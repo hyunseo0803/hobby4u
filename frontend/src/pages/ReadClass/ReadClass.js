@@ -12,6 +12,8 @@ import ClassCard from "../../component/classCard";
 function Allclass(props) {
 	const { readFirebasefile, isLoggedIn, userData } = props;
 
+	const [myclassid, setMyclassid] = useState([]);
+
 	const [data, setData] = useState([]);
 	const [newdata, setNewData] = useState([]);
 	const [fliteredata, setFliteredata] = useState([]);
@@ -208,8 +210,10 @@ function Allclass(props) {
 				ReadGoodCount();
 				readNew();
 				if (option === "" && money === "") {
+					ReadGoodCount();
 					readAll();
 				} else {
+					ReadGoodCount();
 					readFilter();
 				}
 			} catch (error) {
@@ -217,10 +221,17 @@ function Allclass(props) {
 			}
 		}
 	}
+	const jwt_token = localStorage.getItem("token");
+
 	useEffect(() => {
 		readAll();
 		readNew();
+		ReadGoodCount();
 	}, []);
+
+	useEffect(() => {
+		readMyClassid(jwt_token);
+	}, [jwt_token]);
 
 	function handleSelectTheme(themeFilter) {
 		if (themeFilter) {
@@ -355,6 +366,23 @@ function Allclass(props) {
 		}
 	};
 
+	async function readMyClassid(jwt_token) {
+		try {
+			const response = await axios.get(
+				`http://localhost:8000/api/post/read_my_class/`,
+				{
+					headers: {
+						Authorization: `Bearer ${jwt_token}`,
+					},
+				}
+			);
+			const myclassid = response.data.allclass_my;
+			setMyclassid(myclassid);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
 	return (
 		<div className="read_container">
 			<div className="search_wrapper">
@@ -426,7 +454,17 @@ function Allclass(props) {
 
 			{themef.length > 0 || searchClick ? (
 				loading ? (
-					<div style={{ marginTop: 100 }}>로딩중</div>
+					<div style={{ marginTop: 100, marginBottom: 80 }}>
+						<div class="loading">
+							<span>L</span>
+							<span>O</span>
+							<span>A</span>
+							<span>D</span>
+							<span>I</span>
+							<span>N</span>
+							<span>G</span>
+						</div>
+					</div>
 				) : fliteredata.length > 0 || fliteredata !== "none" ? (
 					<>
 						<div className="result_cnt">
@@ -452,14 +490,17 @@ function Allclass(props) {
 							</div>
 						)}
 						{fliteredata.length > 0 ? (
-							<ClassCard
-								classDiv={fliteredata}
-								readFirebasefile={readFirebasefile}
-								userData={userData}
-								like_status={like_status}
-								isLoggedIn={isLoggedIn}
-								goodClick={goodClick}
-							/>
+							<div className="row_center_wrap">
+								<ClassCard
+									classDiv={fliteredata}
+									readFirebasefile={readFirebasefile}
+									userData={userData}
+									like_status={like_status}
+									isLoggedIn={isLoggedIn}
+									goodClick={goodClick}
+									myclassid={myclassid}
+								/>
+							</div>
 						) : (
 							<div style={{ marginTop: 100 }}>검색결과가 없습니다. </div>
 						)}
@@ -478,6 +519,7 @@ function Allclass(props) {
 							goodClick={goodClick}
 							isLoggedIn={isLoggedIn}
 							userData={userData}
+							myclassid={myclassid}
 						/>
 					</div>
 
@@ -495,6 +537,7 @@ function Allclass(props) {
 									mypage={false}
 									isLoggedIn={isLoggedIn}
 									goodClick={goodClick}
+									myclassid={myclassid}
 								/>
 							) : fliteredata.length > 0 ? (
 								<ClassCard
@@ -504,6 +547,7 @@ function Allclass(props) {
 									like_status={like_status}
 									isLoggedIn={isLoggedIn}
 									goodClick={goodClick}
+									myclassid={myclassid}
 								/>
 							) : (
 								<div>필터링 결과가 없습니다. </div>

@@ -24,8 +24,8 @@
 
 .img_wrapper {
 	margin: 10px;
-	width: 400px;
-	height: 380px;
+	width: 380px;
+	height: 350px;
 	background-color: white;
 	display: flex;
 	align-items: center;
@@ -99,7 +99,7 @@ label {
 	width: 100vh;
 	border: none;
 	border-radius: 10px;
-	font-weight: 600;
+	font-weight: 500;
 	letter-spacing: 3px;
 	margin-top: 50px;
 	margin-bottom: 70px;

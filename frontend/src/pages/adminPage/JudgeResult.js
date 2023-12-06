@@ -288,8 +288,9 @@ function JudgeResult(props) {
 			<div
 				style={{
 					width: "55%",
-					height: 640,
+					height: 610,
 					backgroundColor: "white",
+					boxShadow: "3px 3px 8px 0px #b80f0a",
 					margin: 10,
 					borderRadius: 10,
 				}}
@@ -301,15 +302,17 @@ function JudgeResult(props) {
 					style={{
 						overflowX: "auto",
 						marginBottom: 20,
-						height: 640,
+						height: 600,
 					}}
 				/>
 			</div>
+
 			<div
 				style={{
 					width: "35%",
-					height: 640,
+					height: 610,
 					backgroundColor: "white",
+					boxShadow: "3px 3px 8px 0px #32cd32",
 					margin: 10,
 					borderRadius: 10,
 				}}
@@ -321,7 +324,7 @@ function JudgeResult(props) {
 					style={{
 						overflowX: "auto",
 						marginBottom: 20,
-						height: 640,
+						height: 600,
 					}}
 				/>
 			</div>

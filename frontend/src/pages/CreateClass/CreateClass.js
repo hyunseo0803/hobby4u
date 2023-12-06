@@ -5,6 +5,7 @@ import { XCircleFillIcon } from "@primer/octicons-react";
 import { IoMdDownload } from "react-icons/io";
 import LoginRequired from "../../common/LoginRequired";
 import Swal from "sweetalert2";
+import { IoMdCloudUpload } from "react-icons/io";
 
 function CreateClass(props) {
 	const navigate = useNavigate();
@@ -186,44 +187,25 @@ function CreateClass(props) {
 								</>
 							) : (
 								<>
-									<div className="img_wrapper" style={{ border: "dashed" }}>
-										<img
-											width="80"
-											height="80"
-											src="https://img.icons8.com/ios/50/image--v1.png"
-											alt="--v1"
+									<label className="img_wrapper" style={{ border: "dashed" }}>
+										<div>
+											<IoMdCloudUpload size={150} />
+											<div>Upload Image or Video</div>
+										</div>
+										<input
+											accept="image/*,video/*"
+											id="ex_file"
+											type="file"
+											style={{ display: "none" }}
+											onChange={(e) => {
+												uploadfile(e.target.files[0]);
+											}}
 										/>
-									</div>
+									</label>
 								</>
 							)}
 						</div>
 						<div className="rL_wrapper">
-							{" "}
-							<label className="component_row_wrapper" htmlFor="ex_file">
-								<div className="file-selector-button" width={100}>
-									<p
-										style={{
-											textAlign: "center",
-											padding: 3,
-										}}
-									>
-										파일 선택
-									</p>
-								</div>
-								{imageSrc && (
-									<div style={{ padding: 3, marginLeft: 5 }}>
-										{imageSrc.name}
-									</div>
-								)}
-							</label>
-							<input
-								accept="image/*,video/*"
-								id="ex_file"
-								type="file"
-								onChange={(e) => {
-									uploadfile(e.target.files[0]);
-								}}
-							/>{" "}
 							<div className="background_input">
 								<input
 									type="text"

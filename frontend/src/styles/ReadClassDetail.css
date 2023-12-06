@@ -31,8 +31,8 @@
 }
 
 .info_div {
-	/* padding-left: 5%; */
-	/* padding-right: 5%; */
+	/* padding-left: 3%; */
+	/* padding-right: 3%; */
 	/* padding-bottom: 5%; */
 	text-align: center;
 	align-items: center;
@@ -63,6 +63,40 @@
 	font-family: "iceJaram-Rg";
 	font-size: 40px;
 	letter-spacing: 5px;
+}
+
+.mentor {
+	font-family: "Pretendard-Regular";
+}
+.mentor_200 {
+	font-family: "Pretendard";
+}
+
+.omyu {
+	font-family: "omyu_pretty";
+}
+
+@font-face {
+	font-family: "omyu_pretty";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2")
+		format("woff2");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Pretendard-Regular";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+	font-weight: 900;
+	font-style: normal;
+}
+@font-face {
+	font-family: "Pretendard";
+	src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+		format("woff");
+	font-weight: 100;
+	font-style: normal;
 }
 
 @font-face {

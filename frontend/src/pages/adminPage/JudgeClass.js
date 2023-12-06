@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { PiWarningBold } from "react-icons/pi";
 
 function JudgeClass(props) {
 	const { asapJudgeList, readFirebasefile } = props;
@@ -93,17 +94,17 @@ function JudgeClass(props) {
 				backgroundColor: "#d3d3d3",
 				width: "100%",
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				justifyContent: "center",
 				alignItems: "center",
 			}}
 		>
+			<div style={{ margin: 10, fontSize: 40 }}>
+				{clickAsapBtn ? "Hurry up" : "All"}
+			</div>
 			<div
 				style={{
-					// backgroundColor: "red",
 					width: "90%",
-					// top: 10,
-					// height: "88%",
 					display: "flex",
 					flexDirection: "column",
 					flexWrap: "wrap",
@@ -113,13 +114,40 @@ function JudgeClass(props) {
 					borderRadius: 10,
 				}}
 			>
-				<div style={{ padding: 20, marginTop: 15 }}>
+				{/* <div style={{ padding: 20, marginTop: 15 }}>
 					<input type="text" />
 					<button>검색</button>
+				</div> */}
+				<div
+					style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+				>
+					<button
+						style={{
+							marginRight: 120,
+							border: "none",
+							backgroundColor: "transparent",
+							color: "#d10000",
+							padding: 8,
+							borderRadius: 5,
+						}}
+						onClick={() => setClickAsapBtn(!clickAsapBtn)}
+					>
+						{clickAsapBtn ? (
+							"전체 보기"
+						) : (
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
+								<PiWarningBold size={22} style={{ marginRight: 5 }} />
+								급한 심사 모아보기
+							</div>
+						)}
+					</button>
 				</div>
-				<button onClick={() => setClickAsapBtn(!clickAsapBtn)}>
-					심사 얼마 안남음
-				</button>
 
 				<div
 					style={{
