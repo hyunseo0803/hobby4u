@@ -7,24 +7,38 @@ import React from "react";
 import moment from "moment";
 import PaymentButton from "../../component/tossPgBTN";
 import axios from "axios";
+import HorizonLine from "../../common/HorizonLine";
+import { IoIosStar } from "react-icons/io";
 
-function ReadClassDetail() {
+function ReadClassDetail(props) {
+	const { readFirebasefile } = props;
 	const location = useLocation();
 	const ClassDetail = location.state.ClassDetail;
 	const DayDetail = location.state.DayDetail;
 	const userData = location.state.userData;
+
+	const [updatedImg, setUpdatedImg] = useState("");
+
 	const [cashBackList, SetCashBackList] = useState([]);
 	const [randomOrederid, setRandomOrederid] = useState("");
-
+	const [achiveLink, setAchiveLink] = useState([]);
+	const [achiveFile, setAchiveFile] = useState([]);
 	const [activityClassList, setActivityClassList] = useState([]);
 	const [isApplyMember, setIsApplyMember] = useState(false);
 	const [applyokClassList, setapplyokClassList] = useState([]);
 	const theme = ClassDetail["theme"]
-
 		.replace("['", "")
 		.replace("']", "")
 		.replace("', '", ",")
 		.replace("', '", ",");
+
+	const isAllInfoNullOrBlank =
+		(ClassDetail.info1 === null || ClassDetail.info1 === "") &&
+		(ClassDetail.info2 === null || ClassDetail.info2 === "") &&
+		(ClassDetail.info3 === null || ClassDetail.info3 === "") &&
+		(ClassDetail.infoimg1 === null || ClassDetail.infoimg1 === "") &&
+		(ClassDetail.infoimg2 === null || ClassDetail.infoimg2 === "") &&
+		(ClassDetail.infoimg3 === null || ClassDetail.infoimg3 === "");
 
 	useEffect(() => {
 		let random = (
@@ -40,13 +54,26 @@ function ReadClassDetail() {
 	}, []);
 
 	useEffect(() => {
+		console.log(Object.keys(ClassDetail));
+	}, []);
+
+	useEffect(() => {
 		getCashbackList();
 		check_ApplyMember();
 		read_applyclass_list();
+		getUserAchiv();
 		if (ClassDetail.type === "online") {
 			read_activityclass_list();
 		}
+		// if (ClassDetail.id.updateprofile) {
+		// 	const url = await readFirebasefile("userImg", userImgUpdate);
+		// 	setUpdatedImg(url);
+		// }
 	}, []);
+
+	const handleLocalFilePreview = (file) => {
+		window.open(file, "_blank");
+	};
 
 	useEffect(() => {
 		console.log(applyokClassList);
@@ -87,6 +114,51 @@ function ReadClassDetail() {
 			SetCashBackList(response.data.cashlist);
 		} catch (err) {
 			console.error(err);
+		}
+	};
+
+	const getUserAchiv = async () => {
+		if (ClassDetail.id.updateprofile) {
+			const url = await readFirebasefile(
+				"userImg",
+				ClassDetail.id.updateprofile
+			);
+			setUpdatedImg(url);
+		}
+
+		try {
+			const response = await axios.post(
+				"http://localhost:8000/api/user/get_user_achive/",
+				{
+					mentor: ClassDetail.id.id,
+				}
+			);
+			const achive = response.data.achive_list;
+
+			console.log(achive);
+
+			const linkdata = achive.filter((item) => item.achive_file === null);
+			const filedata = achive.filter((item) => item.achive_file !== null);
+			if (filedata.length > 0) {
+				try {
+					const urlArray = await Promise.all(
+						filedata.map((file) => readFirebasefile("userAchiveFile", file))
+					);
+					setAchiveFile(urlArray);
+				} catch (error) {
+					console.error("Error fetching achive files: ", error);
+				}
+			} else {
+				setAchiveFile([]);
+			}
+			if (linkdata.length > 0) {
+				setAchiveLink(linkdata);
+			} else {
+				setAchiveLink([]);
+			}
+		} catch (error) {
+			// 예외처리
+			console.error(error);
 		}
 	};
 
@@ -134,14 +206,18 @@ function ReadClassDetail() {
 		window.open(ClassDetail["file"], "_blank");
 	};
 
-	const read_activityclass_list = () => {
+	const read_activityclass_list = async () => {
 		//모든 활동중인 클래스id 리스트 가져오기
 		try {
-			const response = axios.get(
+			const response = await axios.get(
 				"http://localhost:8000/api/post/read_activityclass_list/"
 			);
-			console.log(response.data.activityClassList);
-			setActivityClassList(response.data.activityClassList);
+			// console.log(response.data);
+			if (response.data.activityClassList) {
+				setActivityClassList(response.data.activityClassList);
+			} else {
+				setActivityClassList([]);
+			}
 		} catch (e) {
 			console.error(e);
 		}
@@ -197,8 +273,9 @@ function ReadClassDetail() {
 			}}
 		>
 			<div className="large_coment">{ClassDetail["title"]}</div>
-			<div className="info_div">{ClassDetail["info"]}</div>
-
+			<div className="info_div">
+				<div style={{ margin: 20 }}>{ClassDetail["info"]}</div>
+			</div>
 			<div
 				className="round_label_container"
 				style={{ justifyContent: "space-between" }}
@@ -248,16 +325,20 @@ function ReadClassDetail() {
 				>
 					<div className="row_container">
 						<div className="info_div">
-							모집 인원 <div>{ClassDetail["people"]}명</div>
+							<div style={{ fontSize: 18 }}>모집 인원 </div>
+							<div style={{ fontSize: 17 }}> {ClassDetail["people"]}명</div>
 						</div>
 						<div className="info_div">
-							수강료 <div>{ClassDetail["money"]}</div>
+							<div style={{ fontSize: 18 }}>수강료 </div>
+							<div style={{ fontSize: 17 }}>{ClassDetail["money"]}</div>
 						</div>
 						<div className="info_div">
-							{calculateDaysLeft(ClassDetail["applyend"]) > 0 ? (
+							{calculateDaysLeft(ClassDetail["applyend"]) >= 0 ? (
 								<div className="info_div">
-									신청 마감
-									<div>D - {calculateDaysLeft(ClassDetail["applyend"])}</div>
+									<div style={{ fontSize: 18 }}>신청 마감</div>
+									<div style={{ fontSize: 17, color: "red" }}>
+										D - {calculateDaysLeft(ClassDetail["applyend"])}
+									</div>
 								</div>
 							) : (
 								<div
@@ -291,9 +372,6 @@ function ReadClassDetail() {
 							flexDirection: "row",
 						}}
 					>
-						{/* <div style={{ fontSize: 25, marginRight: 15 }}>
-							{ClassDetail.applycnt}/{ClassDetail.people}
-						</div> */}
 						{userData &&
 						userData.nickname !== ClassDetail.id.nickname &&
 						applyokClassList.some(
@@ -324,7 +402,15 @@ function ReadClassDetail() {
 					</div>
 				</div>
 			</div>
-			{Object.values(ClassDetail).some((value) => value !== null) && (
+			{ClassDetail.type === "offline" && (
+				<div style={{ padding: 70 }}>
+					<div className="large_coment">활동 기간</div>
+					<div className="omyu" style={{ margin: 15, fontSize: 25 }}>
+						{ClassDetail.activitystart} ~ {ClassDetail.activityend}
+					</div>
+				</div>
+			)}
+			{!isAllInfoNullOrBlank && (
 				<div
 					style={{
 						backgroundColor: "rgb(62, 63, 74)",
@@ -333,7 +419,7 @@ function ReadClassDetail() {
 					}}
 				>
 					<div className="large_coment" style={{ padding: 50 }}>
-						우리 클래스를 소개할게요
+						소개할게요
 					</div>
 					{[1, 2, 3].map((index) => {
 						const infoKey = `info${index}`;
@@ -353,15 +439,19 @@ function ReadClassDetail() {
 										<img className="infoimg_img" src={imgSrc} alt="gg" />
 									</div>
 								)}
-								{infoText && <div className="info_div">{infoText}</div>}
+								{infoText && (
+									<div style={{ padding: 8 }} className="info_div">
+										{infoText}
+									</div>
+								)}
 							</>
 						);
 					})}
 				</div>
 			)}
 			<div className="info_div">
-				<div className="large_coment" style={{ padding: 70 }}>
-					어떤 활동을 하나요?
+				<div style={{ padding: 70 }}>
+					<div className="large_coment">어떤 활동을 하나요?</div>
 				</div>
 				{DayDetail.map((Item, index) => {
 					const isActivity = activityClassList.some(
@@ -371,8 +461,12 @@ function ReadClassDetail() {
 						<div key={index} className="row_container">
 							<div
 								style={{
+									// backgroundColor: "red",
 									width: "80%",
-									height: 300,
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+									// height: 300,
 								}}
 							>
 								{isImage(Item["day_file"]) ? (
@@ -384,7 +478,7 @@ function ReadClassDetail() {
 									/>
 								) : ClassDetail.type === "offline" ||
 								  (isActivity && isApplyMember && userData) ||
-								  userData.id === ClassDetail.id.id ? (
+								  (userData && userData.id === ClassDetail.id.id) ? (
 									//재생가능
 									<video
 										className="infoimg_img"
@@ -428,11 +522,30 @@ function ReadClassDetail() {
 							>
 								<div
 									style={{
-										fontFamily: "omyu_pretty",
-										fontSize: 30,
+										display: "flex",
+										flexDirection: "row",
+										alignItems: "end",
+										// backgroundColor: "red",
 									}}
 								>
-									{Item["day_sequence"]}
+									<div
+										style={{
+											fontFamily: "omyu_pretty",
+											fontSize: 30,
+											marginRight: 10,
+										}}
+									>
+										{Item["day_sequence"]}
+									</div>
+									<div
+										style={{
+											fontFamily: "omyu_pretty",
+											fontSize: 20,
+											marginBottom: 5,
+										}}
+									>
+										{Item["day_date"]}
+									</div>
 								</div>
 								<div
 									style={{
@@ -452,12 +565,24 @@ function ReadClassDetail() {
 				<>
 					<div
 						style={{
-							backgroundColor: "rgb(62, 63, 74)",
-							color: "white",
+							// backgroundColor: "rgb(62, 63, 74)",
+							// color: "white",
+							marginTop: 100,
 							height: 400,
 						}}
 					>
-						<div className="large_coment">어디서? where?</div>
+						<div className="large_coment">활동 장소</div>
+						<div
+							style={{
+								fontFamily: "Pretendard",
+								fontSize: 20,
+								letterSpacing: 3,
+								margin: 10,
+								background: "none",
+							}}
+						>
+							{ClassDetail["address"]}
+						</div>
 
 						<div
 							className="map"
@@ -468,27 +593,18 @@ function ReadClassDetail() {
 								margin: "auto",
 							}}
 						></div>
-						<div
-							style={{
-								fontFamily: "omyu_pretty",
-								fontSize: 30,
-								letterSpacing: 3,
-								margin: 10,
-							}}
-						>
-							{ClassDetail["address"]}
-						</div>
 					</div>
 				</>
 			)}
 			{ClassDetail["file"] !== null && (
 				<div style={{ margin: 30 }}>
+					<div className="large_coment">상세 일정 파일</div>
 					<button
 						onClick={openPdfPreview}
 						style={{
 							border: "none",
-							backgroundColor: "black",
-							color: "white",
+							backgroundColor: "transparent",
+							color: "royalblue",
 							padding: 20,
 							borderRadius: 50,
 						}}
@@ -497,6 +613,169 @@ function ReadClassDetail() {
 					</button>
 				</div>
 			)}
+			<div className="large_coment" style={{ padding: 50 }}>
+				Mentor
+			</div>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<div
+					style={{
+						width: 160,
+						height: 160,
+						borderRadius: "50%",
+						overflow: "hidden",
+						// backgroundColor: "red",
+					}}
+				>
+					{ClassDetail.id.updateprofile === null ? (
+						<img
+							src={ClassDetail.id.profile}
+							alt="profile"
+							style={{ width: "100%", height: "100%", objectFit: "cover" }}
+						/>
+					) : (
+						<img
+							src={updatedImg}
+							alt="updateprofile"
+							style={{ width: "100%", height: "100%", objectFit: "cover" }}
+						/>
+					)}
+				</div>
+
+				<div className="mentor" style={{ fontSize: 22, margin: 10 }}>
+					{ClassDetail.id.nickname}
+				</div>
+				<div className="mentor_200" style={{ fontSize: 18, margin: 5 }}>
+					{ClassDetail.id.info}{" "}
+				</div>
+				<div className="mentor_200" style={{ margin: 5 }}>
+					{ClassDetail.id.email}{" "}
+				</div>
+
+				{(achiveLink.length !== 0 || achiveFile.length !== 0) && (
+					<div
+						style={{
+							margin: 10,
+							// backgroundColor: "red",
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+						}}
+					>
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								width: "100%",
+								borderBottom: "1px solid #d3d3d3",
+								lineHeight: "0.1em",
+								margin: "10px 0 20px",
+								position: "relative",
+							}}
+						>
+							<div
+								style={{
+									position: "absolute",
+									backgroundColor: "#fff",
+									padding: "0 10px",
+								}}
+							>
+								<IoIosStar color="#ffd700" size={18} />
+							</div>
+						</div>
+
+						{achiveLink.length !== 0 && (
+							<>
+								{achiveLink.map((a, index) => (
+									<div
+										key={index}
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent: "center",
+										}}
+									>
+										<div
+											key={index}
+											style={{
+												marginBottom: 10,
+												wordBreak: "break-all",
+												padding: 5,
+												borderRadius: 5,
+												backgroundColor: "blanchedAlmond",
+											}}
+										>
+											<div
+												style={{
+													fontSize: 15,
+													marginRight: 10,
+												}}
+											>
+												{a.achive_linkname}
+											</div>
+											<a
+												href={a.achive_link}
+												target="_blank"
+												style={{
+													color: "#1A1A3A",
+													fontSize: 12,
+												}}
+												rel="noopener noreferrer"
+											>
+												{a.achive_link}
+											</a>
+										</div>
+									</div>
+								))}
+							</>
+						)}
+						{achiveFile.length !== 0 && (
+							<>
+								{achiveFile.map((a, index) => (
+									<div
+										key={index}
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent: "center",
+										}}
+									>
+										<div
+											key={index}
+											style={{
+												width: "100%",
+												marginBottom: 10,
+												wordBreak: "break-all",
+											}}
+										>
+											<button
+												style={{
+													color: "#1A1A3A",
+													fontSize: 14,
+													border: "none",
+													padding: 7,
+													borderRadius: 5,
+													backgroundColor: "blanchedAlmond",
+												}}
+												onClick={() => handleLocalFilePreview(a.achive_file)}
+											>
+												{a.achive_filename}
+											</button>
+										</div>
+									</div>
+								))}
+							</>
+						)}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

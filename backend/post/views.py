@@ -194,6 +194,7 @@ def extract_data_from_class(class_instance):
         'class_id': class_instance.class_id.class_id,
         'id': {
             'nickname': class_instance.class_id.id.nickname,
+            'info': class_instance.class_id.id.info,
             'profile': class_instance.class_id.id.profileimg if class_instance.class_id.id.profileimg else None,
             'updateprofile': class_instance.class_id.id.updateprofile if class_instance.class_id.id.updateprofile else None,
         },
@@ -217,6 +218,7 @@ def extract_data_from_classmodel(class_instance):
         'class_id': class_instance.class_id,
         'id': {
             'nickname': class_instance.id.nickname,
+            'info': class_instance.id.info,
             'profile': class_instance.id.profileimg if class_instance.id.profileimg else None,
             'updateprofile': class_instance.id.updateprofile if class_instance.id.updateprofile else None,
         },
@@ -448,6 +450,8 @@ def read_some_data(request):
                 'class_id': cls.class_id,
                 'id':{
                     'id':cls.id.id,
+                    'email':cls.id.email,
+                    'info':cls.id.info,
                     'nickname':cls.id.nickname,
                     'profile':cls.id.profileimg if cls.id.profileimg else None,
                     'updateprofile':cls.id.updateprofile if cls.id.updateprofile else None,
@@ -481,7 +485,8 @@ def read_some_data(request):
                     'day_file':day_.file,
                     'day_title': day_.title,
                     'day_info': day_.info,
-                    'day_sequence':day_.sequence
+                    'day_sequence':day_.sequence,
+                    'day_date':day_.date,
                 }
                 day_data_list.append(day_data)
             return JsonResponse({'class_data':class_data,'day_data':day_data_list})
