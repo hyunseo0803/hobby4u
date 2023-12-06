@@ -22,6 +22,7 @@ function CreateClassDetail(props) {
 	const [token, setToken] = useState("");
 
 	const [isOpen, setIsOpen] = useState(false);
+	const [activitymin, setActivitymin] = useState("");
 
 	const [applyEndDate, setApplyEndDate] = useState(null);
 
@@ -246,6 +247,7 @@ function CreateClassDetail(props) {
 				"Updated applyEndDate in useEffect:",
 				moment(applyEndDate, "YYYY-MM-DD", true)
 			);
+			// setActivitymin(moment(applyEndDate).add(1, "days"));
 		} else {
 			console.log("Updated applyEndDate in useEffect: null");
 		}
@@ -590,6 +592,7 @@ function CreateClassDetail(props) {
 			token: token,
 		};
 		const formData = new FormData();
+		console.log("폼 데이터:", JSON.stringify(classAllData));
 		formData.append("json", JSON.stringify(classAllData)); // JSON 데이터 추가
 		formData.append("imageSrc", imageSrc);
 		formData.append("file", file);
@@ -610,9 +613,8 @@ function CreateClassDetail(props) {
 			})
 			.then((response) => {
 				console.log(response.data);
-				if (window.alert("성공적으로 등록했습니다.")) {
-					navigate("/judge");
-				}
+				window.alert("성공적으로 등록했습니다.");
+				navigate("/judge");
 			})
 			.catch((error) => {
 				console.error("Error submitting data:", error);
@@ -815,6 +817,7 @@ function CreateClassDetail(props) {
 						{option === "offline" ? (
 							<PLACE_PERIOD
 								// applyStartDate={applyStartDate}
+								activitymin={activitymin}
 								applyEndDate={applyEndDate}
 								onChangeApply={onChangeApply}
 								activityStartDate={activityStartDate}
