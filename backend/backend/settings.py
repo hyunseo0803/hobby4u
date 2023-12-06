@@ -16,6 +16,9 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 
+# settings.py
+
+
 cred = credentials.Certificate("C:\\Users\\hyunseo\\Hobby4U\\hobby4u\\backend\\backend\\firebase_sdk.json")
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'hivehobby.appspot.com'
@@ -203,4 +206,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1000  # 10MB로 설정 예시
+
