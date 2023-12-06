@@ -8,6 +8,7 @@ from .models import *
 from .serializers import MemberSerializer
 from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import jwt
 import os
 import requests
@@ -183,12 +184,13 @@ def KakaoCallbackView(request):
     else:
             return Response('Failed to get access token', status=response.status_code)
        
-@api_view(['POST'])       
+# @api_view(['POST']) 
+@csrf_exempt      
 def get_user_data(request):
     try:
         if request.method == "POST":
-            jwt_token = request.headers.get('Authorization').split(' ')[1]
-            
+            data=json.loads(request.body.decode("utf-8"))
+            jwt_token = data.get('token')     
             payload = jwt.decode(jwt_token,SECRET_KEY,ALGORITHM)
             user_id=payload['id']
             member=Member.objects.get(id=user_id)
@@ -204,7 +206,7 @@ def get_user_data(request):
                         'get_cash':member.get_cash
                         
                     }
-        return Response(response_data)
+        return JsonResponse({'response_data':response_data})
     except ExpiredSignatureError:
         # 만료된 토큰에 대한 예외 처리
         return Response({'error': 'Token has expired'}, status=401)
@@ -297,24 +299,36 @@ def delete_user_achive(request):
         
     return Response("success")
 
-@api_view(['POST'])       
+# @api_view(['POST'])   
+@csrf_exempt    
 def get_user_achive(request):
-    if request.method =='POST':
-        jwt_token = request.headers.get('Authorization').split(' ')[1]
-        # try:
-        payload = jwt.decode(jwt_token, SECRET_KEY, ALGORITHM)
+    data=json.loads(request.body.decode("utf-8"))
+    token=data.get('token')
+    mentor=data.get('mentor')
+    
+    print("멘토 아이디:",mentor)
+    
+    user_id = None
+    
+    if token:
+        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
         user_id = payload['id']
-        achive = Performance.objects.filter(id=user_id)
-        achive_list = []
-        for achive_data in achive:
-            data = {
-                'achive_file': achive_data.file if achive_data.file else None,
-                'achive_filename': achive_data.file_title,
-                'achive_link': achive_data.link,
-                'achive_linkname': achive_data.link_title
-            }
-            achive_list.append(data)
-        return Response(achive_list)
+    elif mentor:
+        user_id=mentor
+        
+    print("작성자 id:",user_id)
+    
+    achive = Performance.objects.filter(id=user_id)
+    achive_list = []
+    for achive_data in achive:
+        data = {
+            'achive_file': achive_data.file if achive_data.file else None,
+            'achive_filename': achive_data.file_title,
+            'achive_link': achive_data.link,
+            'achive_linkname': achive_data.link_title
+        }
+        achive_list.append(data)
+    return JsonResponse({'achive_list':achive_list})
 
 
 def get_cashback_list(request):
