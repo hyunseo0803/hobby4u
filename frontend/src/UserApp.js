@@ -16,6 +16,7 @@ import TossSuccess from "./pages/TossSuccess.tsx";
 import TossFail from "./pages/TossFail.tsx";
 import CompletePayment from "./common/CompletePayment.js";
 import CashBack from "./pages/CashBack.js";
+import axios from "axios";
 
 class UserApp extends Component {
 	constructor(props) {
@@ -42,27 +43,19 @@ class UserApp extends Component {
 		try {
 			const token = localStorage.getItem("token");
 
-			const response = await fetch(
+			const response = await axios.post(
 				"http://localhost:8000/api/user/get_user_data/",
 				{
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-					},
+					token: token,
 				}
 			);
-			if (response.ok) {
-				const user = await response.json();
-				// 사용자 정보를 가져온 후 상태를 업데이트하는 콜백 함수
-				this.setState({ userData: user, isLoggedIn: true }, () => {
-					// 상태가 업데이트된 후에 실행되는 로직
-					// 이곳에서 헤더를 다시 렌더링하거나 기타 작업을 수행할 수 있습니다.
-					console.log("User data fetched successfully");
-				});
-			} else {
-				// API 호출이 실패한 경우 에러 처리 로직 추가
-				throw new Error("Failed to fetch user data");
-			}
+			const user = response.data.response_data;
+			// 사용자 정보를 가져온 후 상태를 업데이트하는 콜백 함수
+			this.setState({ userData: user, isLoggedIn: true }, () => {
+				// 상태가 업데이트된 후에 실행되는 로직
+				// 이곳에서 헤더를 다시 렌더링하거나 기타 작업을 수행할 수 있습니다.
+				console.log("User data fetched successfully");
+			});
 		} catch (error) {
 			// 예외처리
 			console.error(error);
@@ -99,7 +92,12 @@ class UserApp extends Component {
 					<Route path="gide" element={<Intro />} />
 					<Route
 						path="readClass/classDetail"
-						element={<ReadClassDetail isLoggedIn={isLoggedIn} />}
+						element={
+							<ReadClassDetail
+								isLoggedIn={isLoggedIn}
+								readFirebasefile={readFirebasefile}
+							/>
+						}
 					/>
 					{isLoggedIn && (
 						<>

@@ -41,48 +41,39 @@ function Myclass(props) {
 		try {
 			const token = localStorage.getItem("token");
 			if (token) {
-				if (!token) {
-					throw new Error("Token is not available");
-				}
-
-				const response = await fetch(
+				const response = await axios.post(
 					"http://localhost:8000/api/user/get_user_achive/",
 					{
-						method: "POST",
-						headers: {
-							Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-						},
+						token: token,
 					}
 				);
-				if (response.ok) {
-					const achive = await response.json();
-					const linkdata = achive.filter((item) => item.achive_file === null);
-					const filedata = achive.filter((item) => item.achive_file !== null);
-					if (filedata.length > 0) {
-						try {
-							const urlArray = await Promise.all(
-								filedata.map((file) => readFirebasefile("userAchiveFile", file))
-							);
-							setAchiveFile(urlArray);
-						} catch (error) {
-							console.error("Error fetching achive files: ", error);
-						}
-					} else {
-						setAchiveFile([]);
-					}
-					if (linkdata.length > 0) {
-						setAchiveLink(linkdata);
-					} else {
-						setAchiveLink([]);
+				const achive = response.data.achive_list;
+				const linkdata = achive.filter((item) => item.achive_file === null);
+				const filedata = achive.filter((item) => item.achive_file !== null);
+				if (filedata.length > 0) {
+					try {
+						const urlArray = await Promise.all(
+							filedata.map((file) => readFirebasefile("userAchiveFile", file))
+						);
+						setAchiveFile(urlArray);
+					} catch (error) {
+						console.error("Error fetching achive files: ", error);
 					}
 				} else {
-					// 예외처리
-					throw new Error("Failed to fetch user data");
+					setAchiveFile([]);
 				}
+				if (linkdata.length > 0) {
+					setAchiveLink(linkdata);
+				} else {
+					setAchiveLink([]);
+				}
+			} else {
+				// 예외처리
+				throw new Error("Failed to fetch user data");
 			}
 		} catch (error) {
 			// 예외처리
-			throw new Error("Token is not available");
+			console.error(error);
 		}
 	};
 
@@ -233,40 +224,27 @@ function Myclass(props) {
 	const getUserData = async () => {
 		try {
 			const token = localStorage.getItem("token");
-
-			if (!token) {
-				throw new Error("Token is not available");
-			}
-
-			const response = await fetch(
+			const response = await axios.post(
 				"http://localhost:8000/api/user/get_user_data/",
 				{
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-					},
+					token: token,
 				}
 			);
-			if (response.ok) {
-				const user = await response.json();
-				const nickname = user.nickname;
-				const userImg = user.profileImg;
-				const userImgUpdate = user.updateprofile;
-				const userEmail = user.email;
-				const userInfo = user.info;
-				setUserNickname(nickname);
-				setUserImg(userImg);
-				setUserInfo(userInfo);
-				setUserEmail(userEmail);
-				if (userImgUpdate) {
-					const url = await readFirebasefile("userImg", userImgUpdate);
-					setUpdatedImg(url);
-				} else {
-					setUserImg(userImg);
-				}
+			const user = response.data.response_data;
+			const nickname = user.nickname;
+			const userImg = user.profileImg;
+			const userImgUpdate = user.updateprofile;
+			const userEmail = user.email;
+			const userInfo = user.info;
+			setUserNickname(nickname);
+			setUserImg(userImg);
+			setUserInfo(userInfo);
+			setUserEmail(userEmail);
+			if (userImgUpdate) {
+				const url = await readFirebasefile("userImg", userImgUpdate);
+				setUpdatedImg(url);
 			} else {
-				// 예외처리
-				throw new Error("Failed to fetch user data");
+				setUserImg(userImg);
 			}
 		} catch (error) {
 			// 예외처리
@@ -318,7 +296,7 @@ function Myclass(props) {
 							<div className="user_email">{userEmail}</div>
 							<div>
 								{(achiveLink.length !== 0 || achiveFile.length !== 0) && (
-									<>
+									<div style={{ marginTop: 10 }}>
 										{achiveLink.length !== 0 && (
 											<>
 												{achiveLink.map((a, index) => (
@@ -401,7 +379,7 @@ function Myclass(props) {
 												))}
 											</>
 										)}
-									</>
+									</div>
 								)}
 							</div>
 						</div>
@@ -411,8 +389,8 @@ function Myclass(props) {
 							display: "flex",
 							flexDirection: "row",
 							justifyContent: "center",
-							width: "100%",
-							margin: 10,
+							width: "80%",
+							margin: 20,
 						}}
 					>
 						<button
@@ -493,7 +471,17 @@ function Myclass(props) {
 					{selectwhat === "myclass" ? (
 						<>
 							{loding ? (
-								<div>로딩중</div>
+								<div style={{ marginTop: 100, marginBottom: 80 }}>
+									<div class="loading">
+										<span>L</span>
+										<span>O</span>
+										<span>A</span>
+										<span>D</span>
+										<span>I</span>
+										<span>N</span>
+										<span>G</span>
+									</div>
+								</div>
 							) : myclass.length > 0 ? (
 								<div
 									style={{
@@ -513,7 +501,7 @@ function Myclass(props) {
 											delete_or_cancle={my_delete_ok}
 											readMyClass={readMyClass}
 											mypage={true}
-											status="삭제 가능"
+											status="삭제"
 										/>
 									)}
 									{(filter === "before" ||
@@ -527,7 +515,7 @@ function Myclass(props) {
 											delete_or_cancle={my_delete_ok}
 											mypage={true}
 											readMyClass={readMyClass}
-											status="삭제 가능"
+											status="삭제"
 										/>
 									) : (
 										(filter === "before" ||
@@ -578,7 +566,17 @@ function Myclass(props) {
 						selectwhat === "applyclass" && (
 							<>
 								{loding ? (
-									<div>로딩중</div>
+									<div style={{ marginTop: 100, marginBottom: 80 }}>
+										<div class="loading">
+											<span>L</span>
+											<span>O</span>
+											<span>A</span>
+											<span>D</span>
+											<span>I</span>
+											<span>N</span>
+											<span>G</span>
+										</div>
+									</div>
 								) : applyClass.length > 0 ? (
 									<div
 										style={{
@@ -598,7 +596,7 @@ function Myclass(props) {
 												readMyClass={readMyClass}
 												delete_or_cancle={apply_cancle_ok}
 												mypage={true}
-												status="취소 가능"
+												status="수강 취소"
 											/>
 										)}
 										{(filter === "before" ||
@@ -612,7 +610,7 @@ function Myclass(props) {
 												readMyClass={readMyClass}
 												delete_or_cancle={apply_cancle_ok}
 												mypage={true}
-												status="취소 가능"
+												status="수강 취소"
 											/>
 										) : (
 											(filter === "before" ||

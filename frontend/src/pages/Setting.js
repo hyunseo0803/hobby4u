@@ -12,6 +12,7 @@ import { AiOutlineLink, AiOutlineFilePdf } from "react-icons/ai";
 
 import { BsFillMortarboardFill, BsXCircleFill } from "react-icons/bs";
 import LoginRequired from "../common/LoginRequired";
+import axios from "axios";
 
 function Setting(props) {
 	const { readFirebasefile } = props;
@@ -78,33 +79,25 @@ function Setting(props) {
 				throw new Error("Token is not available");
 			}
 
-			const response = await fetch(
+			const response = await axios.post(
 				"http://localhost:8000/api/user/get_user_data/",
 				{
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-					},
+					token: token,
 				}
 			);
-			if (response.ok) {
-				const user = await response.json();
-				const userImgUpdate = user.updateprofile;
-				setInputText({
-					email: user.email,
-					nickname: user.nickname,
-					info: user.info,
-				});
-				setInputImg(user.profileImg);
-				if (userImgUpdate) {
-					const url = await readFirebasefile("userImg", userImgUpdate);
-					setUpdatedImg(url);
-				} else {
-					setInputImg(user.profileImg);
-				}
+			const user = response.data.response_data;
+			const userImgUpdate = user.updateprofile;
+			setInputText({
+				email: user.email,
+				nickname: user.nickname,
+				info: user.info,
+			});
+			setInputImg(user.profileImg);
+			if (userImgUpdate) {
+				const url = await readFirebasefile("userImg", userImgUpdate);
+				setUpdatedImg(url);
 			} else {
-				// 예외처리
-				throw new Error("Failed to fetch user data");
+				setInputImg(user.profileImg);
 			}
 		} catch (error) {
 			// 예외처리
@@ -119,49 +112,40 @@ function Setting(props) {
 		try {
 			const token = localStorage.getItem("token");
 			if (token) {
-				if (!token) {
-					throw new Error("Token is not available");
-				}
-
-				const response = await fetch(
+				const response = await axios.post(
 					"http://localhost:8000/api/user/get_user_achive/",
 					{
-						method: "POST",
-						headers: {
-							Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization header에 포함시킴
-						},
+						token: token,
 					}
 				);
-				if (response.ok) {
-					const achive = await response.json();
-					const linkdata = achive.filter((item) => item.achive_file === null);
-					const filedata = achive.filter((item) => item.achive_file !== null);
-					if (filedata.length > 0) {
-						try {
-							const urlArray = await Promise.all(
-								filedata.map((file) => readFirebasefile("userAchiveFile", file))
-							);
-							setAchiveFile(urlArray);
-						} catch (error) {
-							console.error("Error fetching achive files: ", error);
-							// 에러 처리
-						}
-					} else {
-						setAchiveFile([]);
-					}
-					if (linkdata.length > 0) {
-						setAchiveLink(linkdata);
-					} else {
-						setAchiveLink([]);
+				const achive = response.data.achive_list;
+				const linkdata = achive.filter((item) => item.achive_file === null);
+				const filedata = achive.filter((item) => item.achive_file !== null);
+				if (filedata.length > 0) {
+					try {
+						const urlArray = await Promise.all(
+							filedata.map((file) => readFirebasefile("userAchiveFile", file))
+						);
+						setAchiveFile(urlArray);
+					} catch (error) {
+						console.error("Error fetching achive files: ", error);
+						// 에러 처리
 					}
 				} else {
-					// 예외처리
-					throw new Error("Failed to fetch user data");
+					setAchiveFile([]);
 				}
+				if (linkdata.length > 0) {
+					setAchiveLink(linkdata);
+				} else {
+					setAchiveLink([]);
+				}
+			} else {
+				// 예외처리
+				throw new Error("Failed to fetch user data");
 			}
 		} catch (error) {
 			// 예외처리
-			throw new Error("Token is not available");
+			console.error(error);
 		}
 	};
 
@@ -959,19 +943,6 @@ function Setting(props) {
 								저장
 							</button>
 						)}
-						<div
-							style={{
-								backgroundColor: "#F26B6B",
-								color: "white",
-								// margin: 50,
-								width: 120,
-								padding: 5,
-								textAlign: "center",
-								borderRadius: 8,
-							}}
-						>
-							회원탈퇴
-						</div>
 					</div>
 				</>
 			) : (
